@@ -1,0 +1,36 @@
+{
+  "name": "hap-nodered",
+  "version": "0.0.0",
+  "description": "NodeRED Automation for HomeBridge",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "node-red": {
+    "nodes": {
+      "HAP-NodeRed": "HAP-NodeRed.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NorthernMan54/HAP-NodeRed.git"
+  },
+  "devDependencies": {
+    "ava": "0.25.0",
+    "coveralls": "3.0.2",
+    "documentation": "8.1.2",
+    "nyc": "13.1.0",
+    "xo": "0.23.0"
+  },
+  "dependencies": {
+    "debug": ">2.6.9",
+    "mqtt": ">=2.18.8",
+    "hap-node-client": ">=0.0.0"
+  },
+  "author": "NorthernMan54",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NorthernMan54/HAP-NodeRed/issues"
+  },
+  "homepage": "https://github.com/NorthernMan54/HAP-NodeRed#readme"
+}
