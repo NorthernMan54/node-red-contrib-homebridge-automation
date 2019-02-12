@@ -3,7 +3,8 @@ var debug = require('debug')('hapNodeRed');
 var register = require('./lib/register.js');
 
 module.exports = function(RED) {
-  var devices = [];
+  var evDevices = [];
+  var ctDevices = [];
   var homebridge;
 
   function hapConf(n) {
@@ -12,7 +13,6 @@ module.exports = function(RED) {
     this.username = n.username;
     this.password = this.credentials.password;
     var registerQueue = [];
-    this.connectionState = false;
 
     var options = {
       "pin": n.username,
@@ -22,27 +22,24 @@ module.exports = function(RED) {
 
     this.users = {};
 
+    homebridge = new HAPNodeJSClient(options);
+    homebridge.on('Ready', function(accessories) {
+      evDevices = register.registerEv(homebridge, accessories);
+      ctDevices = register.registerCt(homebridge, accessories);
+      debug('Discovered %s evDevices', evDevices.length);
+      debug('Discovered %s ctDevices', ctDevices.length);
+      debug("registerQueue", registerQueue.length);
+      registerQueue.forEach(function(element) {
+        _register(element.device, node, element.done);
+      });
+    });
+
     var node = this;
 
     // getDevices(node.username, node.password, node.id);
 
     this.connect = function(done) {
-      debug("connect", this.connectionState);
-      if (!this.connectionState) {
-        this.connectionState = true;
-        homebridge = new HAPNodeJSClient(options);
-
-        homebridge.on('Ready', function(accessories) {
-          devices = register.register(homebridge, accessories);
-          debug('Discovered %s devices', devices.length);
-          if (done) {
-            done();
-          }
-          // debug('Discovered', accessories);
-          // registerEvents(register.register(homebridge, accessories), homebridge);
-          // debug("Register", JSON.stringify(register.register(this.homebridge, devices)));
-        });
-      }
+      done();
     };
 
     /*
@@ -110,7 +107,7 @@ module.exports = function(RED) {
     this.register = function(deviceNode, done) {
       debug("register", deviceNode.name);
       node.users[deviceNode.id] = deviceNode;
-      if (devices.length < 1) {
+      if (evDevices.length < 1) {
         // No device cache
         debug("register->connect", deviceNode.name);
         if (deviceNode.device) {
@@ -121,11 +118,7 @@ module.exports = function(RED) {
         }
         if (!homebridge) {
           node.connect(function() {
-            // process registerQueue
-            debug("registerQueue", registerQueue.length);
-            registerQueue.forEach(function(element) {
-              _register(element.device, node, element.done);
-            });
+            // Unused
           });
         } // I have a homebridge object, but no devices yet!!
       } else {
@@ -219,11 +212,17 @@ module.exports = function(RED) {
 
     node.conf.register(node, function() {
       debug("Registered", node.name);
-      this.hapDevice = _findEndpoint(devices, node.device);
-      node.hapEndpoint = 'host: ' + this.hapDevice.host + ':' + this.hapDevice.port + ' aid: ' + this.hapDevice.aid + ' iid: ' + this.hapDevice.iid;
-      node.description = this.hapDevice.description;
-      node.deviceType = this.hapDevice.deviceType;
-      homebridge.on(this.hapDevice.host + this.hapDevice.port + this.hapDevice.aid + this.hapDevice.iid, node.command);
+      this.hapDevice = _findEndpoint(evDevices, node.device);
+      if (this.hapDevice) {
+        node.hapEndpoint = 'host: ' + this.hapDevice.host + ':' + this.hapDevice.port + ' aid: ' + this.hapDevice.aid + ' iid: ' + this.hapDevice.iid;
+        node.description = this.hapDevice.description;
+        node.deviceType = this.hapDevice.deviceType;
+        // Register for events
+        homebridge.on(this.hapDevice.host + this.hapDevice.port + this.hapDevice.aid + this.hapDevice.iid, node.command);
+      } else {
+        node.error("Can't find device " + node.device, null);
+        debug("Missing device", node.device);
+      }
     });
 
     node.on('close', function(done) {
@@ -253,14 +252,16 @@ module.exports = function(RED) {
       });
     });
 
+    /*
     node.conf.register(node, function() {
       debug("hapControl-Registered", node.name);
-      this.hapDevice = _findEndpoint(devices, node.device);
+      this.hapDevice = _findEndpoint(ctDevices, node.device);
       node.hapEndpoint = 'host: ' + this.hapDevice.host + ':' + this.hapDevice.port + ' aid: ' + this.hapDevice.aid + ' iid: ' + this.hapDevice.iid;
       node.description = this.hapDevice.description;
       node.deviceType = this.hapDevice.deviceType;
       // homebridge.on(this.hapDevice.host + this.hapDevice.port + this.hapDevice.aid + this.hapDevice.iid, node.command);
     });
+    */
 
     node.on('close', function(done) {
       node.conf.deregister(node, done);
@@ -284,19 +285,37 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/devices/', function(req, res) {
+  RED.httpAdmin.get('/hap-device/evDevices/', function(req, res) {
     // debug("Devices", devices);
-    if (devices) {
-      res.send(devices);
+    if (evDevices) {
+      res.send(evDevices);
     } else {
       res.status(404).send();
     }
   });
 
-  RED.httpAdmin.get('/hap-device/devices/:id', function(req, res) {
+  RED.httpAdmin.get('/hap-device/evDevices/:id', function(req, res) {
     // debug("Devices", devices);
-    if (devices) {
-      res.send(devices);
+    if (evDevices) {
+      res.send(evDevices);
+    } else {
+      res.status(404).send();
+    }
+  });
+
+  RED.httpAdmin.get('/hap-device/ctDevices/', function(req, res) {
+    // debug("Devices", devices);
+    if (ctDevices) {
+      res.send(ctDevices);
+    } else {
+      res.status(404).send();
+    }
+  });
+
+  RED.httpAdmin.get('/hap-device/ctDevices/:id', function(req, res) {
+    // debug("Devices", devices);
+    if (ctDevices) {
+      res.send(ctDevices);
     } else {
       res.status(404).send();
     }
@@ -305,8 +324,8 @@ module.exports = function(RED) {
   //
 
   function _control(nrDevice, node, value, done) {
-    debug("_control", nrDevice, devices.length);
-    var endpoint = _findEndpoint(devices, nrDevice);
+    debug("_control", nrDevice, ctDevices.length);
+    var endpoint = _findEndpoint(ctDevices, nrDevice);
     if (endpoint) {
       var message = {
         "characteristics": [{
@@ -331,8 +350,8 @@ module.exports = function(RED) {
   }
 
   function _register(nrDevice, node, done) {
-    debug("_register", nrDevice, devices.length);
-    var endpoint = _findEndpoint(devices, nrDevice);
+    debug("_register", nrDevice, evDevices.length);
+    var endpoint = _findEndpoint(evDevices, nrDevice);
     if (endpoint) {
       var message = {
         "characteristics": [{

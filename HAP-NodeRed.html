@@ -104,7 +104,7 @@
                 $('#node-input-name').val($('#node-input-device option:selected').text());
             });
             var getDevs = function (account){
-                $.getJSON('hap-device/devices/' + account, function(data){
+                $.getJSON('hap-device/evDevices/' + account, function(data){
                     $('#node-input-device').find('option').remove().end();
                     for (d in data) {
                         $('<option/>',{
@@ -116,7 +116,7 @@
                         $('#node-input-device').val(node.device);
                     }
                 }).fail(function(jqXHR, textStatus, errorThrown){
-                    console.log("problem getting devices");
+                    console.log("problem getting evDevices");
                     console.log(textStatus);
                 });
 
@@ -217,7 +217,7 @@
                 $('#node-input-name').val($('#node-input-device option:selected').text());
             });
             var getDevs = function (account){
-                $.getJSON('hap-device/devices/' + account, function(data){
+                $.getJSON('hap-device/ctDevices/' + account, function(data){
                     $('#node-input-device').find('option').remove().end();
                     for (d in data) {
                         $('<option/>',{
@@ -229,7 +229,7 @@
                         $('#node-input-device').val(node.device);
                     }
                 }).fail(function(jqXHR, textStatus, errorThrown){
-                    console.log("problem getting devices");
+                    console.log("problem getting ctDevices");
                     console.log(textStatus);
                 });
 
