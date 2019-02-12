@@ -24,3 +24,172 @@
 <script type="text/x-red" data-help-name="HAP-NodeRed">
     <p>A simple node that converts the message payloads into all lower-case characters</p>
 </script>
+
+<script type="text/x-red" data-template-name="hap-conf">
+    <div class="form-row">
+	    <label for="node-config-input-username"><i class="icon-tag"></i> Username</label>
+	    <input type="text" id="node-config-input-username">
+	</div>
+	<div class="form-row">
+	   	<label for="node-config-input-password"><i class="icon-tag"></i> Password</label>
+	    <input type="password" id="node-config-input-password">
+	</div>
+</script>
+
+<script type="text/x-red" data-help-name="hap-conf">
+	<p>If you don't have an account on the bridge create one
+    <a target="_blank" href="https://alexa-node-red.bm.hardill.me.uk/">here</a>.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('hap-conf',{
+        category: 'config',
+        defaults: {
+        	username: {}
+        },
+        credentials: {
+            password: {type:"password"}
+        },
+        color: '#D3D3D3',
+        label: function() {
+        	return this.username;
+        },
+        oneditsave: function(){
+        	var node = this;
+        	var user = $('#node-config-input-username').val();
+        	var pass = $('#node-config-input-password').val();
+            console.log("pass: ", pass);
+        	if (pass != '_PWD_') {
+        		var account = {
+        			id: node.id,
+        			user: user,
+        			pass: pass
+        		}
+        		$.ajax({
+        			data: JSON.stringify(account),
+        			url: 'alexa-home/new-account',
+        			contentType: 'application/json',
+        			type: 'POST',
+        			processData: false
+        		});
+        	}
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="hap-device">
+	<div class="form-row">
+		<label for="node-input-conf"><i class="icon-tag"></i> Account</label>
+		<input type="text" id="node-input-conf">
+	</div>
+	<div class="form-row">
+		<label for="node-input-device"><i class="icon-tag"></i> Device</label>
+		<select id="node-input-device">
+
+		</select>
+        <a id="node-input-device-refresh" class="btn"><i class="fa fa-refresh"></i></a>
+	</div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-acknoledge" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-acknoledge" style="width: 70%"> Auto Acknowledge</span>
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tag"></i> Topic</label>
+        <input type="text" id="node-input-topic">
+    </div>
+    <input type="hidden" id="node-input-name">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="hap-device">
+	<p>This node provides endpoint for emiting events from Homebridge</p>
+    <p>More details</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('hap-device',{
+        category: 'alexa',
+        defaults: {
+        	conf: {value: "", type:"hap-conf"},
+        	device: {value: "" },
+            acknoledge: {value: true},
+        	name: {},
+            topic: {}
+        },
+        outputs: 1,
+        inputs: 0,
+        color: '#D3D3D3',
+        icon: 'alexa.png',
+        label: function() {
+        	return this.name || "Homebridge";
+        },
+        oneditsave: function() {
+             var n = $('#node-input-device option:selected').text();
+            //console.log("selected name " + n);
+            this.name = n;
+            $('#node-input-name').val(n);
+        },
+        oneditprepare: function(){
+            var node = this;
+            //console.log("foo " + node.device);
+            if (typeof node.acknoledge === 'undefined') {
+                console.log("ben");
+                $('#node-input-acknoledge').prop('checked', true);
+            }
+            $('#node-input-device').change(function(){
+                $('#node-input-name').val($('#node-input-device option:selected').text());
+            });
+            var getDevs = function (account){
+                $.getJSON('hap-device/devices/' + account, function(data){
+                    $('#node-input-device').find('option').remove().end();
+                    for (d in data) {
+                        $('<option/>',{
+                        value: data[d].uniqueId,
+                            text: data[d].friendlyName
+                        }).appendTo('#node-input-device');
+                    }
+                    if (node.device) {
+                        $('#node-input-device').val(node.device);
+                    }
+                }).fail(function(jqXHR, textStatus, errorThrown){
+                    console.log("problem getting devices");
+                    console.log(textStatus);
+                });
+
+            }
+        	if (node.conf) {
+        		var account = $('#node-input-conf').val();
+                //console.log("account: ", account);
+        		if (account != '_ADD_') {
+	        		getDevs(account);
+        		}
+        	}
+        	$('#node-input-conf').change(function(){
+        		var account = $('#node-input-conf').val();
+                //console.log("account changed: ", account);
+                if (account != '_ADD_') {
+            		getDevs(account);
+                } else {
+                    //console.log("new account");
+                    $('#node-input-device').find('option').remove().end();
+                    $('#node-input-device').val("");
+                }
+        	});
+            $('#node-input-device-refresh').click(function(){
+                $('#node-input-device-refresh').addClass('disabled');
+                var account = $('#node-input-conf').val();
+                $.ajax({
+                    url: 'hap-device/refresh/' + account,
+                    type: 'POST'
+                }).done(function(data){
+                    setTimeout(function(){
+                        getDevs(account);
+                        $('#node-input-device-refresh').removeClass('disabled');
+                    },3000);
+                });
+            });
+        }
+    });
+</script>
