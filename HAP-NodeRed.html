@@ -38,7 +38,7 @@
 
 <script type="text/x-red" data-help-name="hap-conf">
 	<p>If you don't have an account on the bridge create one
-    <a target="_blank" href="https://alexa-node-red.bm.hardill.me.uk/">here</a>.</p>
+
 </script>
 
 <script type="text/javascript">
@@ -56,8 +56,8 @@
         },
         oneditsave: function(){
         	var node = this;
-        	var user = $('#node-config-input-username').val();
-        	var pass = $('#node-config-input-password').val();
+        	var user = $('#node-config-input-PIN').val();
+        	// var pass = $('#node-config-input-password').val();
             console.log("pass: ", pass);
         	if (pass != '_PWD_') {
         		var account = {
@@ -79,7 +79,7 @@
 
 <script type="text/x-red" data-template-name="hap-device">
 	<div class="form-row">
-		<label for="node-input-conf"><i class="icon-tag"></i> Account</label>
+		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
 		<input type="text" id="node-input-conf">
 	</div>
 	<div class="form-row">
@@ -89,15 +89,7 @@
 		</select>
         <a id="node-input-device-refresh" class="btn"><i class="fa fa-refresh"></i></a>
 	</div>
-    <div class="form-row">
-        <label>&nbsp;</label>
-        <input type="checkbox" id="node-input-acknoledge" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-acknoledge" style="width: 70%"> Auto Acknowledge</span>
-    </div>
-    <div class="form-row">
-        <label for="node-input-topic"><i class="icon-tag"></i> Topic</label>
-        <input type="text" id="node-input-topic">
-    </div>
+
     <input type="hidden" id="node-input-name">
     </div>
 </script>
@@ -110,13 +102,14 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('hap-device',{
-        category: 'alexa',
+        category: 'Homebridge',
         defaults: {
         	conf: {value: "", type:"hap-conf"},
         	device: {value: "" },
-            acknoledge: {value: true},
         	name: {},
-            topic: {}
+          hapEndpoint: {value: ""},
+          deviceType: {value: ""},
+          description: {value: ""}
         },
         outputs: 1,
         inputs: 0,
