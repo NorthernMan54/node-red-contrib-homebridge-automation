@@ -1,38 +1,7 @@
-<script type="text/javascript">
-    RED.nodes.registerType('HAP-NodeRed',{
-        category: 'input',
-        color: '#a6bbcf',
-        defaults: {
-            name: {value:""}
-        },
-        inputs:1,
-        outputs:1,
-        icon: "file.png",
-        label: function() {
-            return this.name||"HAP-NodeRed";
-        }
-    });
-</script>
-
-<script type="text/x-red" data-template-name="HAP-NodeRed">
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="HAP-NodeRed">
-    <p>A simple node that converts the message payloads into all lower-case characters</p>
-</script>
-
 <script type="text/x-red" data-template-name="hap-conf">
     <div class="form-row">
-	    <label for="node-config-input-username"><i class="icon-tag"></i> Username</label>
+	    <label for="node-config-input-username"><i class="icon-tag"></i> Pin</label>
 	    <input type="text" id="node-config-input-username">
-	</div>
-	<div class="form-row">
-	   	<label for="node-config-input-password"><i class="icon-tag"></i> Password</label>
-	    <input type="password" id="node-config-input-password">
 	</div>
 </script>
 
@@ -77,7 +46,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="hap-device">
+<script type="text/x-red" data-template-name="hap-event">
 	<div class="form-row">
 		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
 		<input type="text" id="node-input-conf">
@@ -95,13 +64,13 @@
 </script>
 
 
-<script type="text/x-red" data-help-name="hap-device">
+<script type="text/x-red" data-help-name="hap-event">
 	<p>This node provides endpoint for emiting events from Homebridge</p>
     <p>More details</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('hap-device',{
+    RED.nodes.registerType('hap-event',{
         category: 'Homebridge',
         defaults: {
         	conf: {value: "", type:"hap-conf"},
@@ -114,9 +83,122 @@
         outputs: 1,
         inputs: 0,
         color: '#D3D3D3',
-        icon: 'alexa.png',
+        icon: 'inject.png',
         label: function() {
-        	return this.name || "Homebridge";
+        	return this.name || "Choose accessory/event";
+        },
+        oneditsave: function() {
+             var n = $('#node-input-device option:selected').text();
+            //console.log("selected name " + n);
+            this.name = n;
+            $('#node-input-name').val(n);
+        },
+        oneditprepare: function(){
+            var node = this;
+            //console.log("foo " + node.device);
+            if (typeof node.acknoledge === 'undefined') {
+                console.log("ben");
+                $('#node-input-acknoledge').prop('checked', true);
+            }
+            $('#node-input-device').change(function(){
+                $('#node-input-name').val($('#node-input-device option:selected').text());
+            });
+            var getDevs = function (account){
+                $.getJSON('hap-device/devices/' + account, function(data){
+                    $('#node-input-device').find('option').remove().end();
+                    for (d in data) {
+                        $('<option/>',{
+                        value: data[d].uniqueId,
+                            text: data[d].friendlyName
+                        }).appendTo('#node-input-device');
+                    }
+                    if (node.device) {
+                        $('#node-input-device').val(node.device);
+                    }
+                }).fail(function(jqXHR, textStatus, errorThrown){
+                    console.log("problem getting devices");
+                    console.log(textStatus);
+                });
+
+            }
+        	if (node.conf) {
+        		var account = $('#node-input-conf').val();
+                //console.log("account: ", account);
+        		if (account != '_ADD_') {
+	        		getDevs(account);
+        		}
+        	}
+        	$('#node-input-conf').change(function(){
+        		var account = $('#node-input-conf').val();
+                //console.log("account changed: ", account);
+                if (account != '_ADD_') {
+            		getDevs(account);
+                } else {
+                    //console.log("new account");
+                    $('#node-input-device').find('option').remove().end();
+                    $('#node-input-device').val("");
+                }
+        	});
+            $('#node-input-device-refresh').click(function(){
+                $('#node-input-device-refresh').addClass('disabled');
+                var account = $('#node-input-conf').val();
+                $.ajax({
+                    url: 'hap-device/refresh/' + account,
+                    type: 'POST'
+                }).done(function(data){
+                    setTimeout(function(){
+                        getDevs(account);
+                        $('#node-input-device-refresh').removeClass('disabled');
+                    },3000);
+                });
+            });
+        }
+    });
+</script>
+
+// Start of HAP Control
+
+<script type="text/x-red" data-template-name="hap-control">
+	<div class="form-row">
+		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
+		<input type="text" id="node-input-conf">
+	</div>
+	<div class="form-row">
+		<label for="node-input-device"><i class="icon-tag"></i> Device</label>
+		<select id="node-input-device">
+
+		</select>
+        <a id="node-input-device-refresh" class="btn"><i class="fa fa-refresh"></i></a>
+	</div>
+
+    <input type="hidden" id="node-input-name">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="hap-control">
+	<p>This node provides endpoint for emiting events from Homebridge</p>
+    <p>More details</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('hap-control',{
+        category: 'Homebridge',
+        defaults: {
+        	conf: {value: "", type:"hap-conf"},
+        	device: {value: "" },
+        	name: {},
+          hapEndpoint: {value: ""},
+          deviceType: {value: ""},
+          description: {value: ""}
+        },
+        outputs: 0,
+        inputs: 1,
+        align: 'right',
+        color: '#D3D3D3',
+        icon: 'light.png',
+        label: function() {
+        	return this.name || "Choose accessory";
         },
         oneditsave: function() {
              var n = $('#node-input-device option:selected').text();

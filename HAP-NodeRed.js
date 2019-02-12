@@ -6,15 +6,6 @@ module.exports = function(RED) {
   var devices = [];
   var homebridge;
 
-  function HAPNodeRed(config) {
-    RED.nodes.createNode(this, config);
-    var node = this;
-    // debug("This", node);
-  }
-
-
-  RED.nodes.registerType("HAP-NodeRed", HAPNodeRed);
-
   function hapConf(n) {
     debug("hapConf", n);
     RED.nodes.createNode(this, n);
@@ -201,7 +192,7 @@ module.exports = function(RED) {
     }
   });
 
-  function hapDevice(n) {
+  function hapEvent(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
     this.confId = n.conf;
@@ -211,7 +202,7 @@ module.exports = function(RED) {
     this.description = n.description;
     this.name = n.name;
 
-    debug("hapDevice", n);
+    debug("hapEvent", n);
 
     var node = this;
 
@@ -240,7 +231,43 @@ module.exports = function(RED) {
     });
   }
 
-  RED.nodes.registerType("hap-device", hapDevice);
+  RED.nodes.registerType("hap-event", hapEvent);
+
+  function hapControl(n) {
+    RED.nodes.createNode(this, n);
+    this.conf = RED.nodes.getNode(n.conf);
+    this.confId = n.conf;
+    this.device = n.device;
+    this.hapEndpoint = n.hapEndpoint;
+    this.deviceType = n.deviceType;
+    this.description = n.description;
+    this.name = n.name;
+
+    debug("hapControl", n);
+
+    var node = this;
+
+    node.on('input', function(msg) {
+      _control(this.device, node, msg, function() {
+        debug("Complete");
+      });
+    });
+
+    node.conf.register(node, function() {
+      debug("hapControl-Registered", node.name);
+      this.hapDevice = _findEndpoint(devices, node.device);
+      node.hapEndpoint = 'host: ' + this.hapDevice.host + ':' + this.hapDevice.port + ' aid: ' + this.hapDevice.aid + ' iid: ' + this.hapDevice.iid;
+      node.description = this.hapDevice.description;
+      node.deviceType = this.hapDevice.deviceType;
+      // homebridge.on(this.hapDevice.host + this.hapDevice.port + this.hapDevice.aid + this.hapDevice.iid, node.command);
+    });
+
+    node.on('close', function(done) {
+      node.conf.deregister(node, done);
+    });
+  }
+
+  RED.nodes.registerType("hap-control", hapControl);
 
   RED.httpAdmin.post('/hap-device/refresh/', function(req, res) {
     var id = req.params.id;
@@ -276,6 +303,33 @@ module.exports = function(RED) {
   });
 
   //
+
+  function _control(nrDevice, node, value, done) {
+    debug("_control", nrDevice, devices.length);
+    var endpoint = _findEndpoint(devices, nrDevice);
+    if (endpoint) {
+      var message = {
+        "characteristics": [{
+          "aid": endpoint.aid,
+          "iid": endpoint.iid,
+          "value": value
+        }]
+      };
+      debug("Control %s:%s ->", endpoint.host, endpoint.port, message);
+      homebridge.HAPcontrol(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
+        if (!err) {
+          debug("Controlled %s:%s ->", endpoint.host, endpoint.port, status);
+          done(null);
+        } else {
+          debug("Error: Control %s:%s ->", endpoint.host, endpoint.port, err, status);
+          done(err);
+        }
+      });
+    } else {
+      done();
+    }
+  }
+
   function _register(nrDevice, node, done) {
     debug("_register", nrDevice, devices.length);
     var endpoint = _findEndpoint(devices, nrDevice);
