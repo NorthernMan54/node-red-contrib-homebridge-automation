@@ -24,8 +24,7 @@
   },
   "dependencies": {
     "debug": ">2.6.9",
-    "mqtt": ">=2.18.8",
-    "hap-node-client": ">=0.0.0"
+    "hap-node-client": ">=0.0.6"
   },
   "author": "NorthernMan54",
   "license": "ISC",
