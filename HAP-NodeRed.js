@@ -105,7 +105,7 @@ module.exports = function(RED) {
       });
       */
 
-      /*
+    /*
     this.setStatus = function(status) {
       debug("setStatus", status);
       for (var id in node.users) {
@@ -147,7 +147,7 @@ module.exports = function(RED) {
       debug("deregister", deviceNode);
       deviceNode.status({
         text: 'disconnected',
-        shape: 'dot',
+        shape: 'ring',
         fill: 'red'
       });
       debug("before count", homebridge.listenerCount(deviceNode.eventName));
@@ -251,7 +251,7 @@ module.exports = function(RED) {
 
   function hapControl(n) {
     RED.nodes.createNode(this, n);
-    this.conf = RED.nodes.getNode(n.conf);  // The configuration node
+    this.conf = RED.nodes.getNode(n.conf); // The configuration node
     this.confId = n.conf;
     this.device = n.device;
     this.hapEndpoint = n.hapEndpoint;
@@ -346,13 +346,28 @@ module.exports = function(RED) {
       homebridge.HAPcontrol(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
         if (!err) {
           debug("Controlled %s:%s ->", endpoint.host, endpoint.port, status);
+          node.status({
+            text: 'sent',
+            shape: 'dot',
+            fill: 'green'
+          });
+          setTimeout(function() {
+            node.status({
+            });
+          }, 30 * 1000);
           done(null);
         } else {
           debug("Error: Control %s:%s ->", endpoint.host, endpoint.port, err, status);
+          node.status({
+            text: 'error',
+            shape: 'ring',
+            fill: 'red'
+          });
           done(err);
         }
       });
     } else {
+      debug("Control Device not found", nrDevice);
       done();
     }
   }
