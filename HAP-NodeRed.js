@@ -368,6 +368,11 @@ module.exports = function(RED) {
       });
     } else {
       debug("Control Device not found", nrDevice);
+      node.status({
+        text: 'error',
+        shape: 'ring',
+        fill: 'red'
+      });
       done();
     }
   }
@@ -394,7 +399,7 @@ module.exports = function(RED) {
         }
       });
     } else {
-      done();
+      done(false);
     }
   }
 };
