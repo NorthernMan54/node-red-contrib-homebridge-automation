@@ -278,7 +278,7 @@ module.exports = function(RED) {
 
   RED.nodes.registerType("hap-control", hapControl);
 
-  RED.httpAdmin.post('/hap-device/refresh/', function(req, res) {
+  RED.httpAdmin.post('/hap-device/refresh/', RED.auth.needsPermission('hap-event.read'), function(req, res) {
     var id = req.params.id;
     var conf = RED.nodes.getNode(id);
     if (conf) {
@@ -293,7 +293,7 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/evDevices/', function(req, res) {
+  RED.httpAdmin.get('/hap-device/evDevices/', RED.auth.needsPermission('hap-event.read'), function(req, res) {
     // debug("Devices", devices);
     if (evDevices) {
       res.send(evDevices);
@@ -302,7 +302,7 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/evDevices/:id', function(req, res) {
+  RED.httpAdmin.get('/hap-device/evDevices/:id', RED.auth.needsPermission('hap-event.read'), function(req, res) {
     // debug("Devices", devices);
     if (evDevices) {
       res.send(evDevices);
@@ -311,7 +311,7 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/ctDevices/', function(req, res) {
+  RED.httpAdmin.get('/hap-device/ctDevices/', RED.auth.needsPermission('hap-control.read'), function(req, res) {
     // debug("Devices", devices);
     if (ctDevices) {
       res.send(ctDevices);
@@ -320,7 +320,7 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/ctDevices/:id', function(req, res) {
+  RED.httpAdmin.get('/hap-device/ctDevices/:id', RED.auth.needsPermission('hap-control.read'), function(req, res) {
     // debug("Devices", devices);
     if (ctDevices) {
       res.send(ctDevices);
