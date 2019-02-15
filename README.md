@@ -60,19 +60,19 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 
 ![Choose](docs/Choose.png)
 
--   5.3 Please select the pencil to the right of the PIN Field.
+-   5.3 Please select the **pencil** to the right of the PIN Field.
 
 ![Pencil](docs/Pencil.png)
 
--   5.4 Please enter your PIN, and select add
+-   5.4 Please enter your PIN, and select **Add**.
 
 ![Pin Entered](docs/Pin%20Entered.png)
 
--   5.5 Now select done.
+-   5.5 Now select **Done**.
 
 ![Done](docs/HAP%20Event%20Done.png)
 
--   5.6 Now select deploy
+-   5.6 Now select **Deploy**
 -   5.7 Please wait about 30 seconds.  ( Node-RED is busy discovering all your accessories.)
 -   5.8 Initial setup and config is complete.
 
