@@ -12,14 +12,13 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
    * [Homebride and HAP-NodeRED](#homebride-and-hap-nodered)
    * [Table of Contents](#table-of-contents)
    * [Introduction](#introduction)
-   * [Installation](#installation)
-      * [Steps](#steps)
-         * [1 - Install Node-RED and Homebridge](#1---install-node-red-and-homebridge)
-         * [2 - Prepare Homebridge for integration with HAP-NodeRED](#2---prepare-homebridge-for-integration-with-hap-nodered)
-         * [3 - Install HAP-NodeRED into Node-Red](#3---install-hap-nodered-into-node-red)
-         * [4 - Start Node-Red](#4---start-node-red)
-         * [5 - Initial setup and configuration inside Node-Red](#5---initial-setup-and-configuration-inside-node-red)
-         * [6 - Configure 'hap event' to receive updates from your Accessories](#6---configure-hap-event-to-receive-updates-from-your-accessories)
+   * [Installation Steps](#installation-steps)
+      * [1 - Install Node-RED and Homebridge](#1---install-node-red-and-homebridge)
+      * [2 - Prepare Homebridge for integration with HAP-NodeRED](#2---prepare-homebridge-for-integration-with-hap-nodered)
+      * [3 - Install HAP-NodeRED into Node-Red](#3---install-hap-nodered-into-node-red)
+      * [4 - Start Node-Red](#4---start-node-red)
+      * [5 - Initial setup and configuration inside Node-Red](#5---initial-setup-and-configuration-inside-node-red)
+      * [6 - Configure 'hap event' to receive updates from your Accessories](#6---configure-hap-event-to-receive-updates-from-your-accessories)
    * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
       * [To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-hap-nodered-debug-logs-start-node-red-like-this)
 
@@ -37,26 +36,24 @@ This create's two separate node's in Node-Red, the first node "hap event" listen
 
 ![Homebridge Nodes](docs/HAP%20Event%20Nodes.png)
 
-# Installation
+# Installation Steps
 
-## Steps
-
-### 1 - Install Node-RED and Homebridge
+## 1 - Install Node-RED and Homebridge
 
 This is covered in alot of other places, so I won't cover it here.
 
-### 2 - Prepare Homebridge for integration with HAP-NodeRED
+## 2 - Prepare Homebridge for integration with HAP-NodeRED
 
 Place your homebridge instances into "INSECURE MODE".  This is same as my [Homebridge Alexa](https://github.com/NorthernMan54/homebridge-alexa) plugin, and you just need to follow the [Prepare homebridge for plugin](https://github.com/NorthernMan54/homebridge-alexa#prepare-homebridge-for-plugin-installation) instructions there.
 
-### 3 - Install HAP-NodeRED into Node-Red
+## 3 - Install HAP-NodeRED into Node-Red
 
     cd ~/.node-red
     npm install -g https://github.com/NorthernMan54/HAP-NodeRed
 
-### 4 - Start Node-Red
+## 4 - Start Node-Red
 
-### 5 - Initial setup and configuration inside Node-Red
+## 5 - Initial setup and configuration inside Node-Red
 
 * 5.1 Select 'hap event' node and place onto flow.
 * 5.2 Double click on hap event node ( now called 'Choose accessory/event')
@@ -79,7 +76,7 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 * 5.7 Please wait about 30 seconds.  ( Node-RED is busy discovering all your accessories.)
 * 5.8 Initial setup and config is complete.
 
-### 6 - Configure 'hap event' to receive updates from your Accessories
+## 6 - Configure 'hap event' to receive updates from your Accessories
 
 * 6.1 Double click on hap event node ( now called 'Choose accessory/event')
 
