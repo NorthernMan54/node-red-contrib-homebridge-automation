@@ -13,6 +13,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
    * [Table of Contents](#table-of-contents)
    * [Introduction](#introduction)
    * [Installation](#installation)
+      * [Steps](#steps)
          * [1 - Install Node-RED and Homebridge](#1---install-node-red-and-homebridge)
          * [2 - Prepare Homebridge for integration with HAP-NodeRED](#2---prepare-homebridge-for-integration-with-hap-nodered)
          * [3 - Install HAP-NodeRED into Node-Red](#3---install-hap-nodered-into-node-red)
@@ -37,6 +38,8 @@ This create's two separate node's in Node-Red, the first node "hap event" listen
 ![Homebridge Nodes](docs/HAP%20Event%20Nodes.png)
 
 # Installation
+
+## Steps
 
 ### 1 - Install Node-RED and Homebridge
 
