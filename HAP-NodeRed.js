@@ -14,6 +14,23 @@ module.exports = function(RED) {
     this.password = this.credentials.password;
     var registerQueue = [];
 
+    var processItems = function(x) {
+      if (x < registerQueue.length) {
+        debug("registerQueue", x, registerQueue[x]);
+        if (registerQueue[x]) {
+          _register(registerQueue[x].device, node,
+            function() {
+              processItems(x + 1);
+              var done = registerQueue[x].done;
+              delete registerQueue[x];
+              done();
+            });
+        } else {
+          debug("ERROR: registerQueue");
+        }
+      }
+    };
+
     var options = {
       "pin": n.username,
       "refresh": 900,
@@ -31,16 +48,6 @@ module.exports = function(RED) {
         debug('Discovered %s ctDevices', ctDevices.length);
         debug("registerQueue", registerQueue.length);
 
-        var processItems = function(x) {
-          if (x < registerQueue.length) {
-            _register(registerQueue[x].device, node,
-              function() {
-                processItems(x + 1);
-                registerQueue[x].done();
-              });
-          }
-        };
-
         processItems(0);
       });
     }
@@ -53,70 +60,6 @@ module.exports = function(RED) {
       done();
     };
 
-    /*
-      node.client = mqtt.connect(options);
-      node.client.setMaxListeners(0);
-
-      node.client.on('connect', function() {
-        node.setStatus({
-          text: 'connected',
-          shape: 'dot',
-          fill: 'green'
-        });
-        node.client.removeAllListeners('message');
-        node.client.subscribe("command/" + node.username + "/#");
-        node.client.on('message', function(topic, message) {
-          var msg = JSON.parse(message.toString());
-          var applianceId = msg.payload.appliance.applianceId;
-          for (var id in node.users) {
-            if (node.users.hasOwnProperty(id)) {
-              if (node.users[id].device === applianceId) {
-                node.users[id].command(msg);
-              }
-            }
-          }
-        });
-      });
-
-      node.client.on('offline', function() {
-        node.setStatus({
-          text: 'disconnected',
-          shape: 'dot',
-          fill: 'red'
-        });
-      });
-
-      node.client.on('reconnect', function() {
-        node.setStatus({
-          text: 'reconnecting',
-          shape: 'ring',
-          fill: 'red'
-        });
-      });
-
-      node.client.on('error', function(err) {
-        //console.log(err);
-        node.setStatus({
-          text: 'disconnected',
-          shape: 'dot',
-          fill: 'red'
-        });
-        node.error(err);
-      });
-      */
-
-    /*
-    this.setStatus = function(status) {
-      debug("setStatus", status);
-      for (var id in node.users) {
-        if (node.users.hasOwnProperty(id)) {
-          // debug("setStatus-1", id);
-          node.users[id].status(status);
-        }
-      }
-    };
-    */
-
     this.register = function(deviceNode, done) {
       debug("register", deviceNode.name);
       node.users[deviceNode.id] = deviceNode;
@@ -126,18 +69,11 @@ module.exports = function(RED) {
           "done": done
         });
 
-        if (homebridge && registerQueue.length === 1) {
-          var processItems = function(x) {
-            if (x < registerQueue.length) {
-              _register(registerQueue[x].device, node,
-                function() {
-                  processItems(x + 1);
-                  registerQueue[x].done();
-                });
-            }
-          };
+        if (homebridge && evDevices.length > 0) {
           processItems(0);
         }
+
+
       } else {
         debug("No device to register", deviceNode.device);
       }
@@ -352,8 +288,7 @@ module.exports = function(RED) {
             fill: 'green'
           });
           setTimeout(function() {
-            node.status({
-            });
+            node.status({});
           }, 30 * 1000);
           done(null);
         } else {
