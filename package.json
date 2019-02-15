@@ -4,7 +4,9 @@
   "description": "NodeRED Automation for HomeBridge",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "api": "documentation build HAP=NodeRed.js -f md --config docs/documentation.yml > docs/API.md",
+    "document": "./gh-md-toc --insert README.md"
   },
   "node-red": {
     "nodes": {
@@ -19,12 +21,12 @@
     "ava": "0.25.0",
     "coveralls": "3.0.2",
     "documentation": "8.1.2",
-    "nyc": "13.1.0",
+    "nyc": "^13.3.0",
     "xo": "0.23.0"
   },
   "dependencies": {
     "debug": ">2.6.9",
-    "hap-node-client": ">=0.0.6"
+    "hap-node-client": ">=0.0.9"
   },
   "author": "NorthernMan54",
   "license": "ISC",
