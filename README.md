@@ -4,7 +4,7 @@
     <img src="docs/Homebridge and Node Red.png"/>
 </p>
 
-The above Node-RED Flow, turns on my 'Outside Office' light when the powder room is turned on, and turns them both off after 10 seconds. Not practical but a good sample.
+The above Node-RED Flow, turns on my 'Outside Office' light when the powder room is turned on, and turns them both off after 10 seconds. Not practical but a good sample of the power behind Node-RED.
 
 # Table of Contents
 
@@ -55,34 +55,34 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 
 ### 5 - Initial setup and configuration inside Node-Red
 
--   5.1 Select 'hap event' node and place onto flow.
--   5.2 Double click on hap event node ( now called 'Choose accessory/event')
+* 5.1 Select 'hap event' node and place onto flow.
+* 5.2 Double click on hap event node ( now called 'Choose accessory/event')
 
 ![Choose](docs/Choose.png)
 
--   5.3 Please select the **pencil** to the right of the PIN Field.
+* 5.3 Please select the **pencil** to the right of the PIN Field.
 
 ![Pencil](docs/Pencil.png)
 
--   5.4 Please enter your PIN, and select **Add**.
+* 5.4 Please enter your PIN, and select **Add**.
 
 ![Pin Entered](docs/Pin%20Entered.png)
 
--   5.5 Now select **Done**.
+* 5.5 Now select **Done**.
 
 ![Done](docs/HAP%20Event%20Done.png)
 
--   5.6 Now select **Deploy**
--   5.7 Please wait about 30 seconds.  ( Node-RED is busy discovering all your accessories.)
--   5.8 Initial setup and config is complete.
+* 5.6 Now select **Deploy**
+* 5.7 Please wait about 30 seconds.  ( Node-RED is busy discovering all your accessories.)
+* 5.8 Initial setup and config is complete.
 
 ### 6 - Configure 'hap event' to receive updates from your Accessories
 
--   6.1 Double click on hap event node ( now called 'Choose accessory/event')
+* 6.1 Double click on hap event node ( now called 'Choose accessory/event')
 
 ![Populated](docs/HAP%20Event%20Populated.png)
 
--   6.2 The device drop down should now be populated with all your Homebridge accessories.
+* 6.2 The device drop down should now be populated with all your Homebridge accessories.
 
 ![Populated](docs/HAP%20Event%20Drop%20Down.png)
 
