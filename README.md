@@ -1,4 +1,4 @@
-# Homebride and HAP-NodeRED
+# HAP-NodeRED - Homebridge Accessory and Node-RED Integration
 
 <p align="center">
     <img src="docs/Homebridge and Node Red.png"/>
