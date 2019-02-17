@@ -46,7 +46,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="hap-event">
+<script type="text/x-red" data-template-name="hb-event">
 	<div class="form-row">
 		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
 		<input type="text" id="node-input-conf">
@@ -64,20 +64,21 @@
 </script>
 
 
-<script type="text/x-red" data-help-name="hap-event">
+<script type="text/x-red" data-help-name="hb-event">
 	<p>This node provides an endpoint for emiting events from Homebridge accessories into Node-Red.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('hap-event',{
+    RED.nodes.registerType('hb-event',{
         category: 'Homebridge',
         defaults: {
-        	conf: {value: "", type:"hap-conf"},
-        	device: {value: "" },
         	name: {},
-          hapEndpoint: {value: ""},
-          deviceType: {value: ""},
-          description: {value: ""}
+          Homebridge: {value: ""},
+          Manufacturer: {value: ""},
+          Type: {value: ""},
+          Function: {value: ""},
+          device: {value: ""},
+          conf: {value: "", type:"hap-conf"}
         },
         outputs: 1,
         inputs: 0,
@@ -88,9 +89,14 @@
         },
         oneditsave: function() {
              var n = $('#node-input-device option:selected').text();
-            //console.log("selected name " + n);
-            this.name = n;
-            $('#node-input-name').val(n);
+            // console.log("selected name ", $('#node-input-device option:selected'));
+
+            this.sname = $('#node-input-device option:selected').attr('name').toString();
+            this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
+            this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
+            this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
+            this.Function = $('#node-input-device option:selected').attr('function').toString();
+            $('#node-input-name').val(this.sname + " - " + this.Function);
         },
         oneditprepare: function(){
             var node = this;
@@ -108,7 +114,13 @@
                     for (d in data) {
                         $('<option/>',{
                         value: data[d].uniqueId,
-                            text: data[d].friendlyName
+                        fullName: data[d].fullName,
+                        name: data[d].name,
+                        text: data[d].fullName,
+                        homebridge: data[d].homebridge,
+                        manufacturer: data[d].manufacturer,
+                        deviceType: data[d].deviceType,
+                        function: data[d].function
                         }).appendTo('#node-input-device');
                     }
                     if (node.device) {
@@ -157,7 +169,7 @@
 
 // Start of HAP Control
 
-<script type="text/x-red" data-template-name="hap-control">
+<script type="text/x-red" data-template-name="hb-control">
 	<div class="form-row">
 		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
 		<input type="text" id="node-input-conf">
@@ -175,20 +187,21 @@
 </script>
 
 
-<script type="text/x-red" data-help-name="hap-control">
+<script type="text/x-red" data-help-name="hb-control">
 	<p>This node provides endpoint for controlling Homebridge Accessories</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('hap-control',{
+    RED.nodes.registerType('hb-control',{
         category: 'Homebridge',
         defaults: {
-        	conf: {value: "", type:"hap-conf"},
-        	device: {value: "" },
-        	name: {},
-          hapEndpoint: {value: ""},
-          deviceType: {value: ""},
-          description: {value: ""}
+          name: {},
+          Homebridge: {value: ""},
+          Manufacturer: {value: ""},
+          Type: {value: ""},
+          Function: {value: ""},
+          device: {value: ""},
+          conf: {value: "", type:"hap-conf"}
         },
         outputs: 0,
         inputs: 1,
@@ -201,8 +214,12 @@
         oneditsave: function() {
              var n = $('#node-input-device option:selected').text();
             //console.log("selected name " + n);
-            this.name = n;
-            $('#node-input-name').val(n);
+            this.sname = $('#node-input-device option:selected').attr('name').toString();
+            this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
+            this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
+            this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
+            this.Function = $('#node-input-device option:selected').attr('function').toString();
+            $('#node-input-name').val(this.sname + " - " + this.Function);
         },
         oneditprepare: function(){
             var node = this;
@@ -219,8 +236,14 @@
                     $('#node-input-device').find('option').remove().end();
                     for (d in data) {
                         $('<option/>',{
-                        value: data[d].uniqueId,
-                            text: data[d].friendlyName
+                          value: data[d].uniqueId,
+                          fullName: data[d].fullName,
+                          name: data[d].name,
+                          text: data[d].fullName,
+                          homebridge: data[d].homebridge,
+                          manufacturer: data[d].manufacturer,
+                          deviceType: data[d].deviceType,
+                          function: data[d].function
                         }).appendTo('#node-input-device');
                     }
                     if (node.device) {

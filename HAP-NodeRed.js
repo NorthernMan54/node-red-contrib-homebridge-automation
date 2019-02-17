@@ -45,6 +45,10 @@ module.exports = function(RED) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
         debug('Discovered %s evDevices', evDevices.length);
+
+        evDevices.sort((a,b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
+        ctDevices.sort((a,b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
+
         debug('Discovered %s ctDevices', ctDevices.length);
         debug("registerQueue", registerQueue.length);
 
@@ -130,6 +134,15 @@ module.exports = function(RED) {
     }
   });
 
+  /*
+  name: 'Ceiling One light - On',
+  Homebridge: 'Raj',
+  Manufacturer: 'hampton-bay',
+  Type: 'Lightbulb',
+  Function: 'On',
+  device: 'RajCC:22:3D:E3:CF:32hampton-bayCeiling One light0000004300000025',
+  */
+
   function hapEvent(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
@@ -137,10 +150,23 @@ module.exports = function(RED) {
     this.device = n.device;
     this.hapEndpoint = n.hapEndpoint;
     this.deviceType = n.deviceType;
-    this.description = n.description;
+    this.hapDevice = n.hapDevice;
     this.name = n.name;
 
-    debug("hapEvent", n);
+    debug("hapEvent", JSON.stringify(n));
+
+    /*
+    {"id":"7a703739.8abc5",
+    "type":"hb-event",
+    "z":"8cc57342.e61928",
+    "name":"Table light - On",
+    "Homebridge":"Raj-Hue",
+    "Manufacturer":"ecoplug",
+    "Type":"Outlet",
+    "Function":"On",
+    "device":"Raj-HueCC:22:3D:E3:CF:33ecoplugTable light0000004700000025",
+    "conf":"ed5aee3b.502bd8","x":180,"y":280,"wires":[["9686581c.02b84","623a0ae2.2310dc"]]}
+    */
 
     var node = this;
 
@@ -148,9 +174,13 @@ module.exports = function(RED) {
       debug("Sending event", event);
       var msg = {
         name: node.name,
+        payload: event.status,
+        Homebridge: node.hapDevice.homebridge,
+        Manufacturer: node.hapDevice.manufacturer,
+        Type: node.hapDevice.deviceType,
+        Function: node.hapDevice.function,
         _confId: node.confId,
-        _rawEvent: event,
-        payload: event.status
+        _rawEvent: event
       };
       node.send(msg);
     };
@@ -160,7 +190,7 @@ module.exports = function(RED) {
       this.hapDevice = _findEndpoint(evDevices, node.device);
       if (this.hapDevice) {
         node.hapEndpoint = 'host: ' + this.hapDevice.host + ':' + this.hapDevice.port + ', aid: ' + this.hapDevice.aid + ', iid: ' + this.hapDevice.iid;
-        node.description = this.hapDevice.description;
+        node.hapDevice = this.hapDevice;
         node.deviceType = this.hapDevice.deviceType;
         // Register for events
         node.listener = node.command;
@@ -183,7 +213,7 @@ module.exports = function(RED) {
     });
   }
 
-  RED.nodes.registerType("hap-event", hapEvent);
+  RED.nodes.registerType("hb-event", hapEvent);
 
   function hapControl(n) {
     RED.nodes.createNode(this, n);
@@ -192,7 +222,7 @@ module.exports = function(RED) {
     this.device = n.device;
     this.hapEndpoint = n.hapEndpoint;
     this.deviceType = n.deviceType;
-    this.description = n.description;
+    this.hapDevice = n.hapDevice;
     this.name = n.name;
 
     debug("hapControl", n);
@@ -212,15 +242,32 @@ module.exports = function(RED) {
     });
   }
 
-  RED.nodes.registerType("hap-control", hapControl);
+  RED.nodes.registerType("hb-control", hapControl);
 
-  RED.httpAdmin.post('/hap-device/refresh/', RED.auth.needsPermission('hap-event.read'), function(req, res) {
+  /* Device object
+  { host: '192.168.1.253',
+  port: 51827,
+  hbName: 'Raj-Hue',
+  id: 'CC:22:3D:E3:CF:33',
+  aid: 15,
+  manufacturer: 'ecoplug',
+  name: 'Bunkie Porch',
+  friendlyName: 'Raj-Hue Bunkie Porch Outlet On',
+  iid: 10,
+  description: 'On',
+  service: '00000047',
+  characteristic: '00000025',
+  deviceType: 'Outlet',
+  uniqueId: 'Raj-HueCC:22:3D:E3:CF:33ecoplugBunkie Porch0000004700000025' },
+  */
+
+  RED.httpAdmin.post('/hap-device/refresh/:id', RED.auth.needsPermission('hb-event.read'), function(req, res) {
     var id = req.params.id;
     var conf = RED.nodes.getNode(id);
     if (conf) {
       var username = conf.username;
       var password = conf.credentials.password;
-      getDevices(username, password, id);
+      // getDevices(username, password, id);
       res.status(200).send();
     } else {
       // not deployed yet
@@ -229,8 +276,8 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/evDevices/', RED.auth.needsPermission('hap-event.read'), function(req, res) {
-    // debug("Devices", devices);
+  RED.httpAdmin.get('/hap-device/evDevices/', RED.auth.needsPermission('hb-event.read'), function(req, res) {
+    debug("evDevices", evDevices.length);
     if (evDevices) {
       res.send(evDevices);
     } else {
@@ -238,8 +285,8 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/evDevices/:id', RED.auth.needsPermission('hap-event.read'), function(req, res) {
-    // debug("Devices", devices);
+  RED.httpAdmin.get('/hap-device/evDevices/:id', RED.auth.needsPermission('hb-event.read'), function(req, res) {
+    debug("evDevices", evDevices.length);
     if (evDevices) {
       res.send(evDevices);
     } else {
@@ -247,8 +294,8 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/ctDevices/', RED.auth.needsPermission('hap-control.read'), function(req, res) {
-    // debug("Devices", devices);
+  RED.httpAdmin.get('/hap-device/ctDevices/', RED.auth.needsPermission('hb-control.read'), function(req, res) {
+    debug("ctDevices", ctDevices.length);
     if (ctDevices) {
       res.send(ctDevices);
     } else {
@@ -256,8 +303,8 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/ctDevices/:id', RED.auth.needsPermission('hap-control.read'), function(req, res) {
-    // debug("Devices", devices);
+  RED.httpAdmin.get('/hap-device/ctDevices/:id', RED.auth.needsPermission('hb-control.read'), function(req, res) {
+    debug("ctDevices", ctDevices.length);
     if (ctDevices) {
       res.send(ctDevices);
     } else {

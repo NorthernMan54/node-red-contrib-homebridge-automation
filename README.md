@@ -18,7 +18,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [3 - Install HAP-NodeRED into Node-Red](#3---install-hap-nodered-into-node-red)
       * [4 - Start Node-Red](#4---start-node-red)
       * [5 - Initial setup and configuration inside Node-Red](#5---initial-setup-and-configuration-inside-node-red)
-      * [6 - Configure 'hap event' to receive updates from your Accessories](#6---configure-hap-event-to-receive-updates-from-your-accessories)
+      * [6 - Configure 'hap event' to receive updates from your Accessories](#6---configure-homebridge-event-to-receive-updates-from-your-accessories)
    * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
       * [To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-hap-nodered-debug-logs-start-node-red-like-this)
 
@@ -43,6 +43,17 @@ This create's two separate node's in Node-Red, the first node "hap event" listen
 * For the 'Hap Event' node, the ability of a Accessory to generate events in Real Time is dependent on how the plugin was architected and the actual device.  Some are very good at generating events in real time, and others only generate events when the Home App is opened to the accessory. YMMV.
 
 With a plugin, you can see if it supports Real Time events, by opening the Home App, and looking at an accessory.  Then trigger a local event outside of homebridge/homekit.  If the accessory updates in real time, then it support Real Events.  ( An example of a local event can be turning on a Smart Light Switch, by the local switch.  Another example would be using the vendor app to control an accessory.)    
+
+# Backlog / Roadmap
+
+* [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )
+* [x] - Sort device drop down listing
+* [ ] - Add timestamp to Node msg object
+* [x] - Trim Node name to just accessory Name
+* [ ] - Adjust msg.payload to match other homekit / NodeRED integrations
+* [ ] - Documentation
+* [ ] - Object names ( hb-event and hb-control ), do these make sense?
+* [ ] - Do I need a node that emits events for all homebridge devices?
 
 # Installation Steps
 
@@ -97,6 +108,35 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 The accessory naming convention is:
 
 Homebridge Instance Name ( From your config.json ), Accessory Name, Accessory Type, and Accessory characteristic
+
+# Node-RED HAP-NodeRed Message Structure
+
+## hb-Event
+
+Message is structured like this
+
+```
+msg = {
+  name: node.name,
+  payload: event.status,
+  Homebridge: node.hapDevice.homebridge,
+  Manufacturer: node.hapDevice.manufacturer,
+  Type: node.hapDevice.deviceType,
+  Function: node.hapDevice.function,
+  _confId: node.confId,
+  _rawEvent: event
+};
+```
+
+## hb-control
+
+The hb-control node only looks at msg.payload value, and ignore's all others.
+
+```
+msg = {
+        payload: Changed value for accessories characteristic
+      }
+```
 
 # Troubleshooting / DEBUG MODE
 
