@@ -1,17 +1,17 @@
-<script type="text/x-red" data-template-name="hap-conf">
+<script type="text/x-red" data-template-name="hb-conf">
     <div class="form-row">
 	    <label for="node-config-input-username"><i class="icon-tag"></i> Pin</label>
 	    <input type="text" id="node-config-input-username">
 	</div>
 </script>
 
-<script type="text/x-red" data-help-name="hap-conf">
+<script type="text/x-red" data-help-name="hb-conf">
 	<p>This allows you to register your homebridge PIN</p>
 
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('hap-conf',{
+    RED.nodes.registerType('hb-conf',{
         category: 'config',
         defaults: {
         	username: {}
@@ -78,7 +78,7 @@
           Type: {value: ""},
           Function: {value: ""},
           device: {value: ""},
-          conf: {value: "", type:"hap-conf"}
+          conf: {value: "", type:"hb-conf"}
         },
         outputs: 1,
         inputs: 0,
@@ -201,7 +201,7 @@
           Type: {value: ""},
           Function: {value: ""},
           device: {value: ""},
-          conf: {value: "", type:"hap-conf"}
+          conf: {value: "", type:"hb-conf"}
         },
         outputs: 0,
         inputs: 1,

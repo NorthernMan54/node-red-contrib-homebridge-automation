@@ -20,11 +20,11 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [3 - Install HAP-NodeRED into Node-Red](#3---install-hap-nodered-into-node-red)
       * [4 - Start Node-Red](#4---start-node-red)
       * [5 - Initial setup and configuration inside Node-Red](#5---initial-setup-and-configuration-inside-node-red)
-      * [6 - Configure 'hap event' to receive updates from your Accessories](#6---configure-hap-event-to-receive-updates-from-your-accessories)
+      * [6 - Configure 'hb event' to receive updates from your Accessories](#6---configure-hb-event-to-receive-updates-from-your-accessories)
    * [Node-RED HAP-NodeRed Message Structure](#node-red-hap-nodered-message-structure)
       * [hb-Event](#hb-event)
       * [hb-control](#hb-control)
-   * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
+   * [TroubleshhbDevice/ DEBUG MODE](#troubleshhbdevice-debug-mode)
       * [To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-hap-nodered-debug-logs-start-node-red-like-this)
 
 <!-- Added by: sgracey, at:  -->
@@ -37,7 +37,7 @@ This is an Alpha release of the ability to integrate Homebridge Accessories into
 
 ![Homebridge Nodes](docs/Homebridge%20Nodes.png)
 
-This create's two separate node's in Node-Red, the first node "hap event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hap control" allows you to control a homebridge accessory.  Each node is tied to an individual characteristic of an accessory (ie on/off or brightness).  Using a dimmable light bulb as an example, you would configure two nodes for it.  The first for On/Off and the second for brightness.
+This create's two separate node's in Node-Red, the first node "hb event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb control" allows you to control a homebridge accessory.  Each node is tied to an individual characteristic of an accessory (ie on/off or brightness).  Using a dimmable light bulb as an example, you would configure two nodes for it.  The first for On/Off and the second for brightness.
 
 ![Homebridge Nodes](docs/HAP%20Event%20Nodes.png)
 
@@ -45,7 +45,7 @@ This create's two separate node's in Node-Red, the first node "hap event" listen
 
 * Please keep in mind that this integration only works with devices supported/exposed with HomeBridge Plugins.  This does not have visibility to Native HomeKit devices.  ( Similar to my homebridge-alexa plugin. )
 
-* For the 'Hap Event' node, the ability of a Accessory to generate events in Real Time is dependent on how the plugin was architected and the actual device.  Some are very good at generating events in real time, and others only generate events when the Home App is opened to the accessory. YMMV.
+* For the 'hb Event' node, the ability of a Accessory to generate events in Real Time is dependent on how the plugin was architected and the actual device.  Some are very good at generating events in real time, and others only generate events when the Home App is opened to the accessory. YMMV.
 
 With a plugin, you can see if it supports Real Time events, by opening the Home App, and looking at an accessory.  Then trigger a local event outside of homebridge/homekit.  If the accessory updates in real time, then it support Real Events.  ( An example of a local event can be turning on a Smart Light Switch, by the local switch.  Another example would be using the vendor app to control an accessory.)    
 
@@ -79,8 +79,8 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 
 ## 5 - Initial setup and configuration inside Node-Red
 
-* 5.1 Select 'hap event' node and place onto flow.
-* 5.2 Double click on hap event node ( now called 'Choose accessory/event')
+* 5.1 Select 'hb event' node and place onto flow.
+* 5.2 Double click on hb event node ( now called 'Choose accessory/event')
 
 ![Choose](docs/Choose.png)
 
@@ -100,9 +100,9 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 * 5.7 Please wait about 30 seconds.  ( Node-RED is busy discovering all your accessories.)
 * 5.8 Initial setup and config is complete.
 
-## 6 - Configure 'hap event' to receive updates from your Accessories
+## 6 - Configure 'hb event' to receive updates from your Accessories
 
-* 6.1 Double click on hap event node ( now called 'Choose accessory/event')
+* 6.1 Double click on hb event node ( now called 'Choose accessory/event')
 
 ![Populated](docs/HAP%20Event%20Populated.png)
 
@@ -124,10 +124,10 @@ Message is structured like this
 msg = {
   name: node.name,
   payload: event.status,
-  Homebridge: node.hapDevice.homebridge,
-  Manufacturer: node.hapDevice.manufacturer,
-  Type: node.hapDevice.deviceType,
-  Function: node.hapDevice.function,
+  Homebridge: node.hbDevice.homebridge,
+  Manufacturer: node.hbDevice.manufacturer,
+  Type: node.hbDevice.deviceType,
+  Function: node.hbDevice.function,
   _confId: node.confId,
   _rawEvent: event
 };
@@ -143,7 +143,7 @@ msg = {
       }
 ```
 
-# Troubleshooting / DEBUG MODE
+# TroubleshhbDevice/ DEBUG MODE
 
 ## To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.
 

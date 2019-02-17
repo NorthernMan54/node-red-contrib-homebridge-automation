@@ -7,8 +7,8 @@ module.exports = function(RED) {
   var ctDevices = [];
   var homebridge;
 
-  function hapConf(n) {
-    debug("hapConf", n);
+  function hbConf(n) {
+    debug("hbConf", n);
     RED.nodes.createNode(this, n);
     this.username = n.username;
     this.password = this.credentials.password;
@@ -126,7 +126,7 @@ module.exports = function(RED) {
     });
   }
 
-  RED.nodes.registerType("hap-conf", hapConf, {
+  RED.nodes.registerType("hb-conf", hbConf, {
     credentials: {
       password: {
         type: "password"
@@ -143,17 +143,17 @@ module.exports = function(RED) {
   device: 'RajCC:22:3D:E3:CF:32hampton-bayCeiling One light0000004300000025',
   */
 
-  function hapEvent(n) {
+  function hbEvent(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
     this.confId = n.conf;
     this.device = n.device;
     this.hapEndpoint = n.hapEndpoint;
     this.deviceType = n.deviceType;
-    this.hapDevice = n.hapDevice;
+    this.hbDevice = n.hbDevice;
     this.name = n.name;
 
-    debug("hapEvent", JSON.stringify(n));
+    debug("hbEvent", JSON.stringify(n));
 
     /*
     {"id":"7a703739.8abc5",
@@ -175,10 +175,10 @@ module.exports = function(RED) {
       var msg = {
         name: node.name,
         payload: event.status,
-        Homebridge: node.hapDevice.homebridge,
-        Manufacturer: node.hapDevice.manufacturer,
-        Type: node.hapDevice.deviceType,
-        Function: node.hapDevice.function,
+        Homebridge: node.hbDevice.homebridge,
+        Manufacturer: node.hbDevice.manufacturer,
+        Type: node.hbDevice.deviceType,
+        Function: node.hbDevice.function,
         _confId: node.confId,
         _rawEvent: event
       };
@@ -187,15 +187,15 @@ module.exports = function(RED) {
 
     node.conf.register(node, function() {
       debug("Registered", node.name);
-      this.hapDevice = _findEndpoint(evDevices, node.device);
-      if (this.hapDevice) {
-        node.hapEndpoint = 'host: ' + this.hapDevice.host + ':' + this.hapDevice.port + ', aid: ' + this.hapDevice.aid + ', iid: ' + this.hapDevice.iid;
-        node.hapDevice = this.hapDevice;
-        node.deviceType = this.hapDevice.deviceType;
+      this.hbDevice = _findEndpoint(evDevices, node.device);
+      if (this.hbDevice) {
+        node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
+        node.hbDevice = this.hbDevice;
+        node.deviceType = this.hbDevice.deviceType;
         // Register for events
         node.listener = node.command;
-        node.eventName = this.hapDevice.host + this.hapDevice.port + this.hapDevice.aid + this.hapDevice.iid;
-        homebridge.on(this.hapDevice.host + this.hapDevice.port + this.hapDevice.aid + this.hapDevice.iid, node.command);
+        node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid;
+        homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid, node.command);
         debug("after reg count", homebridge.listenerCount(node.eventName));
         node.status({
           text: 'connected',
@@ -213,19 +213,19 @@ module.exports = function(RED) {
     });
   }
 
-  RED.nodes.registerType("hb-event", hapEvent);
+  RED.nodes.registerType("hb-event", hbEvent);
 
-  function hapControl(n) {
+  function hbControl(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf); // The configuration node
     this.confId = n.conf;
     this.device = n.device;
     this.hapEndpoint = n.hapEndpoint;
     this.deviceType = n.deviceType;
-    this.hapDevice = n.hapDevice;
+    this.hbDevice = n.hbDevice;
     this.name = n.name;
 
-    debug("hapControl", n);
+    debug("hbControl", n);
 
     var node = this;
 
@@ -242,7 +242,7 @@ module.exports = function(RED) {
     });
   }
 
-  RED.nodes.registerType("hb-control", hapControl);
+  RED.nodes.registerType("hb-control", hbControl);
 
   /* Device object
   { host: '192.168.1.253',
