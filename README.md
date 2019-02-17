@@ -9,16 +9,21 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
 # Table of Contents
 
 <!--ts-->
-   * [Homebride and HAP-NodeRED](#homebride-and-hap-nodered)
+   * [HAP-NodeRED - Homebridge Accessory and Node-RED Integration](#hap-nodered---homebridge-accessory-and-node-red-integration)
    * [Table of Contents](#table-of-contents)
    * [Introduction](#introduction)
+      * [Caveats](#caveats)
+   * [Backlog / Roadmap](#backlog--roadmap)
    * [Installation Steps](#installation-steps)
       * [1 - Install Node-RED and Homebridge](#1---install-node-red-and-homebridge)
       * [2 - Prepare Homebridge for integration with HAP-NodeRED](#2---prepare-homebridge-for-integration-with-hap-nodered)
       * [3 - Install HAP-NodeRED into Node-Red](#3---install-hap-nodered-into-node-red)
       * [4 - Start Node-Red](#4---start-node-red)
       * [5 - Initial setup and configuration inside Node-Red](#5---initial-setup-and-configuration-inside-node-red)
-      * [6 - Configure 'hap event' to receive updates from your Accessories](#6---configure-homebridge-event-to-receive-updates-from-your-accessories)
+      * [6 - Configure 'hap event' to receive updates from your Accessories](#6---configure-hap-event-to-receive-updates-from-your-accessories)
+   * [Node-RED HAP-NodeRed Message Structure](#node-red-hap-nodered-message-structure)
+      * [hb-Event](#hb-event)
+      * [hb-control](#hb-control)
    * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
       * [To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-hap-nodered-debug-logs-start-node-red-like-this)
 

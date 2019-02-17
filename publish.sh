@@ -2,7 +2,7 @@
 
 echo "NPM Publishing is disabled at this time"
 if npm audit; then
-  rm *orig* *toc*
+  rm *orig* *toc\.*
   npm run-script document
   npm run-script api
   git add .
