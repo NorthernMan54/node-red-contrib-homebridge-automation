@@ -46,8 +46,8 @@ module.exports = function(RED) {
         ctDevices = register.registerCt(homebridge, accessories);
         debug('Discovered %s evDevices', evDevices.length);
 
-        evDevices.sort((a,b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
-        ctDevices.sort((a,b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
+        evDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
+        ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
 
         debug('Discovered %s ctDevices', ctDevices.length);
         debug("registerQueue", registerQueue.length);
@@ -84,7 +84,7 @@ module.exports = function(RED) {
     };
 
     this.deregister = function(deviceNode, done) {
-      debug("deregister", deviceNode);
+      // debug("deregister", deviceNode);
       deviceNode.status({
         text: 'disconnected',
         shape: 'ring',
@@ -225,7 +225,7 @@ module.exports = function(RED) {
     this.hbDevice = n.hbDevice;
     this.name = n.name;
 
-    debug("hbControl", n);
+    // debug("hbControl", n);
 
     var node = this;
 
@@ -317,37 +317,71 @@ module.exports = function(RED) {
   function _control(nrDevice, node, value, done) {
     debug("_control", nrDevice, ctDevices.length);
     var endpoint = _findEndpoint(ctDevices, nrDevice);
+    // debug("_control", nrDevice, ctDevices.length, endpoint);
     if (endpoint) {
-      var message = {
-        "characteristics": [{
-          "aid": endpoint.aid,
-          "iid": endpoint.iid,
-          "value": value
-        }]
-      };
-      debug("Control %s:%s ->", endpoint.host, endpoint.port, message);
-      homebridge.HAPcontrol(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
-        if (!err) {
-          debug("Controlled %s:%s ->", endpoint.host, endpoint.port, status);
-          node.status({
-            text: 'sent',
-            shape: 'dot',
-            fill: 'green'
+      switch (endpoint.service) {
+        case "00000111": // Camera
+          var message = {
+            "resource-type": "image",
+            "image-width": 1920,
+            "image-height": 1080
+          };
+          debug("Control %s:%s ->", endpoint.host, endpoint.port, message);
+          homebridge.HAPresource(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
+            if (!err) {
+              debug("Controlled %s:%s ->", endpoint.host, endpoint.port);
+              node.status({
+                text: 'sent',
+                shape: 'dot',
+                fill: 'green'
+              });
+              setTimeout(function() {
+                node.status({});
+              }, 30 * 1000);
+              done(null);
+            } else {
+              debug("Error: Control %s:%s ->", endpoint.host, endpoint.port, err);
+              node.status({
+                text: 'error',
+                shape: 'ring',
+                fill: 'red'
+              });
+              done(err);
+            }
           });
-          setTimeout(function() {
-            node.status({});
-          }, 30 * 1000);
-          done(null);
-        } else {
-          debug("Error: Control %s:%s ->", endpoint.host, endpoint.port, err, status);
-          node.status({
-            text: 'error',
-            shape: 'ring',
-            fill: 'red'
+          break;
+        default:
+          var message = {
+            "characteristics": [{
+              "aid": endpoint.aid,
+              "iid": endpoint.iid,
+              "value": value
+            }]
+          };
+          debug("Control %s:%s ->", endpoint.host, endpoint.port, message);
+          homebridge.HAPcontrol(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
+            if (!err) {
+              debug("Controlled %s:%s ->", endpoint.host, endpoint.port, status);
+              node.status({
+                text: 'sent',
+                shape: 'dot',
+                fill: 'green'
+              });
+              setTimeout(function() {
+                node.status({});
+              }, 30 * 1000);
+              done(null);
+            } else {
+              debug("Error: Control %s:%s ->", endpoint.host, endpoint.port, err, status);
+              node.status({
+                text: 'error',
+                shape: 'ring',
+                fill: 'red'
+              });
+              done(err);
+            }
           });
-          done(err);
-        }
-      });
+      } // End of switch
     } else {
       debug("Control Device not found", nrDevice);
       node.status({
