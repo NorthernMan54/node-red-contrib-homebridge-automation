@@ -44,12 +44,11 @@ module.exports = function(RED) {
       homebridge.on('Ready', function(accessories) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
-        debug('Discovered %s ctDevices', JSON.stringify(ctDevices));
-
-        evDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
-        ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
-
         debug('Discovered %s evDevices', evDevices.length);
+
+        evDevices.sort((a,b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
+        ctDevices.sort((a,b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
+
         debug('Discovered %s ctDevices', ctDevices.length);
         debug("registerQueue", registerQueue.length);
 
@@ -85,7 +84,7 @@ module.exports = function(RED) {
     };
 
     this.deregister = function(deviceNode, done) {
-      // debug("deregister", deviceNode);
+      debug("deregister", deviceNode);
       deviceNode.status({
         text: 'disconnected',
         shape: 'ring',
@@ -154,7 +153,7 @@ module.exports = function(RED) {
     this.hbDevice = n.hbDevice;
     this.name = n.name;
 
-    // debug("hbEvent", JSON.stringify(n));
+    debug("hbEvent", JSON.stringify(n));
 
     /*
     {"id":"7a703739.8abc5",
@@ -175,10 +174,11 @@ module.exports = function(RED) {
       debug("Sending event", event);
       var msg = {
         name: node.name,
-        payload: payload(event, node),
+        payload: event.status,
         Homebridge: node.hbDevice.homebridge,
         Manufacturer: node.hbDevice.manufacturer,
         Type: node.hbDevice.deviceType,
+        Function: node.hbDevice.function,
         _confId: node.confId,
         _rawEvent: event
       };
@@ -189,13 +189,13 @@ module.exports = function(RED) {
       debug("Registered", node.name);
       this.hbDevice = _findEndpoint(evDevices, node.device);
       if (this.hbDevice) {
-        node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid;
+        node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
         node.hbDevice = this.hbDevice;
         node.deviceType = this.hbDevice.deviceType;
         // Register for events
         node.listener = node.command;
-        node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
-        homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid, node.command);
+        node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid;
+        homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid, node.command);
         debug("after reg count", homebridge.listenerCount(node.eventName));
         node.status({
           text: 'connected',
@@ -225,7 +225,7 @@ module.exports = function(RED) {
     this.hbDevice = n.hbDevice;
     this.name = n.name;
 
-    // debug("hbControl", n);
+    debug("hbControl", n);
 
     var node = this;
 
@@ -363,18 +363,12 @@ module.exports = function(RED) {
     debug("_register", nrDevice, evDevices.length);
     var endpoint = _findEndpoint(evDevices, nrDevice);
     if (endpoint) {
-      // debug("Endpoint", endpoint);
-      var characteristics = [];
-      endpoint.events.forEach(function(event) {
-        var characteristic = {
-          "aid": endpoint.aid,
-          "iid": event.iid,
-          "ev": true
-        }
-        characteristics.push(characteristic);
-      });
       var message = {
-        "characteristics": characteristics
+        "characteristics": [{
+          "aid": endpoint.aid,
+          "iid": endpoint.iid,
+          "ev": true
+        }]
       };
       debug("Event Register %s:%s ->", endpoint.host, endpoint.port, message);
       homebridge.HAPcontrol(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
@@ -441,37 +435,4 @@ function registerEvents(message, homebridge) {
       }
     });
   }
-}
-
-/* - event
-{ host: '192.168.1.202',
-  port: 51827,
-  aid: 6,
-  iid: 16,
-  status: 35.8 }
-*/
-
-function payload(event, node) {
-  var message;
-  node.hbDevice.events.forEach(function(element) {
-    // debug("Element", element);
-    /*
-      { key: '192.168.1.202:51827:6:10',
-      iid: 10,
-      function: 'Motion Detected',
-      characteristic: 'MotionDetected' }
-    */
-    if (element.key === event.host + ':' + event.port + ':' + event.aid + ':' + event.iid) {
-      message = {
-        [element.characteristic]: event.status
-      };
-    }
-  });
-  if(!message) {
-    debug("No match on event", event);
-    node.hbDevice.events.forEach(function(element) {
-      debug("Match?", element);
-    });
-  }
-  return message;
 }

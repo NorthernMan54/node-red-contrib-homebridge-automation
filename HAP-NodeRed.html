@@ -76,6 +76,7 @@
           Homebridge: {value: ""},
           Manufacturer: {value: ""},
           Type: {value: ""},
+          Function: {value: ""},
           device: {value: ""},
           conf: {value: "", type:"hb-conf"}
         },
@@ -84,7 +85,7 @@
         color: '#F3B567',
         icon: 'inject.png',
         label: function() {
-        	return this.name || "Choose accessory";
+        	return this.name || "Choose accessory/event";
         },
         oneditsave: function() {
              var n = $('#node-input-device option:selected').text();
@@ -94,8 +95,8 @@
             this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
             this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
             this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
-            // this.Function = $('#node-input-device option:selected').attr('function').toString();
-            $('#node-input-name').val(this.sname);
+            this.Function = $('#node-input-device option:selected').attr('function').toString();
+            $('#node-input-name').val(this.sname + " - " + this.Function);
         },
         oneditprepare: function(){
             var node = this;
@@ -118,7 +119,8 @@
                         text: data[d].fullName,
                         homebridge: data[d].homebridge,
                         manufacturer: data[d].manufacturer,
-                        deviceType: data[d].deviceType
+                        deviceType: data[d].deviceType,
+                        function: data[d].function
                         }).appendTo('#node-input-device');
                     }
                     if (node.device) {
@@ -197,6 +199,7 @@
           Homebridge: {value: ""},
           Manufacturer: {value: ""},
           Type: {value: ""},
+          Function: {value: ""},
           device: {value: ""},
           conf: {value: "", type:"hb-conf"}
         },
@@ -215,8 +218,8 @@
             this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
             this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
             this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
-            // this.Function = $('#node-input-device option:selected').attr('function').toString();
-            $('#node-input-name').val(this.sname);
+            this.Function = $('#node-input-device option:selected').attr('function').toString();
+            $('#node-input-name').val(this.sname + " - " + this.Function);
         },
         oneditprepare: function(){
             var node = this;
@@ -239,7 +242,8 @@
                           text: data[d].fullName,
                           homebridge: data[d].homebridge,
                           manufacturer: data[d].manufacturer,
-                          deviceType: data[d].deviceType
+                          deviceType: data[d].deviceType,
+                          function: data[d].function
                         }).appendTo('#node-input-device');
                     }
                     if (node.device) {
