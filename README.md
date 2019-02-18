@@ -143,7 +143,7 @@ msg = {
       }
 ```
 
-# TroubleshhbDevice/ DEBUG MODE
+# Troubleshooting / DEBUG MODE
 
 ## To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.
 
