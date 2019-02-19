@@ -76,8 +76,6 @@ module.exports = function(RED) {
         if (homebridge && evDevices.length > 0) {
           processItems(0);
         }
-
-
       } else {
         debug("No device to register", deviceNode.device);
       }
@@ -244,6 +242,47 @@ module.exports = function(RED) {
 
   RED.nodes.registerType("hb-control", hbControl);
 
+  function hbStatus(n) {
+    RED.nodes.createNode(this, n);
+    this.conf = RED.nodes.getNode(n.conf); // The configuration node
+    this.confId = n.conf;
+    this.device = n.device;
+    this.hapEndpoint = n.hapEndpoint;
+    this.deviceType = n.deviceType;
+    this.hbDevice = n.hbDevice;
+    this.name = n.name;
+
+    // debug("hbControl", n);
+
+    var node = this;
+
+    node.on('input', function(msg) {
+      _status(this.device, node, msg.payload, function(err, message) {
+        if (!err) {
+          debug("Complete", message.characteristics[0].value, node);
+          var msg = {
+            name: node.name,
+            payload: message.characteristics[0].value,
+            // Homebridge: node.hbDevice.homebridge,
+            // Manufacturer: node.hbDevice.manufacturer,
+            // Type: node.hbDevice.deviceType,
+            // Function: node.hbDevice.function,
+            _confId: node.confId
+          };
+          node.send(msg);
+        }
+      });
+    });
+
+    node.on('close', function(done) {
+      // Emitted when closing, not needed
+      done();
+      // node.conf.deregister(node, done);
+    });
+  }
+
+  RED.nodes.registerType("hb-status", hbStatus);
+
   /* Device object
   { host: '192.168.1.253',
   port: 51827,
@@ -312,7 +351,50 @@ module.exports = function(RED) {
     }
   });
 
-  //
+  function _status(nrDevice, node, value, done) {
+    debug("_status", nrDevice, ctDevices.length);
+    var endpoint = _findEndpoint(ctDevices, nrDevice);
+    // debug("_status", nrDevice, ctDevices.length, endpoint);
+    if (endpoint) {
+      switch (endpoint.service) {
+        // Nothing specialized, yet
+        default:
+          // /characteristics?id=2.14,2.10
+          var message = '?id=' + endpoint.aid + '.' + endpoint.iid;
+          debug("Status %s:%s ->", endpoint.host, endpoint.port, message);
+          homebridge.HAPstatus(endpoint.host, endpoint.port, message, function(err, status) {
+            if (!err) {
+              // debug("Status %s:%s ->", endpoint.host, endpoint.port, status);
+              node.status({
+                text: 'sent',
+                shape: 'dot',
+                fill: 'green'
+              });
+              setTimeout(function() {
+                node.status({});
+              }, 30 * 1000);
+              done(null, status);
+            } else {
+              debug("Error: Status %s:%s ->", endpoint.host, endpoint.port, err, status);
+              node.status({
+                text: 'error',
+                shape: 'ring',
+                fill: 'red'
+              });
+              done(err);
+            }
+          });
+      } // End of switch
+    } else {
+      debug("Status Device not found", nrDevice);
+      node.status({
+        text: 'error',
+        shape: 'ring',
+        fill: 'red'
+      });
+      done();
+    }
+  }
 
   function _control(nrDevice, node, value, done) {
     debug("_control", nrDevice, ctDevices.length);

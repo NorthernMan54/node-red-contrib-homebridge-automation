@@ -1,53 +1,55 @@
 <script type="text/x-red" data-template-name="hb-conf">
-    <div class="form-row">
+  <div class="form-row">
 	    <label for="node-config-input-username"><i class="icon-tag"></i> Pin</label>
 	    <input type="text" id="node-config-input-username">
 	</div>
 </script>
 
 <script type="text/x-red" data-help-name="hb-conf">
-	<p>This allows you to register your homebridge PIN</p>
+  <p>This allows you to register your homebridge PIN</p>
 
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('hb-conf',{
-        category: 'config',
-        defaults: {
-        	username: {}
-        },
-        credentials: {
-            password: {type:"password"}
-        },
-        color: '#F3B567',
-        label: function() {
-        	return this.username;
-        },
-        oneditsave: function(){
-        	var node = this;
-        	var user = $('#node-config-input-PIN').val();
-        	// var pass = $('#node-config-input-password').val();
-            console.log("pass: ", pass);
-        	if (pass != '_PWD_') {
-        		var account = {
-        			id: node.id,
-        			user: user,
-        			pass: pass
-        		}
-        		$.ajax({
-        			data: JSON.stringify(account),
-        			url: 'alexa-home/new-account',
-        			contentType: 'application/json',
-        			type: 'POST',
-        			processData: false
-        		});
-        	}
+  RED.nodes.registerType('hb-conf', {
+    category: 'config',
+    defaults: {
+      username: {}
+    },
+    credentials: {
+      password: {
+        type: "password"
+      }
+    },
+    color: '#F3B567',
+    label: function() {
+      return this.username;
+    },
+    oneditsave: function() {
+      var node = this;
+      var user = $('#node-config-input-PIN').val();
+      // var pass = $('#node-config-input-password').val();
+      console.log("pass: ", pass);
+      if (pass != '_PWD_') {
+        var account = {
+          id: node.id,
+          user: user,
+          pass: pass
         }
-    });
+        $.ajax({
+          data: JSON.stringify(account),
+          url: 'alexa-home/new-account',
+          contentType: 'application/json',
+          type: 'POST',
+          processData: false
+        });
+      }
+    }
+  });
 </script>
 
 <script type="text/x-red" data-template-name="hb-event">
-	<div class="form-row">
+  <div class="form-row">
 		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
 		<input type="text" id="node-input-conf">
 	</div>
@@ -65,112 +67,271 @@
 
 
 <script type="text/x-red" data-help-name="hb-event">
-	<p>This node provides an endpoint for emiting events from Homebridge accessories into Node-Red.</p>
+  <p>This node represents a homebridge accessory/event and emits messages when the accessory state changes.</p>
+  <p>Each Homebridge Event node, will emit a message containing the updated status of a single characteristic that has changed.  For accessories with mulitple characteristics, a Homebridge Event node will need to be created for each characteristic you are interested in.</p>
+
+  <ul>
+      <li><strong>Name</strong>: Accessory Name and Function</li>
+      <li><strong>Homebridge</strong>: Homebridge Instance</li>
+      <li><strong>Manufacturer</strong>: Plugin Manufacturer</li>
+      <li><strong>Type</strong>: Accessory type</li>
+      <li><strong>Function</strong>: Event/Characteristic</li>
+      <li><strong>Device</strong>: Unique Device Identifier</li>
+      <li><strong>conf</strong>: Homebridge PIN</li>
+  </ul>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('hb-event',{
-        category: 'Homebridge',
-        defaults: {
-        	name: {},
-          Homebridge: {value: ""},
-          Manufacturer: {value: ""},
-          Type: {value: ""},
-          Function: {value: ""},
-          device: {value: ""},
-          conf: {value: "", type:"hb-conf"}
-        },
-        outputs: 1,
-        inputs: 0,
-        color: '#F3B567',
-        icon: 'inject.png',
-        label: function() {
-        	return this.name || "Choose accessory/event";
-        },
-        oneditsave: function() {
-             var n = $('#node-input-device option:selected').text();
-            // console.log("selected name ", $('#node-input-device option:selected'));
+  RED.nodes.registerType('hb-event', {
+    category: 'Homebridge',
+    defaults: {
+      name: {},
+      Homebridge: {
+        value: ""
+      },
+      Manufacturer: {
+        value: ""
+      },
+      Type: {
+        value: ""
+      },
+      Function: {
+        value: ""
+      },
+      device: {
+        value: ""
+      },
+      conf: {
+        value: "",
+        type: "hb-conf"
+      }
+    },
+    outputs: 1,
+    inputs: 0,
+    color: '#F3B567',
+    icon: 'inject.png',
+    label: function() {
+      return this.name || "Choose accessory/event";
+    },
+    oneditsave: function() {
+      var n = $('#node-input-device option:selected').text();
+      // console.log("selected name ", $('#node-input-device option:selected'));
 
-            this.sname = $('#node-input-device option:selected').attr('name').toString();
-            this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
-            this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-            this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
-            this.Function = $('#node-input-device option:selected').attr('function').toString();
-            $('#node-input-name').val(this.sname + " - " + this.Function);
-        },
-        oneditprepare: function(){
-            var node = this;
-            //console.log("foo " + node.device);
-            if (typeof node.acknoledge === 'undefined') {
-                console.log("ben");
-                $('#node-input-acknoledge').prop('checked', true);
-            }
-            $('#node-input-device').change(function(){
-                $('#node-input-name').val($('#node-input-device option:selected').text());
-            });
-            var getDevs = function (account){
-                $.getJSON('hap-device/evDevices/' + account, function(data){
-                    $('#node-input-device').find('option').remove().end();
-                    for (d in data) {
-                        $('<option/>',{
-                        value: data[d].uniqueId,
-                        fullName: data[d].fullName,
-                        name: data[d].name,
-                        text: data[d].fullName,
-                        homebridge: data[d].homebridge,
-                        manufacturer: data[d].manufacturer,
-                        deviceType: data[d].deviceType,
-                        function: data[d].function
-                        }).appendTo('#node-input-device');
-                    }
-                    if (node.device) {
-                        $('#node-input-device').val(node.device);
-                    }
-                }).fail(function(jqXHR, textStatus, errorThrown){
-                    console.log("problem getting evDevices");
-                    console.log(textStatus);
-                });
+      this.sname = $('#node-input-device option:selected').attr('name').toString();
+      this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
+      this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
+      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
+      this.Function = $('#node-input-device option:selected').attr('function').toString();
+      $('#node-input-name').val(this.sname + " - " + this.Function);
+    },
+    oneditprepare: function() {
+      var node = this;
+      //console.log("foo " + node.device);
+      if (typeof node.acknoledge === 'undefined') {
+        console.log("ben");
+        $('#node-input-acknoledge').prop('checked', true);
+      }
+      $('#node-input-device').change(function() {
+        $('#node-input-name').val($('#node-input-device option:selected').text());
+      });
+      var getDevs = function(account) {
+        $.getJSON('hap-device/evDevices/' + account, function(data) {
+          $('#node-input-device').find('option').remove().end();
+          for (d in data) {
+            $('<option/>', {
+              value: data[d].uniqueId,
+              fullName: data[d].fullName,
+              name: data[d].name,
+              text: data[d].fullName,
+              homebridge: data[d].homebridge,
+              manufacturer: data[d].manufacturer,
+              deviceType: data[d].deviceType,
+              function: data[d].function
+            }).appendTo('#node-input-device');
+          }
+          if (node.device) {
+            $('#node-input-device').val(node.device);
+          }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+          console.log("problem getting evDevices");
+          console.log(textStatus);
+        });
 
-            }
-        	if (node.conf) {
-        		var account = $('#node-input-conf').val();
-                //console.log("account: ", account);
-        		if (account != '_ADD_') {
-	        		getDevs(account);
-        		}
-        	}
-        	$('#node-input-conf').change(function(){
-        		var account = $('#node-input-conf').val();
-                //console.log("account changed: ", account);
-                if (account != '_ADD_') {
-            		getDevs(account);
-                } else {
-                    //console.log("new account");
-                    $('#node-input-device').find('option').remove().end();
-                    $('#node-input-device').val("");
-                }
-        	});
-            $('#node-input-device-refresh').click(function(){
-                $('#node-input-device-refresh').addClass('disabled');
-                var account = $('#node-input-conf').val();
-                $.ajax({
-                    url: 'hap-device/refresh/' + account,
-                    type: 'POST'
-                }).done(function(data){
-                    setTimeout(function(){
-                        getDevs(account);
-                        $('#node-input-device-refresh').removeClass('disabled');
-                    },3000);
-                });
-            });
+      }
+      if (node.conf) {
+        var account = $('#node-input-conf').val();
+        //console.log("account: ", account);
+        if (account != '_ADD_') {
+          getDevs(account);
         }
-    });
+      }
+      $('#node-input-conf').change(function() {
+        var account = $('#node-input-conf').val();
+        //console.log("account changed: ", account);
+        if (account != '_ADD_') {
+          getDevs(account);
+        } else {
+          //console.log("new account");
+          $('#node-input-device').find('option').remove().end();
+          $('#node-input-device').val("");
+        }
+      });
+      $('#node-input-device-refresh').click(function() {
+        $('#node-input-device-refresh').addClass('disabled');
+        var account = $('#node-input-conf').val();
+        $.ajax({
+          url: 'hap-device/refresh/' + account,
+          type: 'POST'
+        }).done(function(data) {
+          setTimeout(function() {
+            getDevs(account);
+            $('#node-input-device-refresh').removeClass('disabled');
+          }, 3000);
+        });
+      });
+    }
+  });
 </script>
 
 // Start of HAP Control
 
 <script type="text/x-red" data-template-name="hb-control">
+  <div class="form-row">
+		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
+		<input type="text" id="node-input-conf">
+	</div>
 	<div class="form-row">
+		<label for="node-input-device"><i class="icon-tag"></i> Device</label>
+		<select id="node-input-device">
+
+		</select>
+        <a id="node-input-device-refresh" class="btn"><i class="fa fa-refresh"></i></a>
+	</div>
+
+    <input type="hidden" id="node-input-name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="hb-control">
+  <p>This node provides endpoint for controlling Homebridge Accessories</p>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('hb-control', {
+    category: 'Homebridge',
+    defaults: {
+      name: {},
+      Homebridge: {
+        value: ""
+      },
+      Manufacturer: {
+        value: ""
+      },
+      Type: {
+        value: ""
+      },
+      Function: {
+        value: ""
+      },
+      device: {
+        value: ""
+      },
+      conf: {
+        value: "",
+        type: "hb-conf"
+      }
+    },
+    outputs: 0,
+    inputs: 1,
+    align: 'right',
+    color: '#F3B567',
+    icon: 'light.png',
+    label: function() {
+      return this.name || "Choose accessory";
+    },
+    oneditsave: function() {
+      var n = $('#node-input-device option:selected').text();
+      //console.log("selected name " + n);
+      this.sname = $('#node-input-device option:selected').attr('name').toString();
+      this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
+      this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
+      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
+      this.Function = $('#node-input-device option:selected').attr('function').toString();
+      $('#node-input-name').val(this.sname + " - " + this.Function);
+    },
+    oneditprepare: function() {
+      var node = this;
+      //console.log("foo " + node.device);
+      if (typeof node.acknoledge === 'undefined') {
+        console.log("ben");
+        $('#node-input-acknoledge').prop('checked', true);
+      }
+      $('#node-input-device').change(function() {
+        $('#node-input-name').val($('#node-input-device option:selected').text());
+      });
+      var getDevs = function(account) {
+        $.getJSON('hap-device/ctDevices/' + account, function(data) {
+          $('#node-input-device').find('option').remove().end();
+          for (d in data) {
+            $('<option/>', {
+              value: data[d].uniqueId,
+              fullName: data[d].fullName,
+              name: data[d].name,
+              text: data[d].fullName,
+              homebridge: data[d].homebridge,
+              manufacturer: data[d].manufacturer,
+              deviceType: data[d].deviceType,
+              function: data[d].function
+            }).appendTo('#node-input-device');
+          }
+          if (node.device) {
+            $('#node-input-device').val(node.device);
+          }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+          console.log("problem getting ctDevices");
+          console.log(textStatus);
+        });
+
+      }
+      if (node.conf) {
+        var account = $('#node-input-conf').val();
+        //console.log("account: ", account);
+        if (account != '_ADD_') {
+          getDevs(account);
+        }
+      }
+      $('#node-input-conf').change(function() {
+        var account = $('#node-input-conf').val();
+        //console.log("account changed: ", account);
+        if (account != '_ADD_') {
+          getDevs(account);
+        } else {
+          //console.log("new account");
+          $('#node-input-device').find('option').remove().end();
+          $('#node-input-device').val("");
+        }
+      });
+      $('#node-input-device-refresh').click(function() {
+        $('#node-input-device-refresh').addClass('disabled');
+        var account = $('#node-input-conf').val();
+        $.ajax({
+          url: 'hap-device/refresh/' + account,
+          type: 'POST'
+        }).done(function(data) {
+          setTimeout(function() {
+            getDevs(account);
+            $('#node-input-device-refresh').removeClass('disabled');
+          }, 3000);
+        });
+      });
+    }
+  });
+</script>
+
+// Start of HAP Status
+
+<script type="text/x-red" data-template-name="hb-status">
+  <div class="form-row">
 		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
 		<input type="text" id="node-input-conf">
 	</div>
@@ -187,105 +348,118 @@
 </script>
 
 
-<script type="text/x-red" data-help-name="hb-control">
-	<p>This node provides endpoint for controlling Homebridge Accessories</p>
+<script type="text/x-red" data-help-name="hb-status">
+  <p>This node provides endpoint for controlling Homebridge Accessories</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('hb-control',{
-        category: 'Homebridge',
-        defaults: {
-          name: {},
-          Homebridge: {value: ""},
-          Manufacturer: {value: ""},
-          Type: {value: ""},
-          Function: {value: ""},
-          device: {value: ""},
-          conf: {value: "", type:"hb-conf"}
-        },
-        outputs: 0,
-        inputs: 1,
-        align: 'right',
-        color: '#F3B567',
-        icon: 'light.png',
-        label: function() {
-        	return this.name || "Choose accessory";
-        },
-        oneditsave: function() {
-             var n = $('#node-input-device option:selected').text();
-            //console.log("selected name " + n);
-            this.sname = $('#node-input-device option:selected').attr('name').toString();
-            this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
-            this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-            this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
-            this.Function = $('#node-input-device option:selected').attr('function').toString();
-            $('#node-input-name').val(this.sname + " - " + this.Function);
-        },
-        oneditprepare: function(){
-            var node = this;
-            //console.log("foo " + node.device);
-            if (typeof node.acknoledge === 'undefined') {
-                console.log("ben");
-                $('#node-input-acknoledge').prop('checked', true);
-            }
-            $('#node-input-device').change(function(){
-                $('#node-input-name').val($('#node-input-device option:selected').text());
-            });
-            var getDevs = function (account){
-                $.getJSON('hap-device/ctDevices/' + account, function(data){
-                    $('#node-input-device').find('option').remove().end();
-                    for (d in data) {
-                        $('<option/>',{
-                          value: data[d].uniqueId,
-                          fullName: data[d].fullName,
-                          name: data[d].name,
-                          text: data[d].fullName,
-                          homebridge: data[d].homebridge,
-                          manufacturer: data[d].manufacturer,
-                          deviceType: data[d].deviceType,
-                          function: data[d].function
-                        }).appendTo('#node-input-device');
-                    }
-                    if (node.device) {
-                        $('#node-input-device').val(node.device);
-                    }
-                }).fail(function(jqXHR, textStatus, errorThrown){
-                    console.log("problem getting ctDevices");
-                    console.log(textStatus);
-                });
+  RED.nodes.registerType('hb-status', {
+    category: 'Homebridge',
+    defaults: {
+      name: {},
+      Homebridge: {
+        value: ""
+      },
+      Manufacturer: {
+        value: ""
+      },
+      Type: {
+        value: ""
+      },
+      Function: {
+        value: ""
+      },
+      device: {
+        value: ""
+      },
+      conf: {
+        value: "",
+        type: "hb-conf"
+      }
+    },
+    outputs: 1,
+    inputs: 1,
+    align: 'right',
+    color: '#F3B567',
+    icon: 'light.png',
+    label: function() {
+      return this.name || "Choose accessory";
+    },
+    oneditsave: function() {
+      var n = $('#node-input-device option:selected').text();
+      //console.log("selected name " + n);
+      this.sname = $('#node-input-device option:selected').attr('name').toString();
+      this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
+      this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
+      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
+      this.Function = $('#node-input-device option:selected').attr('function').toString();
+      $('#node-input-name').val(this.sname + " - " + this.Function);
+    },
+    oneditprepare: function() {
+      var node = this;
+      //console.log("foo " + node.device);
+      if (typeof node.acknoledge === 'undefined') {
+        console.log("ben");
+        $('#node-input-acknoledge').prop('checked', true);
+      }
+      $('#node-input-device').change(function() {
+        $('#node-input-name').val($('#node-input-device option:selected').text());
+      });
+      var getDevs = function(account) {
+        $.getJSON('hap-device/ctDevices/' + account, function(data) {
+          $('#node-input-device').find('option').remove().end();
+          for (d in data) {
+            $('<option/>', {
+              value: data[d].uniqueId,
+              fullName: data[d].fullName,
+              name: data[d].name,
+              text: data[d].fullName,
+              homebridge: data[d].homebridge,
+              manufacturer: data[d].manufacturer,
+              deviceType: data[d].deviceType,
+              function: data[d].function
+            }).appendTo('#node-input-device');
+          }
+          if (node.device) {
+            $('#node-input-device').val(node.device);
+          }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+          console.log("problem getting ctDevices");
+          console.log(textStatus);
+        });
 
-            }
-        	if (node.conf) {
-        		var account = $('#node-input-conf').val();
-                //console.log("account: ", account);
-        		if (account != '_ADD_') {
-	        		getDevs(account);
-        		}
-        	}
-        	$('#node-input-conf').change(function(){
-        		var account = $('#node-input-conf').val();
-                //console.log("account changed: ", account);
-                if (account != '_ADD_') {
-            		getDevs(account);
-                } else {
-                    //console.log("new account");
-                    $('#node-input-device').find('option').remove().end();
-                    $('#node-input-device').val("");
-                }
-        	});
-            $('#node-input-device-refresh').click(function(){
-                $('#node-input-device-refresh').addClass('disabled');
-                var account = $('#node-input-conf').val();
-                $.ajax({
-                    url: 'hap-device/refresh/' + account,
-                    type: 'POST'
-                }).done(function(data){
-                    setTimeout(function(){
-                        getDevs(account);
-                        $('#node-input-device-refresh').removeClass('disabled');
-                    },3000);
-                });
-            });
+      }
+      if (node.conf) {
+        var account = $('#node-input-conf').val();
+        //console.log("account: ", account);
+        if (account != '_ADD_') {
+          getDevs(account);
         }
-    });
+      }
+      $('#node-input-conf').change(function() {
+        var account = $('#node-input-conf').val();
+        //console.log("account changed: ", account);
+        if (account != '_ADD_') {
+          getDevs(account);
+        } else {
+          //console.log("new account");
+          $('#node-input-device').find('option').remove().end();
+          $('#node-input-device').val("");
+        }
+      });
+      $('#node-input-device-refresh').click(function() {
+        $('#node-input-device-refresh').addClass('disabled');
+        var account = $('#node-input-conf').val();
+        $.ajax({
+          url: 'hap-device/refresh/' + account,
+          type: 'POST'
+        }).done(function(data) {
+          setTimeout(function() {
+            getDevs(account);
+            $('#node-input-device-refresh').removeClass('disabled');
+          }, 3000);
+        });
+      });
+    }
+  });
 </script>
