@@ -14,6 +14,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
    * [Introduction](#introduction)
       * [Caveats](#caveats)
    * [Backlog / Roadmap](#backlog--roadmap)
+      * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
       * [1 - Install Node-RED and Homebridge](#1---install-node-red-and-homebridge)
       * [2 - Prepare Homebridge for integration with HAP-NodeRED](#2---prepare-homebridge-for-integration-with-hap-nodered)
@@ -52,13 +53,17 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 # Backlog / Roadmap
 
 * [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )
+* [X] - Do I need a node that emits events for all homebridge devices?
 * [x] - Sort device drop down listing
-* [ ] - Add timestamp to Node msg object
 * [x] - Trim Node name to just accessory Name
+* [ ] - Add timestamp to Node msg object
+* [ ] - Documentation - Fix README with latest options
+* [ ] - Documentation/Naming - Normalize on Accessory, Service, Event and Characteristic
+* [ ] - Hap-Node-Client is not reentrant, and multiple requests get lost.  Needs queuing at an instance level.
+
+## Dropped items
+
 * [ ] - Adjust msg.payload to match other homekit / NodeRED integrations
-* [ ] - Documentation
-* [ ] - Object names ( hb-event and hb-control ), do these make sense?
-* [ ] - Do I need a node that emits events for all homebridge devices?
 
 # Installation Steps
 

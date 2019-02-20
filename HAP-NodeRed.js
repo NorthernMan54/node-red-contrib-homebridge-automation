@@ -8,7 +8,7 @@ module.exports = function(RED) {
   var homebridge;
 
   function hbConf(n) {
-    debug("hbConf", n);
+    // debug("hbConf", n);
     RED.nodes.createNode(this, n);
     this.username = n.username;
     this.password = this.credentials.password;
@@ -96,25 +96,6 @@ module.exports = function(RED) {
       done();
     };
 
-    this.acknoledge = function(messageId, device, success, extra) {
-      debug("acknoledge", device);
-      var response = {
-        messageId: messageId,
-        success: success
-      };
-
-      if (extra) {
-        response.extra = extra;
-      }
-
-      // console.log("response: " + response);
-
-      var topic = 'response/' + node.username + '/' + device;
-      if (node.client && node.client.connected) {
-        node.client.publish(topic, JSON.stringify(response));
-      }
-    };
-
     this.on('close', function() {
       if (node.client && node.client.connected) {
         node.client.end();
@@ -177,6 +158,7 @@ module.exports = function(RED) {
         Manufacturer: node.hbDevice.manufacturer,
         Type: node.hbDevice.deviceType,
         Function: node.hbDevice.function,
+        _device: node.device,
         _confId: node.confId,
         _rawEvent: event
       };
@@ -247,29 +229,47 @@ module.exports = function(RED) {
     this.conf = RED.nodes.getNode(n.conf); // The configuration node
     this.confId = n.conf;
     this.device = n.device;
-    this.hapEndpoint = n.hapEndpoint;
-    this.deviceType = n.deviceType;
-    this.hbDevice = n.hbDevice;
+    this.deviceType = n.Type;
+    this.hbDevice = _findEndpoint(evDevices, n.device);
     this.name = n.name;
 
-    // debug("hbControl", n);
+    // debug("hbStatus", this.hbDevice);
 
     var node = this;
+
+    node.conf.register(node, function() {
+      debug("hbStatus register", node.name);
+      this.hbDevice = _findEndpoint(evDevices, node.device);
+      if (this.hbDevice) {
+        node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
+        node.hbDevice = this.hbDevice;
+        node.deviceType = this.hbDevice.deviceType;
+        // Register for events
+        node.listener = node.command;
+        node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid;
+      } else {
+        node.error("Can't find device " + node.device, null);
+        debug("Missing device", node.device);
+      }
+    });
 
     node.on('input', function(msg) {
       _status(this.device, node, msg.payload, function(err, message) {
         if (!err) {
-          debug("Complete", message.characteristics[0].value, node);
+          debug("hbStatus _status: complete", node.name, message.characteristics[0].value);
           var msg = {
             name: node.name,
             payload: message.characteristics[0].value,
-            // Homebridge: node.hbDevice.homebridge,
-            // Manufacturer: node.hbDevice.manufacturer,
-            // Type: node.hbDevice.deviceType,
-            // Function: node.hbDevice.function,
+            Homebridge: node.hbDevice.homebridge,
+            Manufacturer: node.hbDevice.manufacturer,
+            Type: node.hbDevice.deviceType,
+            Function: node.hbDevice.function,
+            _device: node.device,
             _confId: node.confId
           };
           node.send(msg);
+        } else {
+          debug("hbStatus _status: error", node.name, err);
         }
       });
     });

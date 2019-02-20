@@ -67,18 +67,31 @@
 
 
 <script type="text/x-red" data-help-name="hb-event">
+  <p>Event emitter node for Homebridge accessories.</p>
   <p>This node represents a homebridge accessory/event and emits messages when the accessory state changes.</p>
-  <p>Each Homebridge Event node, will emit a message containing the updated status of a single characteristic that has changed.  For accessories with mulitple characteristics, a Homebridge Event node will need to be created for each characteristic you are interested in.</p>
 
-  <ul>
-      <li><strong>Name</strong>: Accessory Name and Function</li>
-      <li><strong>Homebridge</strong>: Homebridge Instance</li>
-      <li><strong>Manufacturer</strong>: Plugin Manufacturer</li>
-      <li><strong>Type</strong>: Accessory type</li>
-      <li><strong>Function</strong>: Event/Characteristic</li>
-      <li><strong>Device</strong>: Unique Device Identifier</li>
-      <li><strong>conf</strong>: Homebridge PIN</li>
-  </ul>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+      <dt>name<span class="property-type">string</span></dt>
+      <dd>Homebridge accessory name and function </dd>
+      <dt>payload<span class="property-type">various</span></dt>
+      <dd>Accessory characteristic status</dd>
+      <dt>Homebridge<span class="property-type">string</span></dt>
+      <dd>Homebridge bridge name from config.json </dd>
+      <dt>Manufacturer<span class="property-type">string</span></dt>
+      <dd>Plugin Manufacturer</dd>
+      <dt>Type<span class="property-type">string</span></dt>
+      <dd>Accessory service type</dd>
+      <dt>Function<span class="property-type">string</span></dt>
+      <dd>Accessory characteristic/event</dd>
+      <dt>_device<span class="property-type">string</span></dt>
+      <dd>Internal device identifier</dd>
+      <dt>_rawEvent<span class="property-type">string</span></dt>
+      <dd>Event as received from homebridge</dd>
+  </dl>
+<h3>Details</h3>
+<p>Each Homebridge Event node, will emit a message containing the updated status of a single characteristic that has changed.</p>
+<p>For accessories with mulitple characteristics, a Homebridge Event node will need to be created for each characteristic you are interested in.</p>
 </script>
 
 <script type="text/javascript">
@@ -193,9 +206,9 @@
   });
 </script>
 
-// Start of HAP Control
+// Start of HAP Status
 
-<script type="text/x-red" data-template-name="hb-control">
+<script type="text/x-red" data-template-name="hb-status">
   <div class="form-row">
 		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
 		<input type="text" id="node-input-conf">
@@ -212,12 +225,34 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="hb-control">
-  <p>This node provides endpoint for controlling Homebridge Accessories</p>
+
+<script type="text/x-red" data-help-name="hb-status">
+  <p>Status retrieval node for Homebridge accessories.</p>
+  <p>This node provides endpoint for getting the status of homebridge accessories.  When it receives a message, it will poll the accessory for current status and emit a message with current value</p>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+      <dt>name<span class="property-type">string</span></dt>
+      <dd>Homebridge accessory name and function </dd>
+      <dt>payload<span class="property-type">various</span></dt>
+      <dd>Accessory characteristic status</dd>
+      <dt>Homebridge<span class="property-type">string</span></dt>
+      <dd>Homebridge bridge name from config.json </dd>
+      <dt>Manufacturer<span class="property-type">string</span></dt>
+      <dd>Plugin Manufacturer</dd>
+      <dt>Type<span class="property-type">string</span></dt>
+      <dd>Accessory service type</dd>
+      <dt>Function<span class="property-type">string</span></dt>
+      <dd>Accessory characteristic/event</dd>
+      <dt>_device<span class="property-type">string</span></dt>
+      <dd>Internal device identifier</dd>
+  </dl>
+  <h3>Details</h3>
+  <p>On receipt of any input message this node will poll the homebridge accessory and retrieve the status of the characteristic.</p>
+  <p>For accessories with multiple characteristics, a need will need to be created for characteristic you status for.</p>
 </script>
 
 <script type="text/javascript">
-  RED.nodes.registerType('hb-control', {
+  RED.nodes.registerType('hb-status', {
     category: 'Homebridge',
     defaults: {
       name: {},
@@ -241,13 +276,13 @@
         type: "hb-conf"
       }
     },
-    outputs: 0,
+    outputs: 1,
     inputs: 1,
-    align: 'right',
+    align: 'left',
     color: '#F3B567',
-    icon: 'light.png',
+    icon: 'inject.png',
     label: function() {
-      return this.name || "Choose accessory";
+      return this.name || "Choose accessory/characteristic";
     },
     oneditsave: function() {
       var n = $('#node-input-device option:selected').text();
@@ -270,7 +305,7 @@
         $('#node-input-name').val($('#node-input-device option:selected').text());
       });
       var getDevs = function(account) {
-        $.getJSON('hap-device/ctDevices/' + account, function(data) {
+        $.getJSON('hap-device/evDevices/' + account, function(data) {
           $('#node-input-device').find('option').remove().end();
           for (d in data) {
             $('<option/>', {
@@ -328,9 +363,9 @@
   });
 </script>
 
-// Start of HAP Status
+// Start of HAP Control
 
-<script type="text/x-red" data-template-name="hb-status">
+<script type="text/x-red" data-template-name="hb-control">
   <div class="form-row">
 		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
 		<input type="text" id="node-input-conf">
@@ -347,14 +382,20 @@
     </div>
 </script>
 
-
-<script type="text/x-red" data-help-name="hb-status">
-  <p>This node provides endpoint for getthing the status of homebridge accessories.</p>
-  <p>When it receives a message, it will poll the accessory for current status and emit a message with current value</p>
+<script type="text/x-red" data-help-name="hb-control">
+  <p>Control node for Homebridge accessories.</p>
+  <p>This node allows control of a single characteristic of an homebridge accessory.</p>
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+      <dt>payload<span class="property-type">various</span></dt>
+      <dd>Accessory characteristic value</dd>
+  </dl>
+  <h3>Details</h3>
+  <p>This node allows control of a single characteristic of an homebridge accessory. The message payload needs to be a valid value for controlling a homebridge accessory.  Invalid values will ??</p>
 </script>
 
 <script type="text/javascript">
-  RED.nodes.registerType('hb-status', {
+  RED.nodes.registerType('hb-control', {
     category: 'Homebridge',
     defaults: {
       name: {},
@@ -378,13 +419,13 @@
         type: "hb-conf"
       }
     },
-    outputs: 1,
+    outputs: 0,
     inputs: 1,
     align: 'right',
     color: '#F3B567',
     icon: 'light.png',
     label: function() {
-      return this.name || "Choose accessory";
+      return this.name || "Choose accessory/characteristic";
     },
     oneditsave: function() {
       var n = $('#node-input-device option:selected').text();
