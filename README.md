@@ -118,7 +118,7 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 
 The accessory naming convention is:
 
-Accessory Name, and Accessory characteristic
+Accessory Name, Accessory Service Type and Accessory characteristic
 
 # Node-RED HAP-NodeRed Message Structure
 
