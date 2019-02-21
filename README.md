@@ -24,6 +24,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [6 - Configure 'hb event' to receive updates from your Accessories](#6---configure-hb-event-to-receive-updates-from-your-accessories)
    * [Node-RED HAP-NodeRed Message Structure](#node-red-hap-nodered-message-structure)
       * [hb-Event](#hb-event)
+      * [hb-Status](#hb-status)
       * [hb-control](#hb-control)
    * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
       * [To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-hap-nodered-debug-logs-start-node-red-like-this)
