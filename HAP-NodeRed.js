@@ -1,6 +1,7 @@
 var HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
 var debug = require('debug')('hapNodeRed');
 var register = require('./lib/register.js');
+var Queue = require('better-queue');
 
 module.exports = function(RED) {
   var evDevices = [];
@@ -12,24 +13,14 @@ module.exports = function(RED) {
     RED.nodes.createNode(this, n);
     this.username = n.username;
     this.password = this.credentials.password;
-    var registerQueue = [];
 
-    var processItems = function(x) {
-      if (x < registerQueue.length) {
-        debug("registerQueue", x, registerQueue[x]);
-        if (registerQueue[x]) {
-          _register(registerQueue[x].device, node,
-            function() {
-              processItems(x + 1);
-              var done = registerQueue[x].done;
-              delete registerQueue[x];
-              done();
-            });
-        } else {
-          debug("ERROR: registerQueue");
-        }
-      }
-    };
+    var q = new Queue(function(options, cb) {
+      // debug("registerQueue", options);
+      _register(options.device, options.node, cb);
+    }, {
+      concurrent: 1,
+      autoResume: false
+    });
 
     var options = {
       "pin": n.username,
@@ -41,6 +32,7 @@ module.exports = function(RED) {
 
     if (!homebridge) {
       homebridge = new HAPNodeJSClient(options);
+      q.pause();
       homebridge.on('Ready', function(accessories) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
@@ -50,9 +42,8 @@ module.exports = function(RED) {
         ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
 
         debug('Discovered %s ctDevices', ctDevices.length);
-        debug("registerQueue", registerQueue.length);
-
-        processItems(0);
+        debug("hbEvent Total Events", q.getStats().peak);
+        q.resume();
       });
     }
 
@@ -65,19 +56,11 @@ module.exports = function(RED) {
     };
 
     this.register = function(deviceNode, done) {
-      debug("register", deviceNode.name);
-      node.users[deviceNode.id] = deviceNode;
-      if (deviceNode.device) {
-        registerQueue.push({
-          "device": deviceNode.device,
-          "done": done
-        });
-
-        if (homebridge && evDevices.length > 0) {
-          processItems(0);
-        }
-      } else {
-        debug("No device to register", deviceNode.device);
+      // debug("Register", deviceNode.name, this);
+      node.users[deviceNode.id] = deviceNode;      
+      if (deviceNode.device && deviceNode.type === 'hb-event') {
+        debug("Register", deviceNode.name, deviceNode.type);
+        q.push({device: deviceNode.device, node: node}, done);
       }
     };
 
@@ -132,7 +115,7 @@ module.exports = function(RED) {
     this.hbDevice = n.hbDevice;
     this.name = n.name;
 
-    debug("hbEvent", JSON.stringify(n));
+    // debug("hbEvent", JSON.stringify(n));
 
     /*
     {"id":"7a703739.8abc5",
@@ -166,7 +149,7 @@ module.exports = function(RED) {
     };
 
     node.conf.register(node, function() {
-      debug("Registered", node.name);
+      debug("hbEvent Register", node.name);
       this.hbDevice = _findEndpoint(evDevices, node.device);
       if (this.hbDevice) {
         node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
@@ -476,7 +459,7 @@ module.exports = function(RED) {
   }
 
   function _register(nrDevice, node, done) {
-    debug("_register", nrDevice, evDevices.length);
+    // debug("_register", nrDevice, evDevices.length);
     var endpoint = _findEndpoint(evDevices, nrDevice);
     if (endpoint) {
       var message = {
@@ -486,13 +469,13 @@ module.exports = function(RED) {
           "ev": true
         }]
       };
-      debug("Event Register %s:%s ->", endpoint.host, endpoint.port, message);
+      debug("hbEvent Register event %s:%s ->", endpoint.host, endpoint.port, message);
       homebridge.HAPcontrol(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
         if (!err) {
-          debug("Registered Event %s:%s ->", endpoint.host, endpoint.port, status);
+          debug("hbEvent sucessful register %s:%s ->", endpoint.host, endpoint.port, status);
           done(null);
         } else {
-          debug("Error: Event Register %s:%s ->", endpoint.host, endpoint.port, err, status);
+          debug("hbEvent Error: Event Register %s:%s ->", endpoint.host, endpoint.port, err, status);
           done(err);
         }
       });
