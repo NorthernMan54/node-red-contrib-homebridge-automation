@@ -69,11 +69,11 @@ module.exports = function(RED) {
         fill: 'red'
       });
       // Should this also remove the homebridge registered event?
+      //
       debug("hbEvent deregistered:", deviceNode.name);
       if (homebridge.listenerCount(deviceNode.eventName)) {
         homebridge.removeListener(deviceNode.eventName, deviceNode.listener);
       }
-      // debug("after count", homebridge.listenerCount(deviceNode.eventName));
       done();
     };
 
