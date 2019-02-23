@@ -4,8 +4,8 @@ if npm audit; then
   npm run-script document
   npm run-script api
   rm *orig* *toc\.*
+  npm version patch -f -m "$1"
   git add .
-  npm version patch -m "$1"
   git commit -m "$1"
   git push origin master --tags
   npm publish
