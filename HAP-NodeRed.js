@@ -9,14 +9,12 @@ module.exports = function(RED) {
   var homebridge;
 
   function hbConf(n) {
-    // debug("hbConf", n);
     RED.nodes.createNode(this, n);
     this.username = n.username;
     this.password = this.credentials.password;
 
     var q = new Queue(function(options, cb) {
-      // debug("registerQueue", options);
-      _register(options.device, options.node, cb);
+      _register(options, cb);
     }, {
       concurrent: 1,
       autoResume: false
@@ -42,40 +40,40 @@ module.exports = function(RED) {
         ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
 
         debug('Discovered %s ctDevices', ctDevices.length);
-        debug("hbEvent Total Events", q.getStats().peak);
+        debug("Register Queue", q.getStats().peak);
         q.resume();
       });
     }
 
     var node = this;
 
-    // getDevices(node.username, node.password, node.id);
-
     this.connect = function(done) {
       done();
     };
 
     this.register = function(deviceNode, done) {
-      // debug("Register", deviceNode.name, this);
-      node.users[deviceNode.id] = deviceNode;      
-      if (deviceNode.device && deviceNode.type === 'hb-event') {
-        debug("Register", deviceNode.name, deviceNode.type);
-        q.push({device: deviceNode.device, node: node}, done);
-      }
+      node.users[deviceNode.id] = deviceNode;
+      debug("Register %s -> %s", deviceNode.type, deviceNode.name);
+      q.push({
+        device: deviceNode.device,
+        type: deviceNode.type,
+        name: deviceNode.name,
+        node: node
+      }, done);
     };
 
     this.deregister = function(deviceNode, done) {
-      // debug("deregister", deviceNode);
       deviceNode.status({
         text: 'disconnected',
         shape: 'ring',
         fill: 'red'
       });
-      debug("before count", homebridge.listenerCount(deviceNode.eventName));
+      // Should this also remove the homebridge registered event?
+      debug("hbEvent deregistered:", deviceNode.name);
       if (homebridge.listenerCount(deviceNode.eventName)) {
         homebridge.removeListener(deviceNode.eventName, deviceNode.listener);
       }
-      debug("after count", homebridge.listenerCount(deviceNode.eventName));
+      // debug("after count", homebridge.listenerCount(deviceNode.eventName));
       done();
     };
 
@@ -83,8 +81,6 @@ module.exports = function(RED) {
       if (node.client && node.client.connected) {
         node.client.end();
       }
-      // node.removeAllListeners();
-      // delete devices[node.id];
     });
   }
 
@@ -96,15 +92,6 @@ module.exports = function(RED) {
     }
   });
 
-  /*
-  name: 'Ceiling One light - On',
-  Homebridge: 'Raj',
-  Manufacturer: 'hampton-bay',
-  Type: 'Lightbulb',
-  Function: 'On',
-  device: 'RajCC:22:3D:E3:CF:32hampton-bayCeiling One light0000004300000025',
-  */
-
   function hbEvent(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
@@ -115,25 +102,10 @@ module.exports = function(RED) {
     this.hbDevice = n.hbDevice;
     this.name = n.name;
 
-    // debug("hbEvent", JSON.stringify(n));
-
-    /*
-    {"id":"7a703739.8abc5",
-    "type":"hb-event",
-    "z":"8cc57342.e61928",
-    "name":"Table light - On",
-    "Homebridge":"Raj-Hue",
-    "Manufacturer":"ecoplug",
-    "Type":"Outlet",
-    "Function":"On",
-    "device":"Raj-HueCC:22:3D:E3:CF:33ecoplugTable light0000004700000025",
-    "conf":"ed5aee3b.502bd8","x":180,"y":280,"wires":[["9686581c.02b84","623a0ae2.2310dc"]]}
-    */
-
     var node = this;
 
     node.command = function(event) {
-      debug("Sending event", event);
+      debug("hbEvent received event: %s ->", node.name, event);
       var msg = {
         name: node.name,
         payload: event.status,
@@ -149,7 +121,6 @@ module.exports = function(RED) {
     };
 
     node.conf.register(node, function() {
-      debug("hbEvent Register", node.name);
       this.hbDevice = _findEndpoint(evDevices, node.device);
       if (this.hbDevice) {
         node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
@@ -159,7 +130,6 @@ module.exports = function(RED) {
         node.listener = node.command;
         node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid;
         homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid, node.command);
-        debug("after reg count", homebridge.listenerCount(node.eventName));
         node.status({
           text: 'connected',
           shape: 'dot',
@@ -188,20 +158,15 @@ module.exports = function(RED) {
     this.hbDevice = n.hbDevice;
     this.name = n.name;
 
-    // debug("hbControl", n);
-
     var node = this;
 
     node.on('input', function(msg) {
       _control(this.device, node, msg.payload, function() {
-        // debug("Complete");
       });
     });
 
     node.on('close', function(done) {
-      // Emitted when closing, not needed
       done();
-      // node.conf.deregister(node, done);
     });
   }
 
@@ -216,12 +181,10 @@ module.exports = function(RED) {
     this.hbDevice = _findEndpoint(evDevices, n.device);
     this.name = n.name;
 
-    // debug("hbStatus", this.hbDevice);
-
     var node = this;
 
     node.conf.register(node, function() {
-      debug("hbStatus register", node.name);
+      debug("hbStatus Registered:", node.name);
       this.hbDevice = _findEndpoint(evDevices, node.device);
       if (this.hbDevice) {
         node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
@@ -239,7 +202,7 @@ module.exports = function(RED) {
     node.on('input', function(msg) {
       _status(this.device, node, msg.payload, function(err, message) {
         if (!err) {
-          debug("hbStatus _status: complete", node.name, message.characteristics[0].value);
+          debug("hbStatus received: %s = %s", node.name, message.characteristics[0].value);
           var msg = {
             name: node.name,
             payload: message.characteristics[0].value,
@@ -258,38 +221,16 @@ module.exports = function(RED) {
     });
 
     node.on('close', function(done) {
-      // Emitted when closing, not needed
       done();
-      // node.conf.deregister(node, done);
     });
   }
 
   RED.nodes.registerType("hb-status", hbStatus);
 
-  /* Device object
-  { host: '192.168.1.253',
-  port: 51827,
-  hbName: 'Raj-Hue',
-  id: 'CC:22:3D:E3:CF:33',
-  aid: 15,
-  manufacturer: 'ecoplug',
-  name: 'Bunkie Porch',
-  friendlyName: 'Raj-Hue Bunkie Porch Outlet On',
-  iid: 10,
-  description: 'On',
-  service: '00000047',
-  characteristic: '00000025',
-  deviceType: 'Outlet',
-  uniqueId: 'Raj-HueCC:22:3D:E3:CF:33ecoplugBunkie Porch0000004700000025' },
-  */
-
   RED.httpAdmin.post('/hap-device/refresh/:id', RED.auth.needsPermission('hb-event.read'), function(req, res) {
     var id = req.params.id;
     var conf = RED.nodes.getNode(id);
     if (conf) {
-      var username = conf.username;
-      var password = conf.credentials.password;
-      // getDevices(username, password, id);
       res.status(200).send();
     } else {
       // not deployed yet
@@ -335,16 +276,13 @@ module.exports = function(RED) {
   });
 
   function _status(nrDevice, node, value, done) {
-    debug("_status", nrDevice, ctDevices.length);
     var endpoint = _findEndpoint(ctDevices, nrDevice);
-    // debug("_status", nrDevice, ctDevices.length, endpoint);
     if (endpoint) {
       switch (endpoint.service) {
         // Nothing specialized, yet
         default:
-          // /characteristics?id=2.14,2.10
           var message = '?id=' + endpoint.aid + '.' + endpoint.iid;
-          debug("Status %s:%s ->", endpoint.host, endpoint.port, message);
+          debug("hbStatus request: %s -> %s:%s ->", node.name, endpoint.host, endpoint.port, message);
           homebridge.HAPstatus(endpoint.host, endpoint.port, message, function(err, status) {
             if (!err) {
               // debug("Status %s:%s ->", endpoint.host, endpoint.port, status);
@@ -382,11 +320,11 @@ module.exports = function(RED) {
   function _control(nrDevice, node, value, done) {
     debug("_control", nrDevice, ctDevices.length);
     var endpoint = _findEndpoint(ctDevices, nrDevice);
-    // debug("_control", nrDevice, ctDevices.length, endpoint);
     if (endpoint) {
+      var message;
       switch (endpoint.service) {
         case "00000111": // Camera
-          var message = {
+          message = {
             "resource-type": "image",
             "image-width": 1920,
             "image-height": 1080
@@ -416,7 +354,7 @@ module.exports = function(RED) {
           });
           break;
         default:
-          var message = {
+          message = {
             "characteristics": [{
               "aid": endpoint.aid,
               "iid": endpoint.iid,
@@ -458,10 +396,9 @@ module.exports = function(RED) {
     }
   }
 
-  function _register(nrDevice, node, done) {
-    // debug("_register", nrDevice, evDevices.length);
-    var endpoint = _findEndpoint(evDevices, nrDevice);
-    if (endpoint) {
+  function _register(options, done) {
+    var endpoint = _findEndpoint(evDevices, options.device);
+    if (endpoint && options.type === 'hb-event') {
       var message = {
         "characteristics": [{
           "aid": endpoint.aid,
@@ -469,10 +406,9 @@ module.exports = function(RED) {
           "ev": true
         }]
       };
-      debug("hbEvent Register event %s:%s ->", endpoint.host, endpoint.port, message);
       homebridge.HAPcontrol(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
         if (!err) {
-          debug("hbEvent sucessful register %s:%s ->", endpoint.host, endpoint.port, status);
+          debug("hbEvent registered: %s -> %s:%s", options.name, endpoint.host, endpoint.port, status);
           done(null);
         } else {
           debug("hbEvent Error: Event Register %s:%s ->", endpoint.host, endpoint.port, err, status);
@@ -480,7 +416,7 @@ module.exports = function(RED) {
         }
       });
     } else {
-      done(false);
+      done(null);
     }
   }
 };
@@ -488,50 +424,9 @@ module.exports = function(RED) {
 function _findEndpoint(devices, nrDevice) {
   var match = null;
   devices.forEach(function(device) {
-    // debug("_find", device.uniqueId, "===", nrDevice);
     if (device.uniqueId === nrDevice) {
       match = device;
     }
   });
   return match;
-}
-
-function registerEvents(message, homebridge) {
-  // debug("Register", message);
-
-  var HBMessage = [];
-
-  message.forEach(function(endpoint) {
-
-    var device = {
-      "aid": endpoint.aid,
-      "iid": endpoint.iid,
-      "ev": true
-    };
-
-    var x = {
-      "host": endpoint.host,
-      "port": endpoint.port
-    };
-
-    if (HBMessage[JSON.stringify(x)]) {
-      HBMessage[JSON.stringify(x)].characteristics.push(device);
-    } else {
-      HBMessage[JSON.stringify(x)] = {
-        "characteristics": [device]
-      };
-    }
-  })
-  for (var register in HBMessage) {
-    // console.log("send", instance, HBMessage[instance]);
-    var hbInstance = JSON.parse(register);
-    debug("Event Register %s:%s ->", hbInstance.host, hbInstance.port, HBMessage[register]);
-    homebridge.HAPcontrol(hbInstance.host, hbInstance.port, JSON.stringify(HBMessage[register]), function(err, status) {
-      if (!err) {
-        debug("Registered Event %s:%s ->", hbInstance.host, hbInstance.port, status);
-      } else {
-        debug("Error: Event Register %s:%s ->", hbInstance.host, hbInstance.port, err, status);
-      }
-    });
-  }
 }

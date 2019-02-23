@@ -39,7 +39,7 @@ This is an Alpha release of the ability to integrate Homebridge Accessories into
 
 ![Homebridge Nodes](docs/Homebridge%20Nodes.png)
 
-This create's three separate node's in Node-Red, the first node "hb event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb status" allows you to poll an accessory for status. The third node "hb control" allows you to control a homebridge accessory.  Each node is tied to an individual characteristic of an accessory (ie on/off or brightness).  Using a dimmable light bulb as an example, you would configure two nodes for it.  The first for On/Off and the second for brightness.
+Three different node types are created, the first node "hb event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb status" allows you to poll an accessory for status. The third node "hb control" allows you to control a homebridge accessory.  Each node is tied to an individual characteristic of an accessory (ie on/off or brightness).  Using a dimmable light bulb as an example, you would configure two nodes for it.  The first for On/Off and the second for brightness.
 
 ![Homebridge Nodes](docs/HAP%20Event%20Nodes.png)
 
@@ -57,14 +57,14 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 * [X] - Do I need a node that emits events for all homebridge devices?
 * [x] - Sort device drop down listing
 * [x] - Trim Node name to just accessory Name
-* [ ] - Add timestamp to Node msg object
-* [ ] - Documentation - Fix README with latest options
+* [x] - Documentation - Fix README with latest options
 * [ ] - Documentation/Naming - Normalize on Accessory, Service, Event and Characteristic
-* [ ] - Hap-Node-Client is not reentrant, and multiple requests get lost.  Needs queuing at an instance level.
+* [x] - Hap-Node-Client is not reentrant, and multiple requests get lost.  Needs queuing at an instance level.
 
 ## Dropped items
 
 * [ ] - Adjust msg.payload to match other homekit / NodeRED integrations
+* [ ] - Add timestamp to Node msg object
 
 # Installation Steps
 
