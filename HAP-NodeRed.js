@@ -276,7 +276,7 @@ module.exports = function(RED) {
   });
 
   function _status(nrDevice, node, value, done) {
-    var endpoint = _findEndpoint(ctDevices, nrDevice);
+    var endpoint = _findEndpoint(evDevices, nrDevice);
     if (endpoint) {
       switch (endpoint.service) {
         // Nothing specialized, yet
@@ -307,7 +307,7 @@ module.exports = function(RED) {
           });
       } // End of switch
     } else {
-      debug("Status Device not found", nrDevice);
+      debug("hbStatus device not found", nrDevice);
       node.status({
         text: 'error',
         shape: 'ring',
