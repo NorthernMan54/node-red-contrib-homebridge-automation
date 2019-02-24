@@ -40,7 +40,7 @@ module.exports = function(RED) {
         ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
 
         debug('Discovered %s ctDevices', ctDevices.length);
-        debug("Register Queue", q.getStats().peak);
+        // debug("Register Queue", q.getStats().peak);
         q.resume();
       });
     }
