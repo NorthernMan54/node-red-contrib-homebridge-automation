@@ -1,6 +1,6 @@
 {
   "name": "hap-nodered",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "NodeRED Automation for HomeBridge",
   "main": "index.js",
   "scripts": {
