@@ -148,6 +148,87 @@ module.exports = function(RED) {
 
   RED.nodes.registerType("hb-event", hbEvent);
 
+  function hbState(n) {
+    RED.nodes.createNode(this, n);
+    this.conf = RED.nodes.getNode(n.conf);
+    this.confId = n.conf;
+    this.device = n.device;
+    this.hapEndpoint = n.hapEndpoint;
+    this.deviceType = n.deviceType;
+    this.hbDevice = n.hbDevice;
+    this.name = n.name;
+
+    var node = this;
+
+    node.state = null;
+
+    node.on('input', function(msg) {
+      var newMsg;
+      if (!msg.payload) {
+        // false / Turn Off
+        newMsg = {
+          name: node.name,
+          Homebridge: node.hbDevice.homebridge,
+          Manufacturer: node.hbDevice.manufacturer,
+          Type: node.hbDevice.deviceType,
+          Function: node.hbDevice.function,
+          _device: node.device,
+          _confId: node.confId
+        };
+        if (node.state !== null) {
+          newMsg.payload = node.state;
+          node.state = null;
+        } else {
+          newMsg = msg;
+        }
+      } else {
+        // True / Turn on
+        newMsg = msg;
+      }
+      node.send(newMsg);
+    });
+
+    node.command = function(event) {
+      debug("hbState received event: %s ->", node.name, event);
+      node.state = event.status;
+    };
+
+    node.conf.register(node, function() {
+      this.hbDevice = _findEndpoint(evDevices, node.device);
+      if (this.hbDevice) {
+        _status(node.device, node, '', function(err, message) {
+          if (!err) {
+            debug("hbStatus received: %s = %s", node.name, message.characteristics[0].value);
+            node.state = message.characteristics[0].value;
+          } else {
+            debug("hbStatus _status: error", node.name, err);
+          }
+        });
+        node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
+        node.hbDevice = this.hbDevice;
+        node.deviceType = this.hbDevice.deviceType;
+        // Register for events
+        node.listener = node.command;
+        node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid;
+        homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid, node.command);
+        node.status({
+          text: 'connected',
+          shape: 'dot',
+          fill: 'green'
+        });
+      } else {
+        node.error("Can't find device " + node.device, null);
+        debug("Missing device", node.device);
+      }
+    });
+
+    node.on('close', function(done) {
+      node.conf.deregister(node, done);
+    });
+  }
+
+  RED.nodes.registerType("hb-state", hbState);
+
   function hbControl(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf); // The configuration node
@@ -161,8 +242,7 @@ module.exports = function(RED) {
     var node = this;
 
     node.on('input', function(msg) {
-      _control(this.device, node, msg.payload, function() {
-      });
+      _control(this.device, node, msg.payload, function() {});
     });
 
     node.on('close', function(done) {
@@ -249,6 +329,36 @@ module.exports = function(RED) {
   });
 
   RED.httpAdmin.get('/hap-device/evDevices/:id', RED.auth.needsPermission('hb-event.read'), function(req, res) {
+    debug("evDevices", evDevices.length);
+    if (evDevices) {
+      res.send(evDevices);
+    } else {
+      res.status(404).send();
+    }
+  });
+
+  RED.httpAdmin.post('/hap-device/refresh/:id', RED.auth.needsPermission('hb-state.read'), function(req, res) {
+    var id = req.params.id;
+    var conf = RED.nodes.getNode(id);
+    if (conf) {
+      res.status(200).send();
+    } else {
+      // not deployed yet
+      console.log("Can't refresh until deployed");
+      res.status(404).send();
+    }
+  });
+
+  RED.httpAdmin.get('/hap-device/evDevices/', RED.auth.needsPermission('hb-state.read'), function(req, res) {
+    debug("evDevices", evDevices.length);
+    if (evDevices) {
+      res.send(evDevices);
+    } else {
+      res.status(404).send();
+    }
+  });
+
+  RED.httpAdmin.get('/hap-device/evDevices/:id', RED.auth.needsPermission('hb-state.read'), function(req, res) {
     debug("evDevices", evDevices.length);
     if (evDevices) {
       res.send(evDevices);
@@ -398,7 +508,7 @@ module.exports = function(RED) {
 
   function _register(options, done) {
     var endpoint = _findEndpoint(evDevices, options.device);
-    if (endpoint && options.type === 'hb-event') {
+    if (endpoint && (options.type === 'hb-event' || options.type === 'hb-state')) {
       var message = {
         "characteristics": [{
           "aid": endpoint.aid,

@@ -206,6 +206,164 @@
   });
 </script>
 
+<script type="text/x-red" data-template-name="hb-state">
+  <div class="form-row">
+		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
+		<input type="text" id="node-input-conf">
+	</div>
+	<div class="form-row">
+		<label for="node-input-device"><i class="icon-tag"></i> Device</label>
+		<select id="node-input-device">
+
+		</select>
+        <a id="node-input-device-refresh" class="btn"><i class="fa fa-refresh"></i></a>
+	</div>
+
+    <input type="hidden" id="node-input-name">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="hb-state">
+  <p>Event emitter node for Homebridge accessories.</p>
+  <p>This node represents a homebridge accessory/event and emits messages when the accessory state changes.</p>
+
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+      <dt>name<span class="property-type">string</span></dt>
+      <dd>Homebridge accessory name and function </dd>
+      <dt>payload<span class="property-type">various</span></dt>
+      <dd>Accessory characteristic status</dd>
+      <dt>Homebridge<span class="property-type">string</span></dt>
+      <dd>Homebridge bridge name from config.json </dd>
+      <dt>Manufacturer<span class="property-type">string</span></dt>
+      <dd>Plugin Manufacturer</dd>
+      <dt>Type<span class="property-type">string</span></dt>
+      <dd>Accessory service type</dd>
+      <dt>Function<span class="property-type">string</span></dt>
+      <dd>Accessory characteristic/event</dd>
+      <dt>_device<span class="property-type">string</span></dt>
+      <dd>Internal device identifier</dd>
+      <dt>_rawEvent<span class="property-type">string</span></dt>
+      <dd>Event as received from homebridge</dd>
+  </dl>
+<h3>Details</h3>
+<p>Each Homebridge Event node, will emit a message containing the updated status of a single characteristic that has changed.</p>
+<p>For accessories with mulitple characteristics, a Homebridge Event node will need to be created for each characteristic you are interested in.</p>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('hb-state', {
+    category: 'Homebridge',
+    defaults: {
+      name: {},
+      Homebridge: {
+        value: ""
+      },
+      Manufacturer: {
+        value: ""
+      },
+      Type: {
+        value: ""
+      },
+      Function: {
+        value: ""
+      },
+      device: {
+        value: ""
+      },
+      conf: {
+        value: "",
+        type: "hb-conf"
+      }
+    },
+    outputs: 1,
+    inputs: 1,
+    color: '#F3B567',
+    icon: 'serial.png',
+    label: function() {
+      return this.name || "Choose accessory/event";
+    },
+    oneditsave: function() {
+      var n = $('#node-input-device option:selected').text();
+      // console.log("selected name ", $('#node-input-device option:selected'));
+
+      this.sname = $('#node-input-device option:selected').attr('name').toString();
+      this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
+      this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
+      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
+      this.Function = $('#node-input-device option:selected').attr('function').toString();
+      $('#node-input-name').val(this.sname + " - " + this.Function);
+    },
+    oneditprepare: function() {
+      var node = this;
+      //console.log("foo " + node.device);
+      if (typeof node.acknoledge === 'undefined') {
+        console.log("ben");
+        $('#node-input-acknoledge').prop('checked', true);
+      }
+      $('#node-input-device').change(function() {
+        $('#node-input-name').val($('#node-input-device option:selected').text());
+      });
+      var getDevs = function(account) {
+        $.getJSON('hap-device/evDevices/' + account, function(data) {
+          $('#node-input-device').find('option').remove().end();
+          for (d in data) {
+            $('<option/>', {
+              value: data[d].uniqueId,
+              fullName: data[d].fullName,
+              name: data[d].name,
+              text: data[d].fullName,
+              homebridge: data[d].homebridge,
+              manufacturer: data[d].manufacturer,
+              deviceType: data[d].deviceType,
+              function: data[d].function
+            }).appendTo('#node-input-device');
+          }
+          if (node.device) {
+            $('#node-input-device').val(node.device);
+          }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+          console.log("problem getting evDevices");
+          console.log(textStatus);
+        });
+
+      }
+      if (node.conf) {
+        var account = $('#node-input-conf').val();
+        //console.log("account: ", account);
+        if (account != '_ADD_') {
+          getDevs(account);
+        }
+      }
+      $('#node-input-conf').change(function() {
+        var account = $('#node-input-conf').val();
+        //console.log("account changed: ", account);
+        if (account != '_ADD_') {
+          getDevs(account);
+        } else {
+          //console.log("new account");
+          $('#node-input-device').find('option').remove().end();
+          $('#node-input-device').val("");
+        }
+      });
+      $('#node-input-device-refresh').click(function() {
+        $('#node-input-device-refresh').addClass('disabled');
+        var account = $('#node-input-conf').val();
+        $.ajax({
+          url: 'hap-device/refresh/' + account,
+          type: 'POST'
+        }).done(function(data) {
+          setTimeout(function() {
+            getDevs(account);
+            $('#node-input-device-refresh').removeClass('disabled');
+          }, 3000);
+        });
+      });
+    }
+  });
+</script>
+
 // Start of HAP Status
 
 <script type="text/x-red" data-template-name="hb-status">
@@ -280,7 +438,7 @@
     inputs: 1,
     align: 'left',
     color: '#F3B567',
-    icon: 'inject.png',
+    icon: 'link-out.png',
     label: function() {
       return this.name || "Choose accessory/characteristic";
     },
