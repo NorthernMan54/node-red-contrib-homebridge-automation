@@ -225,8 +225,9 @@
 
 
 <script type="text/x-red" data-help-name="hb-state">
-  <p>Event emitter node for Homebridge accessories.</p>
-  <p>This node represents a homebridge accessory/event and emits messages when the accessory state changes.</p>
+  <p>Statefull message passthru node.</p>
+  <p>This node allows the creation of a state resume flow.  When a true/On message is input, it is passed directly to the output.  When the first false/Off message is received, the output is the accessories On state from prior to the most recent true/On.  If a second false/off is received it is passed directly to output.</p>
+
 
   <h3>Outputs</h3>
   <dl class="message-properties">
@@ -247,9 +248,8 @@
       <dt>_rawEvent<span class="property-type">string</span></dt>
       <dd>Event as received from homebridge</dd>
   </dl>
-<h3>Details</h3>
-<p>Each Homebridge Event node, will emit a message containing the updated status of a single characteristic that has changed.</p>
-<p>For accessories with mulitple characteristics, a Homebridge Event node will need to be created for each characteristic you are interested in.</p>
+<h3>Where and why would you use this node?</h3>
+<p>I'm using this with a group of lights in a room, where I have either an automation to turn on all the lights for a short period of time ( ie arrive home turning on the lights around the door) or an Amazon Alexa.  And what it does is restore all the lights in the group to the state they where in, prior to being turned on.  So if you have a light on in a room, and you ask Alexa to turn on all the lights, then a few minutes later you can then ask her to turn them off, she will turn them all off except the one that was on previously.  If you ask her to turn off all the lights a second time, she will then turn them all off.</p>
 </script>
 
 <script type="text/javascript">

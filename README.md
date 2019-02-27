@@ -24,6 +24,9 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [6 - Configure 'hb event' to receive updates from your Accessories](#6---configure-hb-event-to-receive-updates-from-your-accessories)
    * [Node-RED HAP-NodeRed Message Structure](#node-red-hap-nodered-message-structure)
       * [hb-Event](#hb-event)
+      * [hb-state](#hb-state)
+         * [input](#input)
+         * [output](#output)
       * [hb-Status](#hb-status)
       * [hb-control](#hb-control)
    * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
@@ -39,7 +42,7 @@ This is an Alpha release of the ability to integrate Homebridge Accessories into
 
 ![Homebridge Nodes](docs/Homebridge%20Nodes.png)
 
-Three different node types are created, the first node "hb event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb status" allows you to poll an accessory for status. The third node "hb control" allows you to control a homebridge accessory.  Each node is tied to an individual characteristic of an accessory (ie on/off or brightness).  Using a dimmable light bulb as an example, you would configure two nodes for it.  The first for On/Off and the second for brightness.
+Four different node types are created, the first node "hb event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb state" holds the state of an accessory and supports creating a state restore function. The third node "hb status" allows you to poll an accessory for status. The forth node "hb control" allows you to control a homebridge accessory.  Each node is tied to an individual characteristic of an accessory (ie on/off or brightness).  Using a dimmable light bulb as an example, you would configure two nodes for it.  The first for On/Off and the second for brightness.
 
 ![Homebridge Nodes](docs/HAP%20Event%20Nodes.png)
 
@@ -60,6 +63,8 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 * [x] - Documentation - Fix README with latest options
 * [ ] - Documentation/Naming - Normalize on Accessory, Service, Event and Characteristic
 * [x] - Hap-Node-Client is not reentrant, and multiple requests get lost.  Needs queuing at an instance level.
+* [ ] - Refactor interface with Hap-Node-Client, and split events into a dedicated evented socket connection and use the regular request module for everything else.
+* [ ] - Create an accessory based node approach
 
 ## Dropped items
 
@@ -136,6 +141,28 @@ msg = {
   Function: node.hbDevice.function,
   _confId: node.confId,
   _rawEvent: event
+};
+```
+
+## hb-state
+
+### input
+
+Based on the message input payload and state of the accessory the output changes.
+
+For true, the node just passes the message to output.  For the first false, the output is the state of the accessory from prior to the last turn on.  For the second false, the out is false.
+
+```
+msg = {
+  payload: true or false
+};
+```
+
+### output
+
+```
+msg = {
+  payload: true or false
 };
 ```
 
