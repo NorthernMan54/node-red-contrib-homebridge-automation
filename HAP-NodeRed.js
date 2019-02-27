@@ -157,10 +157,23 @@ module.exports = function(RED) {
     this.deviceType = n.deviceType;
     this.hbDevice = n.hbDevice;
     this.name = n.name;
-
     var node = this;
 
     node.state = null;
+
+    // State operating model
+    // - Store msg into node.lastpayload
+    // - Store device state into node.state on events
+    //
+    // Turn on message just passes thru
+    // - if msg = on
+    //
+    // First turn off message restores state from Turn on
+    // - if msg = off and node.lastpayload === on
+    //
+    // Second turn off message just passes thru
+    // - if msg = off and node.lastpayload === off
+    // - Update stored device state to off
 
     node.on('input', function(msg) {
       var newMsg;
@@ -175,10 +188,12 @@ module.exports = function(RED) {
           _device: node.device,
           _confId: node.confId
         };
-        if (node.state !== null) {
+        if (node.lastpayload) {
+          // last msg was on, restore previous state
           newMsg.payload = node.state;
-          node.state = null;
         } else {
+          // last msg was off, pass thru
+          node.state = msg.payload;
           newMsg = msg;
         }
       } else {
@@ -186,6 +201,7 @@ module.exports = function(RED) {
         newMsg = msg;
       }
       node.send(newMsg);
+      node.lastpayload = msg.payload;
     });
 
     node.command = function(event) {
