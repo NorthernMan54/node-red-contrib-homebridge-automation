@@ -1,6 +1,7 @@
 var HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
 var debug = require('debug')('hapNodeRed');
 var register = require('./lib/register.js');
+var Homebridges = require('./lib/Homebridges.js').Homebridges;
 var Queue = require('better-queue');
 
 module.exports = function(RED) {
@@ -34,12 +35,17 @@ module.exports = function(RED) {
       homebridge.on('Ready', function(accessories) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
+        var hbDevices = new Homebridges(accessories);
+        // debug("output", hbDevices.toList('ev'));
+        // debug("evDevices", evDevices);
         debug('Discovered %s evDevices', evDevices.length);
+        debug('Discovered %s new evDevices', hbDevices.toList('ev').length);
 
         evDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
         ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
 
         debug('Discovered %s ctDevices', ctDevices.length);
+        debug('Discovered %s new ctDevices', hbDevices.toList('pw').length);
         // debug("Register Queue", q.getStats().peak);
         q.resume();
       });
