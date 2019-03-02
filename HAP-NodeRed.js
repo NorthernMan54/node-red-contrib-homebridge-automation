@@ -36,16 +36,16 @@ module.exports = function(RED) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
         var hbDevices = new Homebridges(accessories);
-        // debug("output", hbDevices.toList('ev'));
+        // debug("output", JSON.stringify(hbDevices.toList('ev'), null, 4));
         // debug("evDevices", evDevices);
         debug('Discovered %s evDevices', evDevices.length);
-        debug('Discovered %s new evDevices', hbDevices.toList('ev').length);
+        // debug('Discovered %s new evDevices', hbDevices.toList('ev').length);
 
         evDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
         ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
 
         debug('Discovered %s ctDevices', ctDevices.length);
-        debug('Discovered %s new ctDevices', hbDevices.toList('pw').length);
+        // debug('Discovered %s new ctDevices', hbDevices.toList('pw').length);
         // debug("Register Queue", q.getStats().peak);
         q.resume();
       });

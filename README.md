@@ -64,7 +64,7 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 * [ ] - Documentation/Naming - Normalize on Accessory, Service, Event and Characteristic
 * [x] - Hap-Node-Client is not reentrant, and multiple requests get lost.  Needs queuing at an instance level.
 * [ ] - Refactor interface with Hap-Node-Client, and split events into a dedicated evented socket connection and use the regular request module for everything else.
-* [ ] - Create an accessory based node approach
+* [ ] - Create a service/characteristic based node approach mimicing homekit icons
 
 ## Dropped items
 
