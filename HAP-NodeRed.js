@@ -538,7 +538,7 @@ module.exports = function(RED) {
           "ev": true
         }]
       };
-      homebridge.HAPcontrol(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
+      homebridge.HAPevent(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
         if (!err) {
           debug("hbEvent registered: %s -> %s:%s", options.name, endpoint.host, endpoint.port, status);
           done(null);
