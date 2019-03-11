@@ -21,12 +21,14 @@ module.exports = function(RED) {
     this.username = n.username;
     this.password = this.credentials.password;
 
-    var q = new Queue(function(options, cb) {
+    var reqisterQueue = new Queue(function(options, cb) {
+      debug("deQueue", options.type, options.name);
       _register(options, cb);
     }, {
       concurrent: 1,
       autoResume: false
     });
+    reqisterQueue.pause();
 
     var options = {
       "pin": n.username,
@@ -38,7 +40,7 @@ module.exports = function(RED) {
 
     if (!homebridge) {
       homebridge = new HAPNodeJSClient(options);
-      q.pause();
+      // reqisterQueue.pause();
       homebridge.on('Ready', function(accessories) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
@@ -53,8 +55,8 @@ module.exports = function(RED) {
 
         debug('Discovered %s ctDevices', ctDevices.length);
         // debug('Discovered %s new ctDevices', hbDevices.toList('pw').length);
-        // debug("Register Queue", q.getStats().peak);
-        q.resume();
+        debug("Register Queue", reqisterQueue.getStats());
+        reqisterQueue.resume();
       });
     }
 
@@ -65,14 +67,16 @@ module.exports = function(RED) {
     };
 
     this.register = function(deviceNode, done) {
+      debug("hapConf.register", deviceNode.name);
       node.users[deviceNode.id] = deviceNode;
       debug("Register %s -> %s", deviceNode.type, deviceNode.name);
-      q.push({
+      debug("Ticket", reqisterQueue.push({
         device: deviceNode.device,
         type: deviceNode.type,
         name: deviceNode.name,
         node: node
-      }, done);
+      }, done));
+      debug("Register Queue - push", reqisterQueue.getStats());
     };
 
     this.deregister = function(deviceNode, done) {
@@ -141,6 +145,7 @@ module.exports = function(RED) {
     };
 
     node.conf.register(node, function() {
+      debug("hbEvent.register", node.name);
       this.hbDevice = _findEndpoint(evDevices, node.device);
       if (this.hbDevice) {
         node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
