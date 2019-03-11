@@ -239,8 +239,13 @@ module.exports = function(RED) {
       debug("hbState received event: %s ->", node.name, event);
       // debug("hbState - internals %s millis, old %s, event %s, previous %s", Date.now() - node.lastMessageTime, node.lastMessageValue, event.status, node.state);
       // Don't update for events originating from here
-      if ((Date.now() - node.lastMessageTime) < 5000 && node.lastMessageValue !== event.status) {
-        // debug("hbState - updating stored event", event.status);
+      // if Elapsed is greater than 5 seconds, update stored state
+      // if Elapsed is less then 5, and lastMessage doesn't match event update stored state
+      if ((Date.now() - node.lastMessageTime) > 5000) {
+        // debug("hbState - updating stored event >5", event.status);
+        node.state = event.status;
+      } else if (node.lastMessageValue !== event.status) {
+        // debug("hbState - updating stored event !=", event.status);
         node.state = event.status;
       }
     };
