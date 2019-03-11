@@ -1,13 +1,20 @@
-var HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
 var debug = require('debug')('hapNodeRed');
+var Queue = require('better-queue');
 var register = require('./lib/register.js');
 var Homebridges = require('./lib/Homebridges.js').Homebridges;
-var Queue = require('better-queue');
+var HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
 
 module.exports = function(RED) {
   var evDevices = [];
   var ctDevices = [];
   var homebridge;
+
+  /**
+   * hbConf - Configuration
+   *
+   * @param  {type} n description
+   * @return {type}   description
+   */
 
   function hbConf(n) {
     RED.nodes.createNode(this, n);
@@ -35,7 +42,7 @@ module.exports = function(RED) {
       homebridge.on('Ready', function(accessories) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
-        var hbDevices = new Homebridges(accessories);
+        // var hbDevices = new Homebridges(accessories);
         // debug("output", JSON.stringify(hbDevices.toList('ev'), null, 4));
         // debug("evDevices", evDevices);
         debug('Discovered %s evDevices', evDevices.length);
@@ -98,6 +105,13 @@ module.exports = function(RED) {
     }
   });
 
+  /**
+   * hbEvent - Node that listens to HomeKit Events, and sends message into NodeRED
+   *
+   * @param  {type} n description
+   * @return {type}   description
+   */
+
   function hbEvent(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
@@ -154,6 +168,27 @@ module.exports = function(RED) {
 
   RED.nodes.registerType("hb-event", hbEvent);
 
+  /**
+   * hbState - description
+   *
+   * State operating model
+   * - Store msg into node.lastpayload
+   * - Store device state into node.state on events
+   *
+   * Turn on message just passes thru
+   * - if msg = on
+   *
+   * First turn off message restores state from Turn on
+   * - if msg = off and node.lastpayload === on
+   *
+   * Second turn off message just passes thru
+   * - if msg = off and node.lastpayload === off
+   * - Update stored device state to off
+   *
+   * @param  {type} n description
+   * @return {type}   description
+   */
+
   function hbState(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
@@ -166,20 +201,8 @@ module.exports = function(RED) {
     var node = this;
 
     node.state = null;
-
-    // State operating model
-    // - Store msg into node.lastpayload
-    // - Store device state into node.state on events
-    //
-    // Turn on message just passes thru
-    // - if msg = on
-    //
-    // First turn off message restores state from Turn on
-    // - if msg = off and node.lastpayload === on
-    //
-    // Second turn off message just passes thru
-    // - if msg = off and node.lastpayload === off
-    // - Update stored device state to off
+    node.lastMessageTime = null;
+    node.lastMessageValue = null;
 
     node.on('input', function(msg) {
       var newMsg;
@@ -207,12 +230,19 @@ module.exports = function(RED) {
         newMsg = msg;
       }
       node.send(newMsg);
+      node.lastMessageValue = newMsg.payload;
+      node.lastMessageTime = Date.now();
       node.lastpayload = msg.payload;
     });
 
     node.command = function(event) {
       debug("hbState received event: %s ->", node.name, event);
-      node.state = event.status;
+      // debug("hbState - internals %s millis, old %s, event %s, previous %s", Date.now() - node.lastMessageTime, node.lastMessageValue, event.status, node.state);
+      // Don't update for events originating from here
+      if ((Date.now() - node.lastMessageTime) < 5000 && node.lastMessageValue !== event.status) {
+        // debug("hbState - updating stored event", event.status);
+        node.state = event.status;
+      }
     };
 
     node.conf.register(node, function() {
@@ -251,6 +281,13 @@ module.exports = function(RED) {
 
   RED.nodes.registerType("hb-state", hbState);
 
+  /**
+   * hbControl - description
+   *
+   * @param  {type} n description
+   * @return {type}   description
+   */
+
   function hbControl(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf); // The configuration node
@@ -273,6 +310,13 @@ module.exports = function(RED) {
   }
 
   RED.nodes.registerType("hb-control", hbControl);
+
+  /**
+   * hbStatus - description
+   *
+   * @param  {type} n description
+   * @return {type}   description
+   */
 
   function hbStatus(n) {
     RED.nodes.createNode(this, n);
@@ -407,6 +451,16 @@ module.exports = function(RED) {
     }
   });
 
+  /**
+   * _status - description
+   *
+   * @param  {type} nrDevice description
+   * @param  {type} node     description
+   * @param  {type} value    description
+   * @param  {type} done     description
+   * @return {type}          description
+   */
+
   function _status(nrDevice, node, value, done) {
     var endpoint = _findEndpoint(evDevices, nrDevice);
     if (endpoint) {
@@ -448,6 +502,16 @@ module.exports = function(RED) {
       done();
     }
   }
+
+  /**
+   * _control - description
+   *
+   * @param  {type} nrDevice description
+   * @param  {type} node     description
+   * @param  {type} value    description
+   * @param  {type} done     description
+   * @return {type}          description
+   */
 
   function _control(nrDevice, node, value, done) {
     debug("_control", nrDevice, ctDevices.length);
@@ -528,6 +592,14 @@ module.exports = function(RED) {
     }
   }
 
+  /**
+   * _register - description
+   *
+   * @param  {type} options description
+   * @param  {type} done    description
+   * @return {type}         description
+   */
+
   function _register(options, done) {
     var endpoint = _findEndpoint(evDevices, options.device);
     if (endpoint && (options.type === 'hb-event' || options.type === 'hb-state')) {
@@ -552,6 +624,14 @@ module.exports = function(RED) {
     }
   }
 };
+
+/**
+ * _findEndpoint - description
+ *
+ * @param  {type} devices  description
+ * @param  {type} nrDevice description
+ * @return {type}          description
+ */
 
 function _findEndpoint(devices, nrDevice) {
   var match = null;
