@@ -8,6 +8,14 @@ module.exports = function(RED) {
   var evDevices = [];
   var ctDevices = [];
   var homebridge;
+  var reqisterQueue = new Queue(function(options, cb) {
+    // debug("deQueue", options.type, options.name);
+    _register(options, cb);
+  }, {
+    concurrent: 1,
+    autoResume: false
+  });
+  reqisterQueue.pause();
 
   /**
    * hbConf - Configuration
@@ -21,15 +29,6 @@ module.exports = function(RED) {
     this.username = n.username;
     this.password = this.credentials.password;
 
-    var reqisterQueue = new Queue(function(options, cb) {
-      debug("deQueue", options.type, options.name);
-      _register(options, cb);
-    }, {
-      concurrent: 1,
-      autoResume: false
-    });
-    reqisterQueue.pause();
-
     var options = {
       "pin": n.username,
       "refresh": 900,
@@ -40,7 +39,7 @@ module.exports = function(RED) {
 
     if (!homebridge) {
       homebridge = new HAPNodeJSClient(options);
-      // reqisterQueue.pause();
+      reqisterQueue.pause();
       homebridge.on('Ready', function(accessories) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
@@ -55,7 +54,7 @@ module.exports = function(RED) {
 
         debug('Discovered %s ctDevices', ctDevices.length);
         // debug('Discovered %s new ctDevices', hbDevices.toList('pw').length);
-        debug("Register Queue", reqisterQueue.getStats());
+        // debug("Register Queue", reqisterQueue.getStats());
         reqisterQueue.resume();
       });
     }
@@ -67,16 +66,16 @@ module.exports = function(RED) {
     };
 
     this.register = function(deviceNode, done) {
-      debug("hapConf.register", deviceNode.name);
+      // debug("hapConf.register", deviceNode.name);
       node.users[deviceNode.id] = deviceNode;
       debug("Register %s -> %s", deviceNode.type, deviceNode.name);
-      debug("Ticket", reqisterQueue.push({
+      reqisterQueue.push({
         device: deviceNode.device,
         type: deviceNode.type,
         name: deviceNode.name,
         node: node
-      }, done));
-      debug("Register Queue - push", reqisterQueue.getStats());
+      }, done);
+      // debug("Register Queue - push", reqisterQueue.getStats());
     };
 
     this.deregister = function(deviceNode, done) {
@@ -87,7 +86,7 @@ module.exports = function(RED) {
       });
       // Should this also remove the homebridge registered event?
       //
-      debug("hbEvent deregistered:", deviceNode.name);
+      // debug("hbEvent deregistered:", deviceNode.name);
       if (homebridge.listenerCount(deviceNode.eventName)) {
         homebridge.removeListener(deviceNode.eventName, deviceNode.listener);
       }
@@ -145,7 +144,7 @@ module.exports = function(RED) {
     };
 
     node.conf.register(node, function() {
-      debug("hbEvent.register", node.name);
+      // debug("hbEvent.register", node.name);
       this.hbDevice = _findEndpoint(evDevices, node.device);
       if (this.hbDevice) {
         node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
@@ -177,17 +176,17 @@ module.exports = function(RED) {
    * hbState - description
    *
    * State operating model
-   * - Store msg into node.lastpayload
+   * - Store msg into node.lastPayload
    * - Store device state into node.state on events
    *
    * Turn on message just passes thru
    * - if msg = on
    *
    * First turn off message restores state from Turn on
-   * - if msg = off and node.lastpayload === on
+   * - if msg = off and node.lastPayload === on
    *
    * Second turn off message just passes thru
-   * - if msg = off and node.lastpayload === off
+   * - if msg = off and node.lastPayload === off
    * - Update stored device state to off
    *
    * @param  {type} n description
@@ -213,17 +212,20 @@ module.exports = function(RED) {
       var newMsg;
       if (!msg.payload) {
         // false / Turn Off
-        newMsg = {
-          name: node.name,
-          Homebridge: node.hbDevice.homebridge,
-          Manufacturer: node.hbDevice.manufacturer,
-          Type: node.hbDevice.deviceType,
-          Function: node.hbDevice.function,
-          _device: node.device,
-          _confId: node.confId
-        };
-        if (node.lastpayload) {
+        // debug("hbState-Node", node);
+        if (node.lastPayload) {
           // last msg was on, restore previous state
+          newMsg = {
+            name: node.name,
+            _device: node.device,
+            _confId: node.confId
+          };
+          if (node.hbDevice) {
+            newMsg.Homebridge = node.hbDevice.homebridge;
+            newMsg.Manufacturer = node.hbDevice.manufacturer;
+            newMsg.Type = node.hbDevice.deviceType;
+            newMsg.Function = node.hbDevice.function;
+          }
           newMsg.payload = node.state;
         } else {
           // last msg was off, pass thru
@@ -237,7 +239,7 @@ module.exports = function(RED) {
       node.send(newMsg);
       node.lastMessageValue = newMsg.payload;
       node.lastMessageTime = Date.now();
-      node.lastpayload = msg.payload;
+      node.lastPayload = msg.payload;
     });
 
     node.command = function(event) {

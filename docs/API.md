@@ -47,7 +47,7 @@ hbState - description
 
 State operating model
 
--   Store msg into node.lastpayload
+-   Store msg into node.lastPayload
 -   Store device state into node.state on events
 
 Turn on message just passes thru
@@ -56,11 +56,11 @@ Turn on message just passes thru
 
 First turn off message restores state from Turn on
 
--   if msg = off and node.lastpayload === on
+-   if msg = off and node.lastPayload === on
 
 Second turn off message just passes thru
 
--   if msg = off and node.lastpayload === off
+-   if msg = off and node.lastPayload === off
 -   Update stored device state to off
 
 ### Parameters
