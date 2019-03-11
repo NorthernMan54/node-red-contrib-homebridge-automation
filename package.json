@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "debug": ">2.6.9",
-    "hap-node-client": ">=0.0.17",
+    "hap-node-client": ">=0.0.18",
     "better-queue": ">=3.8.10"
   },
   "author": "NorthernMan54",
