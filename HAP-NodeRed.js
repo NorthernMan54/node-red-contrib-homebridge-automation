@@ -29,25 +29,24 @@ module.exports = function(RED) {
     this.username = n.username;
     this.password = this.credentials.password;
 
-    var options = {
-      "pin": n.username,
-      "refresh": 900,
-      "debug": true
-    };
-
     this.users = {};
 
     if (!homebridge) {
-      homebridge = new HAPNodeJSClient(options);
+      homebridge = new HAPNodeJSClient({
+        "pin": n.username,
+        "refresh": 900,
+        "debug": true,
+        "timeout": 5
+      });
       reqisterQueue.pause();
       homebridge.on('Ready', function(accessories) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
-        // var hbDevices = new Homebridges(accessories);
-        // debug("output", JSON.stringify(hbDevices.toList('ev'), null, 4));
+        var hbDevices = new Homebridges(accessories);
+        debug("output", JSON.stringify(hbDevices.toList('ev'), null, 4));
         // debug("evDevices", evDevices);
         debug('Discovered %s evDevices', evDevices.length);
-        // debug('Discovered %s new evDevices', hbDevices.toList('ev').length);
+        debug('Discovered %s new evDevices', hbDevices.toList('ev').length);
 
         evDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
         ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
