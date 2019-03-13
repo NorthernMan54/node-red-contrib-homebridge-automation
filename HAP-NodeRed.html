@@ -68,7 +68,7 @@
 
 <script type="text/x-red" data-help-name="hb-event">
   <p>Event emitter node for Homebridge accessories.</p>
-  <p>This node represents a homebridge accessory/event and emits messages when the accessory state changes.</p>
+  <p>This node represents a homebridge accessory/service and emits messages when the accessory state changes.</p>
 
   <h3>Outputs</h3>
   <dl class="message-properties">
@@ -108,9 +108,6 @@
       Type: {
         value: ""
       },
-      Function: {
-        value: ""
-      },
       device: {
         value: ""
       },
@@ -124,24 +121,22 @@
     color: '#F3B567',
     icon: 'inject.png',
     label: function() {
-      return this.name || "Choose accessory/event";
+      return this.name || "Choose accessory/service";
     },
     oneditsave: function() {
       var n = $('#node-input-device option:selected').text();
       // console.log("selected name ", $('#node-input-device option:selected'));
 
-      this.sname = $('#node-input-device option:selected').attr('name').toString();
+      this.name = $('#node-input-device option:selected').attr('name').toString();
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
       this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
-      this.Function = $('#node-input-device option:selected').attr('function').toString();
-      $('#node-input-name').val(this.sname + " - " + this.Function);
+      $('#node-input-name').val(this.name);
     },
     oneditprepare: function() {
       var node = this;
       //console.log("foo " + node.device);
       if (typeof node.acknoledge === 'undefined') {
-        console.log("ben");
         $('#node-input-acknoledge').prop('checked', true);
       }
       $('#node-input-device').change(function() {
@@ -153,13 +148,11 @@
           for (d in data) {
             $('<option/>', {
               value: data[d].uniqueId,
-              fullName: data[d].fullName,
               name: data[d].name,
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              deviceType: data[d].deviceType,
-              function: data[d].function
+              deviceType: data[d].deviceType
             }).appendTo('#node-input-device');
           }
           if (node.device) {

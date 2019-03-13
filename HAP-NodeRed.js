@@ -7,6 +7,7 @@ var HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
 module.exports = function(RED) {
   var evDevices = [];
   var ctDevices = [];
+  var hbDevices;
   var homebridge;
   var reqisterQueue = new Queue(function(options, cb) {
     // debug("deQueue", options.type, options.name);
@@ -42,7 +43,7 @@ module.exports = function(RED) {
       homebridge.on('Ready', function(accessories) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
-        var hbDevices = new Homebridges(accessories);
+        hbDevices = new Homebridges(accessories);
         debug("output", JSON.stringify(hbDevices.toList('ev'), null, 4));
         // debug("evDevices", evDevices);
         debug('Discovered %s evDevices', evDevices.length);
@@ -65,7 +66,7 @@ module.exports = function(RED) {
     };
 
     this.register = function(deviceNode, done) {
-      // debug("hapConf.register", deviceNode.name);
+      debug("hbConf.register", deviceNode.name);
       node.users[deviceNode.id] = deviceNode;
       debug("Register %s -> %s", deviceNode.type, deviceNode.name);
       reqisterQueue.push({
@@ -115,6 +116,7 @@ module.exports = function(RED) {
    */
 
   function hbEvent(n) {
+    debug("hbEvent", n.name);
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
     this.confId = n.conf;
@@ -134,7 +136,6 @@ module.exports = function(RED) {
         Homebridge: node.hbDevice.homebridge,
         Manufacturer: node.hbDevice.manufacturer,
         Type: node.hbDevice.deviceType,
-        Function: node.hbDevice.function,
         _device: node.device,
         _confId: node.confId,
         _rawEvent: event
@@ -143,7 +144,7 @@ module.exports = function(RED) {
     };
 
     node.conf.register(node, function() {
-      // debug("hbEvent.register", node.name);
+      debug("hbEvent.register", node.name);
       this.hbDevice = _findEndpoint(evDevices, node.device);
       if (this.hbDevice) {
         node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
@@ -397,18 +398,18 @@ module.exports = function(RED) {
   });
 
   RED.httpAdmin.get('/hap-device/evDevices/', RED.auth.needsPermission('hb-event.read'), function(req, res) {
-    debug("evDevices", evDevices.length);
+    debug("evDevices", hbDevices.toList('ev').length);
     if (evDevices) {
-      res.send(evDevices);
+      res.send(hbDevices.toList('ev'));
     } else {
       res.status(404).send();
     }
   });
 
   RED.httpAdmin.get('/hap-device/evDevices/:id', RED.auth.needsPermission('hb-event.read'), function(req, res) {
-    debug("evDevices", evDevices.length);
+    debug("evDevices", hbDevices.toList('ev').length);
     if (evDevices) {
-      res.send(evDevices);
+      res.send(hbDevices.toList('ev'));
     } else {
       res.status(404).send();
     }
@@ -427,18 +428,18 @@ module.exports = function(RED) {
   });
 
   RED.httpAdmin.get('/hap-device/evDevices/', RED.auth.needsPermission('hb-state.read'), function(req, res) {
-    debug("evDevices", evDevices.length);
+    debug("evDevices", hbDevices.toList('ev').length);
     if (evDevices) {
-      res.send(evDevices);
+      res.send(hbDevices.toList('ev'));
     } else {
       res.status(404).send();
     }
   });
 
   RED.httpAdmin.get('/hap-device/evDevices/:id', RED.auth.needsPermission('hb-state.read'), function(req, res) {
-    debug("evDevices", evDevices.length);
+    debug("evDevices", hbDevices.toList('ev').length);
     if (evDevices) {
-      res.send(evDevices);
+      res.send(hbDevices.toList('ev'));
     } else {
       res.status(404).send();
     }
@@ -612,6 +613,7 @@ module.exports = function(RED) {
    */
 
   function _register(options, done) {
+    debug("_register", options.name);
     var endpoint = _findEndpoint(evDevices, options.device);
     if (endpoint && (options.type === 'hb-event' || options.type === 'hb-state')) {
       var message = {
