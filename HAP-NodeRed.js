@@ -9,9 +9,9 @@ module.exports = function(RED) {
   var ctDevices = [];
   var hbDevices;
   var homebridge;
-  var reqisterQueue = new Queue(function(options, cb) {
+  var reqisterQueue = new Queue(function(node, cb) {
     // debug("deQueue", options.type, options.name);
-    _register(options, cb);
+    _register(node, cb);
   }, {
     concurrent: 1,
     autoResume: false
@@ -44,7 +44,7 @@ module.exports = function(RED) {
         evDevices = register.registerEv(homebridge, accessories);
         ctDevices = register.registerCt(homebridge, accessories);
         hbDevices = new Homebridges(accessories);
-        debug("output", JSON.stringify(hbDevices.toList('ev'), null, 4));
+        // debug("output", JSON.stringify(hbDevices.toList('ev'), null, 4));
         // debug("evDevices", evDevices);
         debug('Discovered %s evDevices', evDevices.length);
         debug('Discovered %s new evDevices', hbDevices.toList('ev').length);
@@ -66,13 +66,14 @@ module.exports = function(RED) {
     };
 
     this.register = function(deviceNode, done) {
-      debug("hbConf.register", deviceNode.name);
+      debug("hbConf.register", deviceNode.fullName);
       node.users[deviceNode.id] = deviceNode;
-      debug("Register %s -> %s", deviceNode.type, deviceNode.name);
+      debug("Register %s -> %s", deviceNode.type, deviceNode.fullName);
       reqisterQueue.push({
         device: deviceNode.device,
         type: deviceNode.type,
         name: deviceNode.name,
+        fullName: deviceNode.fullName,
         node: node
       }, done);
       // debug("Register Queue - push", reqisterQueue.getStats());
@@ -116,15 +117,14 @@ module.exports = function(RED) {
    */
 
   function hbEvent(n) {
-    debug("hbEvent", n.name);
+    debug("hbEvent", n);
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
     this.confId = n.conf;
     this.device = n.device;
-    this.hapEndpoint = n.hapEndpoint;
-    this.deviceType = n.deviceType;
-    this.hbDevice = n.hbDevice;
+    this.service = n.Service;
     this.name = n.name;
+    this.fullName = n.name + ' - ' + n.Service;
 
     var node = this;
 
@@ -135,7 +135,7 @@ module.exports = function(RED) {
         payload: event.status,
         Homebridge: node.hbDevice.homebridge,
         Manufacturer: node.hbDevice.manufacturer,
-        Type: node.hbDevice.deviceType,
+        Service: node.hbDevice.deviceType,
         _device: node.device,
         _confId: node.confId,
         _rawEvent: event
@@ -144,8 +144,8 @@ module.exports = function(RED) {
     };
 
     node.conf.register(node, function() {
-      debug("hbEvent.register", node.name);
-      this.hbDevice = _findEndpoint(evDevices, node.device);
+      debug("hbEvent.register", node.fullName);
+      this.hbDevice = hbDevices.findDevice(node.device);
       if (this.hbDevice) {
         node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
         node.hbDevice = this.hbDevice;
@@ -153,7 +153,7 @@ module.exports = function(RED) {
         // Register for events
         node.listener = node.command;
         node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid;
-        homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid, node.command);
+        homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid, node.command);
         node.status({
           text: 'connected',
           shape: 'dot',
@@ -305,15 +305,14 @@ module.exports = function(RED) {
     this.conf = RED.nodes.getNode(n.conf); // The configuration node
     this.confId = n.conf;
     this.device = n.device;
-    this.hapEndpoint = n.hapEndpoint;
-    this.deviceType = n.deviceType;
-    this.hbDevice = n.hbDevice;
+    this.service = n.Service;
     this.name = n.name;
+    this.fullName = n.name + ' - ' + n.Service;
 
     var node = this;
 
     node.on('input', function(msg) {
-      _control(this.device, node, msg.payload, function() {});
+      _control(node, msg.payload, function() {});
     });
 
     node.on('close', function(done) {
@@ -446,18 +445,18 @@ module.exports = function(RED) {
   });
 
   RED.httpAdmin.get('/hap-device/ctDevices/', RED.auth.needsPermission('hb-control.read'), function(req, res) {
-    debug("ctDevices", ctDevices.length);
+    debug("ctDevices", hbDevices.toList('pw').length);
     if (ctDevices) {
-      res.send(ctDevices);
+      res.send(hbDevices.toList('pw'));
     } else {
       res.status(404).send();
     }
   });
 
   RED.httpAdmin.get('/hap-device/ctDevices/:id', RED.auth.needsPermission('hb-control.read'), function(req, res) {
-    debug("ctDevices", ctDevices.length);
+    debug("ctDevices", hbDevices.toList('pw').length);
     if (ctDevices) {
-      res.send(ctDevices);
+      res.send(hbDevices.toList('pw'));
     } else {
       res.status(404).send();
     }
@@ -525,22 +524,22 @@ module.exports = function(RED) {
    * @return {type}          description
    */
 
-  function _control(nrDevice, node, value, done) {
-    debug("_control", nrDevice, ctDevices.length);
-    var endpoint = _findEndpoint(ctDevices, nrDevice);
-    if (endpoint) {
+  function _control(node, value, done) {
+    debug("_control", node);
+    var device = hbDevices.findDevice(node.device);
+    if (device) {
       var message;
-      switch (endpoint.service) {
+      switch (device.service) {
         case "00000111": // Camera
           message = {
             "resource-type": "image",
             "image-width": 1920,
             "image-height": 1080
           };
-          debug("Control %s:%s ->", endpoint.host, endpoint.port, message);
-          homebridge.HAPresource(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
+          debug("Control %s:%s ->", device.host, device.port, message);
+          homebridge.HAPresource(device.host, device.port, JSON.stringify(message), function(err, status) {
             if (!err) {
-              debug("Controlled %s:%s ->", endpoint.host, endpoint.port);
+              debug("Controlled %s:%s ->", device.host, device.port);
               node.status({
                 text: 'sent',
                 shape: 'dot',
@@ -551,7 +550,7 @@ module.exports = function(RED) {
               }, 30 * 1000);
               done(null);
             } else {
-              debug("Error: Control %s:%s ->", endpoint.host, endpoint.port, err);
+              debug("Error: Control %s:%s ->", device.host, device.port, err);
               node.status({
                 text: 'error',
                 shape: 'ring',
@@ -564,15 +563,15 @@ module.exports = function(RED) {
         default:
           message = {
             "characteristics": [{
-              "aid": endpoint.aid,
-              "iid": endpoint.iid,
+              "aid": device.aid,
+              "iid": device.iid,
               "value": value
             }]
           };
-          debug("Control %s:%s ->", endpoint.host, endpoint.port, message);
-          homebridge.HAPcontrol(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
-            if (!err) {
-              debug("Controlled %s:%s ->", endpoint.host, endpoint.port, status);
+          debug("Control %s:%s ->", device.host, device.port, message);
+          homebridge.HAPcontrol(device.host, device.port, JSON.stringify(message), function(err, status) {
+            if (!err && status.characteristics[0].status === 0) {
+              debug("Controlled %s:%s ->", device.host, device.port, status);
               node.status({
                 text: 'sent',
                 shape: 'dot',
@@ -583,7 +582,7 @@ module.exports = function(RED) {
               }, 30 * 1000);
               done(null);
             } else {
-              debug("Error: Control %s:%s ->", endpoint.host, endpoint.port, err, status);
+              debug("Error: Control %s:%s ->", device.host, device.port, err, status);
               node.status({
                 text: 'error',
                 shape: 'ring',
@@ -594,7 +593,7 @@ module.exports = function(RED) {
           });
       } // End of switch
     } else {
-      debug("Control Device not found", nrDevice);
+      debug("Control Device not found", node.fullName);
       node.status({
         text: 'error',
         shape: 'ring',
@@ -607,28 +606,29 @@ module.exports = function(RED) {
   /**
    * _register - description
    *
-   * @param  {type} options description
-   * @param  {type} done    description
-   * @return {type}         description
+   * @param  {type} node Node object
+   * @Type  {object}
+   * @property {boolean} name   - Node name
+   * @property {string} device  - Node unique device identifier
+   * @property {number} type    - Node type
+   * @param  {type} done        - callback
    */
 
-  function _register(options, done) {
-    debug("_register", options.name);
-    var endpoint = _findEndpoint(evDevices, options.device);
-    if (endpoint && (options.type === 'hb-event' || options.type === 'hb-state')) {
+  function _register(node, done) {
+    debug("_register", node);
+    var device = hbDevices.findDevice(node.device);
+    debug("Device", device);
+    if (node.type === 'hb-event' || node.type === 'hb-state') {
       var message = {
-        "characteristics": [{
-          "aid": endpoint.aid,
-          "iid": endpoint.iid,
-          "ev": true
-        }]
+        "characteristics": device.eventRegisters
       };
-      homebridge.HAPevent(endpoint.host, endpoint.port, JSON.stringify(message), function(err, status) {
+      debug("Message", message);
+      homebridge.HAPevent(device.host, device.port, JSON.stringify(message), function(err, status) {
         if (!err) {
-          debug("hbEvent registered: %s -> %s:%s", options.name, endpoint.host, endpoint.port, status);
+          debug("hbEvent registered: %s -> %s:%s", node.fullName, device.host, device.port, status);
           done(null);
         } else {
-          debug("hbEvent Error: Event Register %s:%s ->", endpoint.host, endpoint.port, err, status);
+          debug("hbEvent Error: Event Register %s:%s ->", device.host, device.port, err, status);
           done(err);
         }
       });

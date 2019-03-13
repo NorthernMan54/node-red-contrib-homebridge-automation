@@ -80,7 +80,7 @@
       <dd>Homebridge bridge name from config.json </dd>
       <dt>Manufacturer<span class="property-type">string</span></dt>
       <dd>Plugin Manufacturer</dd>
-      <dt>Type<span class="property-type">string</span></dt>
+      <dt>Service<span class="property-type">string</span></dt>
       <dd>Accessory service type</dd>
       <dt>Function<span class="property-type">string</span></dt>
       <dd>Accessory characteristic/event</dd>
@@ -105,7 +105,7 @@
       Manufacturer: {
         value: ""
       },
-      Type: {
+      Service: {
         value: ""
       },
       device: {
@@ -128,9 +128,10 @@
       // console.log("selected name ", $('#node-input-device option:selected'));
 
       this.name = $('#node-input-device option:selected').attr('name').toString();
+      // this.fullName = $('#node-input-device option:selected').attr('text').toString();
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
+      this.Service = $('#node-input-device option:selected').attr('service').toString();
       $('#node-input-name').val(this.name);
     },
     oneditprepare: function() {
@@ -152,7 +153,7 @@
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              deviceType: data[d].deviceType
+              service: data[d].service
             }).appendTo('#node-input-device');
           }
           if (node.device) {
@@ -232,7 +233,7 @@
       <dd>Homebridge bridge name from config.json </dd>
       <dt>Manufacturer<span class="property-type">string</span></dt>
       <dd>Plugin Manufacturer</dd>
-      <dt>Type<span class="property-type">string</span></dt>
+      <dt>Service<span class="property-type">string</span></dt>
       <dd>Accessory service type</dd>
       <dt>Function<span class="property-type">string</span></dt>
       <dd>Accessory characteristic/event</dd>
@@ -256,7 +257,7 @@
       Manufacturer: {
         value: ""
       },
-      Type: {
+      Service: {
         value: ""
       },
       Function: {
@@ -284,7 +285,7 @@
       this.sname = $('#node-input-device option:selected').attr('name').toString();
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
+      this.Service = $('#node-input-device option:selected').attr('service').toString();
       this.Function = $('#node-input-device option:selected').attr('function').toString();
       $('#node-input-name').val(this.sname + " - " + this.Function);
     },
@@ -309,7 +310,7 @@
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              deviceType: data[d].deviceType,
+              service: data[d].service,
               function: data[d].function
             }).appendTo('#node-input-device');
           }
@@ -390,7 +391,7 @@
       <dd>Homebridge bridge name from config.json </dd>
       <dt>Manufacturer<span class="property-type">string</span></dt>
       <dd>Plugin Manufacturer</dd>
-      <dt>Type<span class="property-type">string</span></dt>
+      <dt>Service<span class="property-type">string</span></dt>
       <dd>Accessory service type</dd>
       <dt>Function<span class="property-type">string</span></dt>
       <dd>Accessory characteristic/event</dd>
@@ -413,7 +414,7 @@
       Manufacturer: {
         value: ""
       },
-      Type: {
+      Service: {
         value: ""
       },
       Function: {
@@ -441,7 +442,7 @@
       this.sname = $('#node-input-device option:selected').attr('name').toString();
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
+      this.Service = $('#node-input-device option:selected').attr('service').toString();
       this.Function = $('#node-input-device option:selected').attr('function').toString();
       $('#node-input-name').val(this.sname + " - " + this.Function);
     },
@@ -466,7 +467,7 @@
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              deviceType: data[d].deviceType,
+              service: data[d].service,
               function: data[d].function
             }).appendTo('#node-input-device');
           }
@@ -556,10 +557,7 @@
       Manufacturer: {
         value: ""
       },
-      Type: {
-        value: ""
-      },
-      Function: {
+      Service: {
         value: ""
       },
       device: {
@@ -576,17 +574,16 @@
     color: '#F3B567',
     icon: 'light.png',
     label: function() {
-      return this.name || "Choose accessory/characteristic";
+      return this.name || "Choose accessory/service";
     },
     oneditsave: function() {
       var n = $('#node-input-device option:selected').text();
       //console.log("selected name " + n);
-      this.sname = $('#node-input-device option:selected').attr('name').toString();
+      this.name = $('#node-input-device option:selected').attr('name').toString();
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
-      this.Function = $('#node-input-device option:selected').attr('function').toString();
-      $('#node-input-name').val(this.sname + " - " + this.Function);
+      this.Service = $('#node-input-device option:selected').attr('service').toString();
+      $('#node-input-name').val(this.name);
     },
     oneditprepare: function() {
       var node = this;
@@ -609,8 +606,7 @@
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              deviceType: data[d].deviceType,
-              function: data[d].function
+              service: data[d].service
             }).appendTo('#node-input-device');
           }
           if (node.device) {
