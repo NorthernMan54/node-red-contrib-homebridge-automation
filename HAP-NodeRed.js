@@ -117,7 +117,7 @@ module.exports = function(RED) {
    */
 
   function hbEvent(n) {
-    debug("hbEvent", n);
+    // debug("hbEvent", n);
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
     this.confId = n.conf;
@@ -132,7 +132,7 @@ module.exports = function(RED) {
       debug("hbEvent received event: %s ->", node.name, event);
       var msg = {
         name: node.name,
-        payload: event.status,
+        payload: _createEventPayload(event, node),
         Homebridge: node.hbDevice.homebridge,
         Manufacturer: node.hbDevice.manufacturer,
         Service: node.hbDevice.deviceType,
@@ -149,10 +149,9 @@ module.exports = function(RED) {
       if (this.hbDevice) {
         node.hapEndpoint = 'host: ' + this.hbDevice.host + ':' + this.hbDevice.port + ', aid: ' + this.hbDevice.aid + ', iid: ' + this.hbDevice.iid;
         node.hbDevice = this.hbDevice;
-        node.deviceType = this.hbDevice.deviceType;
         // Register for events
         node.listener = node.command;
-        node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid + this.hbDevice.iid;
+        node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
         homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid, node.command);
         node.status({
           text: 'connected',
@@ -463,6 +462,40 @@ module.exports = function(RED) {
   });
 
   /**
+   * _createEventPayload - description
+   *
+   * @param  {type} event description
+   * @param  {type} node  description
+   * @return {type}       description
+   */
+
+  function _createEventPayload(event, node) {
+    // debug("_createEventPayload", node);
+    var device = hbDevices.findDevice(node.device);
+    // debug("Device", device, device.characteristics[event.aid + '.' + event.iid]);
+    var payload = {
+      [device.characteristics[event.aid + '.' + event.iid].characteristic]: event.status
+    };
+    return (payload);
+  }
+
+  function _createControlMessage(msg, node, device) {
+    // debug("_createControlMessage", msg, device);
+    // debug("Device", device, device.characteristics[event.aid + '.' + event.iid]);
+    var payload = [];
+
+    for (var key in msg) {
+      // debug("IID", _getKey(device.characteristics, key));
+      payload.push({
+        "aid": device.aid,
+        "iid": _getKey(device.characteristics, key).iid,
+        "value": msg[key]
+      });
+    }
+    return ({ "characteristics": payload });
+  }
+
+  /**
    * _status - description
    *
    * @param  {type} nrDevice description
@@ -525,11 +558,11 @@ module.exports = function(RED) {
    */
 
   function _control(node, value, done) {
-    debug("_control", node);
+    // debug("_control", node);
     var device = hbDevices.findDevice(node.device);
     if (device) {
       var message;
-      switch (device.service) {
+      switch (device.type) {
         case "00000111": // Camera
           message = {
             "resource-type": "image",
@@ -561,13 +594,7 @@ module.exports = function(RED) {
           });
           break;
         default:
-          message = {
-            "characteristics": [{
-              "aid": device.aid,
-              "iid": device.iid,
-              "value": value
-            }]
-          };
+          message = _createControlMessage(value, node, device);
           debug("Control %s:%s ->", device.host, device.port, message);
           homebridge.HAPcontrol(device.host, device.port, JSON.stringify(message), function(err, status) {
             if (!err && status.characteristics[0].status === 0) {
@@ -615,9 +642,9 @@ module.exports = function(RED) {
    */
 
   function _register(node, done) {
-    debug("_register", node);
+    // debug("_register", node);
     var device = hbDevices.findDevice(node.device);
-    debug("Device", device);
+    // debug("Device", device);
     if (node.type === 'hb-event' || node.type === 'hb-state') {
       var message = {
         "characteristics": device.eventRegisters
@@ -654,4 +681,13 @@ function _findEndpoint(devices, nrDevice) {
     }
   });
   return match;
+}
+
+function _getKey(obj, value) {
+  for (var key in obj) {
+    if (obj[key].characteristic === value) {
+      return obj[key];
+    }
+  }
+  return null;
 }
