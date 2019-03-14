@@ -260,9 +260,6 @@
       Service: {
         value: ""
       },
-      Function: {
-        value: ""
-      },
       device: {
         value: ""
       },
@@ -286,8 +283,7 @@
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
       this.Service = $('#node-input-device option:selected').attr('service').toString();
-      this.Function = $('#node-input-device option:selected').attr('function').toString();
-      $('#node-input-name').val(this.sname + " - " + this.Function);
+      $('#node-input-name').val(this.sname);
     },
     oneditprepare: function() {
       var node = this;
@@ -310,8 +306,7 @@
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              service: data[d].service,
-              function: data[d].function
+              service: data[d].service
             }).appendTo('#node-input-device');
           }
           if (node.device) {
@@ -417,9 +412,6 @@
       Service: {
         value: ""
       },
-      Function: {
-        value: ""
-      },
       device: {
         value: ""
       },
@@ -443,8 +435,7 @@
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
       this.Service = $('#node-input-device option:selected').attr('service').toString();
-      this.Function = $('#node-input-device option:selected').attr('function').toString();
-      $('#node-input-name').val(this.sname + " - " + this.Function);
+      $('#node-input-name').val(this.sname);
     },
     oneditprepare: function() {
       var node = this;
@@ -467,8 +458,7 @@
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              service: data[d].service,
-              function: data[d].function
+              service: data[d].service
             }).appendTo('#node-input-device');
           }
           if (node.device) {
