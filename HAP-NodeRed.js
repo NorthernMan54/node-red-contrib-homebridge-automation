@@ -134,7 +134,7 @@ module.exports = function(RED) {
     var node = this;
 
     node.command = function(event) {
-      debug("hbEvent received event: %s ->", node.name, event);
+      debug("hbEvent received event: %s ->", node.fullName, event);
       var msg = {
         name: node.name,
         payload: _createEventPayload([event], node),
@@ -201,9 +201,9 @@ module.exports = function(RED) {
     this.conf = RED.nodes.getNode(n.conf);
     this.confId = n.conf;
     this.device = n.device;
-    this.deviceType = n.deviceType;
-    this.hbDevice = n.hbDevice;
+    this.service = n.Service;
     this.name = n.name;
+    this.fullName = n.name + ' - ' + n.Service;
     var node = this;
 
     node.state = null;
@@ -245,7 +245,7 @@ module.exports = function(RED) {
     });
 
     node.command = function(event) {
-      debug("hbState received event: %s ->", node.name, event);
+      debug("hbState received event: %s ->", node.fullName, event);
       // debug("hbState - internals %s millis, old %s, event %s, previous %s", Date.now() - node.lastMessageTime, node.lastMessageValue, event.status, node.state);
       // Don't update for events originating from here
       // if Elapsed is greater than 5 seconds, update stored state
@@ -264,10 +264,10 @@ module.exports = function(RED) {
       if (this.hbDevice) {
         _status(node.device, node, '', function(err, message) {
           if (!err) {
-            debug("hbStatus received: %s = %s", node.name, message.characteristics[0].value);
+            debug("hbState received: %s = %s", node.fullName, JSON.stringify(message.characteristics));
             node.state = message.characteristics[0].value;
           } else {
-            debug("hbStatus _status: error", node.name, err);
+            debug("hbState _status: error", node.fullName, err);
           }
         });
         node.hbDevice = this.hbDevice;
@@ -342,7 +342,7 @@ module.exports = function(RED) {
     var node = this;
 
     node.conf.register(node, function() {
-      debug("hbStatus Registered:", node.name);
+      debug("hbStatus Registered:", node.fullName);
       this.hbDevice = hbDevices.findDevice(node.device);
       if (this.hbDevice) {
         node.hbDevice = this.hbDevice;
@@ -359,7 +359,7 @@ module.exports = function(RED) {
     node.on('input', function(msg) {
       _status(this.device, node, msg.payload, function(err, message) {
         if (!err) {
-          debug("hbStatus received: %s = %s", node.name, message);
+          debug("hbStatus received: %s = %s", node.fullName, message);
           var msg = {
             name: node.name,
             _rawMessage: message,
@@ -372,7 +372,7 @@ module.exports = function(RED) {
           };
           node.send(msg);
         } else {
-          debug("hbStatus _status: error", node.name, err);
+          debug("hbStatus _status: error", node.fullName, err);
         }
       });
     });
@@ -545,7 +545,7 @@ module.exports = function(RED) {
         // Nothing specialized, yet
         default:
           var message = '?id=' + device.getCharacteristics;
-          debug("hbStatus request: %s -> %s:%s ->", node.name, device.host, device.port, message);
+          debug("hbStatus request: %s -> %s:%s ->", node.fullName, device.host, device.port, message);
           homebridge.HAPstatus(device.host, device.port, message, function(err, status) {
             if (!err) {
               // debug("Status %s:%s ->", device.host, device.port, status);
@@ -682,7 +682,7 @@ module.exports = function(RED) {
       var message = {
         "characteristics": device.eventRegisters
       };
-      debug("Message", message);
+      // debug("Message", message);
       homebridge.HAPevent(device.host, device.port, JSON.stringify(message), function(err, status) {
         if (!err) {
           debug("hbEvent registered: %s -> %s:%s", node.fullName, device.host, device.port, status);
