@@ -73,8 +73,8 @@
   <h3>Outputs</h3>
   <dl class="message-properties">
       <dt>name<span class="property-type">string</span></dt>
-      <dd>Homebridge accessory name and function </dd>
-      <dt>payload<span class="property-type">various</span></dt>
+      <dd>Homebridge accessory name</dd>
+      <dt>payload<span class="property-type">object</span></dt>
       <dd>Accessory characteristic status</dd>
       <dt>Homebridge<span class="property-type">string</span></dt>
       <dd>Homebridge bridge name from config.json </dd>
@@ -82,16 +82,14 @@
       <dd>Plugin Manufacturer</dd>
       <dt>Service<span class="property-type">string</span></dt>
       <dd>Accessory service type</dd>
-      <dt>Function<span class="property-type">string</span></dt>
-      <dd>Accessory characteristic/event</dd>
       <dt>_device<span class="property-type">string</span></dt>
       <dd>Internal device identifier</dd>
       <dt>_rawEvent<span class="property-type">string</span></dt>
       <dd>Event as received from homebridge</dd>
   </dl>
 <h3>Details</h3>
-<p>Each Homebridge Event node, will emit a message containing the updated status of a single characteristic that has changed.</p>
-<p>For accessories with mulitple characteristics, a Homebridge Event node will need to be created for each characteristic you are interested in.</p>
+<p>Each Homebridge Event node, will emit a message containing the updated status of the service that has changed.</p>
+<p>For accessories with mulitple services, a Homebridge Event node will need to be created for each service you are interested in.</p>
 </script>
 
 <script type="text/javascript">
@@ -226,7 +224,7 @@
   <h3>Outputs</h3>
   <dl class="message-properties">
       <dt>name<span class="property-type">string</span></dt>
-      <dd>Homebridge accessory name and function </dd>
+      <dd>Homebridge accessory name</dd>
       <dt>payload<span class="property-type">various</span></dt>
       <dd>Accessory characteristic status</dd>
       <dt>Homebridge<span class="property-type">string</span></dt>
@@ -235,8 +233,6 @@
       <dd>Plugin Manufacturer</dd>
       <dt>Service<span class="property-type">string</span></dt>
       <dd>Accessory service type</dd>
-      <dt>Function<span class="property-type">string</span></dt>
-      <dd>Accessory characteristic/event</dd>
       <dt>_device<span class="property-type">string</span></dt>
       <dd>Internal device identifier</dd>
       <dt>_rawEvent<span class="property-type">string</span></dt>
@@ -388,14 +384,12 @@
       <dd>Plugin Manufacturer</dd>
       <dt>Service<span class="property-type">string</span></dt>
       <dd>Accessory service type</dd>
-      <dt>Function<span class="property-type">string</span></dt>
-      <dd>Accessory characteristic/event</dd>
       <dt>_device<span class="property-type">string</span></dt>
       <dd>Internal device identifier</dd>
   </dl>
   <h3>Details</h3>
-  <p>On receipt of any input message this node will poll the homebridge accessory and retrieve the status of the characteristic.</p>
-  <p>For accessories with multiple characteristics, a need will need to be created for characteristic you status for.</p>
+  <p>On receipt of any input message this node will poll the homebridge accessory and retrieve the status of the service.</p>
+  <p>For accessories with multiple services, a need will need to be created for characteristic you status for.</p>
 </script>
 
 <script type="text/javascript">
@@ -526,14 +520,14 @@
 
 <script type="text/x-red" data-help-name="hb-control">
   <p>Control node for Homebridge accessories.</p>
-  <p>This node allows control of a single characteristic of an homebridge accessory.</p>
+  <p>This node allows control of a single service of an homebridge accessory.</p>
   <h3>Inputs</h3>
   <dl class="message-properties">
-      <dt>payload<span class="property-type">various</span></dt>
-      <dd>Accessory characteristic value</dd>
+      <dt>payload<span class="property-type">object</span></dt>
+      <dd>Accessory characteristic object</dd>
   </dl>
   <h3>Details</h3>
-  <p>This node allows control of a single characteristic of an homebridge accessory. The message payload needs to be a valid value for controlling a homebridge accessory.  Invalid values will ??</p>
+  <p>This node allows control of a single characteristic of an homebridge accessory. The message payload needs to be a valid value for controlling a homebridge accessory.  Invalid values will ??</p> <p>{"On":false,"Brightness":0}</p>
 </script>
 
 <script type="text/javascript">
