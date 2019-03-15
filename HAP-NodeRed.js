@@ -41,20 +41,18 @@ module.exports = function(RED) {
       });
       reqisterQueue.pause();
       homebridge.on('Ready', function(accessories) {
-        evDevices = register.registerEv(homebridge, accessories);
-        ctDevices = register.registerCt(homebridge, accessories);
+        // evDevices = register.registerEv(homebridge, accessories);
+        // ctDevices = register.registerCt(homebridge, accessories);
         hbDevices = new Homebridges(accessories);
         // debug("output", JSON.stringify(hbDevices.toList({ perms: 'ev'}), null, 4));
         // debug("evDevices", evDevices);
-        debug('Discovered %s evDevices', evDevices.length);
-        debug('Discovered %s new evDevices', hbDevices.toList({
-          perms: 'ev'
-        }).length);
+        // debug('Discovered %s evDevices', evDevices.length);
+        debug('Discovered %s new evDevices', hbDevices.toList({perms: 'ev'}).length);
+        // debug(hbDevices.toList({perms: 'pw'}));
+        // evDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
+        // ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
 
-        evDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
-        ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
-
-        debug('Discovered %s ctDevices', ctDevices.length);
+        // debug('Discovered %s ctDevices', ctDevices.length);
         debug('Discovered %s new ctDevices', hbDevices.toList({
           perms: 'pw'
         }).length);
