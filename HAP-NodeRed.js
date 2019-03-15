@@ -410,7 +410,7 @@ module.exports = function(RED) {
     node.on('input', function(msg) {
       _status(this.device, node, msg.payload, function(err, message) {
         if (!err) {
-          debug("hbStatus received: %s = %s", node.fullName, message);
+          debug("hbStatus received: %s = %s", JSON.stringify(node.fullName), JSON.stringify(message));
           var msg = {
             name: node.name,
             _rawMessage: message,
@@ -575,12 +575,16 @@ module.exports = function(RED) {
     var payload = [];
 
     for (var key in msg) {
-      // debug("IID", _getKey(device.characteristics, key));
-      payload.push({
-        "aid": device.aid,
-        "iid": _getKey(device.characteristics, key).iid,
-        "value": msg[key]
-      });
+      // debug("IID", key, _getKey(device.characteristics, key));
+      if (_getKey(device.characteristics, key)) {
+        payload.push({
+          "aid": device.aid,
+          "iid": _getKey(device.characteristics, key).iid,
+          "value": msg[key]
+        });
+      } else {
+        debug("Error: missing characteristic", node.fullName, key, device);
+      }
     }
     return ({
       "characteristics": payload
@@ -658,8 +662,12 @@ module.exports = function(RED) {
       var message;
       switch (device.type) {
         case "00000111": // Camera
-          message = _createControlMessage(value, node, device);
-          debug("Control %s:%s ->", device.host, device.port, message);
+          message = {
+            "resource-type": "image",
+            "image-width": 1920,
+            "image-height": 1080
+          };
+          debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
           homebridge.HAPresource(device.host, device.port, JSON.stringify(message), function(err, status) {
             if (!err) {
               debug("Controlled %s:%s ->", device.host, device.port);
@@ -685,11 +693,11 @@ module.exports = function(RED) {
           break;
         default:
           message = _createControlMessage(value, node, device);
-          debug("Control %s:%s ->", device.host, device.port, message);
+          debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
           if (message.characteristics.length > 0) {
             homebridge.HAPcontrol(device.host, device.port, JSON.stringify(message), function(err, status) {
               if (!err && status.characteristics[0].status === 0) {
-                debug("Controlled %s:%s ->", device.host, device.port, status);
+                debug("Controlled %s:%s ->", device.host, device.port, JSON.stringify(status));
                 node.status({
                   text: 'sent',
                   shape: 'dot',
@@ -752,7 +760,7 @@ module.exports = function(RED) {
       // debug("Message", message);
       homebridge.HAPevent(device.host, device.port, JSON.stringify(message), function(err, status) {
         if (!err) {
-          debug("%s registered: %s -> %s:%s", node.type, node.fullName, device.host, device.port, status);
+          debug("%s registered: %s -> %s:%s", node.type, node.fullName, device.host, device.port, JSON.stringify(status));
           done(null);
         } else {
           console.log("%s Error: Event Register %s -> %s:%s ->", node.type, node.fullName, device.host, device.port, err, status);
