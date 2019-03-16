@@ -1,6 +1,6 @@
 var debug = require('debug')('hapNodeRed');
 var Queue = require('better-queue');
-var register = require('./lib/register.js');
+// var register = require('./lib/register.js');
 var Homebridges = require('./lib/Homebridges.js').Homebridges;
 var HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
 
@@ -10,8 +10,7 @@ module.exports = function(RED) {
   var hbDevices;
   var homebridge;
   var reqisterQueue = new Queue(function(node, cb) {
-    // debug("deQueue", options.type, options.name);
-    _register(node, cb);
+    _register.call(node.that, node, cb);
   }, {
     concurrent: 1,
     autoResume: false
@@ -47,7 +46,9 @@ module.exports = function(RED) {
         // debug("output", JSON.stringify(hbDevices.toList({ perms: 'ev'}), null, 4));
         // debug("evDevices", evDevices);
         // debug('Discovered %s evDevices', evDevices.length);
-        debug('Discovered %s new evDevices', hbDevices.toList({perms: 'ev'}).length);
+        debug('Discovered %s new evDevices', hbDevices.toList({
+          perms: 'ev'
+        }).length);
         // debug(hbDevices.toList({perms: 'pw'}));
         // evDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
         // ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
@@ -73,6 +74,7 @@ module.exports = function(RED) {
       node.users[deviceNode.id] = deviceNode;
       debug("Register %s -> %s", deviceNode.type, deviceNode.fullName);
       reqisterQueue.push({
+        that: this,
         device: deviceNode.device,
         type: deviceNode.type,
         name: deviceNode.name,
@@ -163,7 +165,7 @@ module.exports = function(RED) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
             debug("hbState received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
           } else {
-            debug("hbState _status: error", node.fullName, err);
+            this.error("hbState _status: error", node.fullName, err);
           }
         });
         node.hbDevice = this.hbDevice;
@@ -178,9 +180,9 @@ module.exports = function(RED) {
         });
       } else {
         node.error("Can't find device " + node.device, null);
-        debug("Missing device", node.device);
+        // this.error("Missing device", node.device);
       }
-    });
+    }.bind(this));
 
     node.on('close', function(done) {
       node.conf.deregister(node, done);
@@ -269,9 +271,9 @@ module.exports = function(RED) {
         node.lastMessageTime = Date.now();
         node.lastPayload = msg.payload;
       } else {
-        debug("Error: hbState", node.fullName, "Invalid message");
+        this.error("Invalid payload: " + msg.payload);
         node.status({
-          text: 'error - Invalid message',
+          text: 'Invalid payload',
           shape: 'ring',
           fill: 'red'
         });
@@ -296,10 +298,10 @@ module.exports = function(RED) {
       debug("hbState.event %s %s -> %s", node.fullName, JSON.stringify(node.state), JSON.stringify(payload));
 
       if ((Date.now() - node.lastMessageTime) > 5000) {
-        // debug("hbState - updating stored event >5", event.status);
+        debug("hbState - updating stored event >5", payload);
         node.state = payload;
       } else if (_getObjectDiff(payload, node.lastMessageValue).length > 0) {
-        // debug("hbState - updating stored event !=", event.status);
+        debug("hbState - updating stored event !=", payload, node.lastMessageValue);
         node.state = payload;
       }
     };
@@ -313,7 +315,7 @@ module.exports = function(RED) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
             debug("hbState received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
           } else {
-            debug("hbState _status: error", node.fullName, err);
+            this.error(err);
           }
         });
         node.hbDevice = this.hbDevice;
@@ -332,9 +334,9 @@ module.exports = function(RED) {
         }, 30 * 1000);
       } else {
         node.error("Can't find device " + node.device, null);
-        debug("Missing device", node.device);
+        // this.error("Missing device " + node.device);
       }
-    });
+    }.bind(this));
 
     node.on('close', function(done) {
       node.conf.deregister(node, done);
@@ -362,7 +364,11 @@ module.exports = function(RED) {
     var node = this;
 
     node.on('input', function(msg) {
-      _control(node, msg.payload, function() {});
+      const ordered = {};
+      Object.keys(msg.payload).sort().forEach(function(key) {
+        ordered[key] = msg.payload[key];
+      });
+      _control.call(this, node, ordered, function() {});
     });
 
     node.on('close', function(done) {
@@ -401,7 +407,7 @@ module.exports = function(RED) {
         node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
       } else {
         node.error("Can't find device " + node.device, null);
-        debug("Missing device", node.device);
+        // this.error("Missing device " + node.device);
       }
     });
 
@@ -421,7 +427,7 @@ module.exports = function(RED) {
           };
           node.send(msg);
         } else {
-          debug("hbStatus _status: error", node.fullName, err);
+          this.error(err);
         }
       });
     });
@@ -581,7 +587,7 @@ module.exports = function(RED) {
           "value": msg[key]
         });
       } else {
-        debug("Error: missing characteristic", node.fullName, key, device);
+        this.warn("missing characteristic: " + key + " available " + device.descriptions);
       }
     }
     return ({
@@ -621,7 +627,7 @@ module.exports = function(RED) {
               }, 30 * 1000);
               done(null, status);
             } else {
-              debug("Error: Status %s:%s ->", device.host, device.port, err, status);
+              this.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
               node.status({
                 text: 'error',
                 shape: 'ring',
@@ -632,7 +638,7 @@ module.exports = function(RED) {
           });
       } // End of switch
     } else {
-      debug("hbStatus device not found", nrDevice);
+      this.error("Device not found: " + nrDevice);
       node.status({
         text: 'error',
         shape: 'ring',
@@ -653,9 +659,7 @@ module.exports = function(RED) {
    */
 
   function _control(node, value, done) {
-    // debug("_control", node);
     var device = hbDevices.findDevice(node.device);
-    // debug("_control", device);
     if (device) {
       var message;
       switch (device.type) {
@@ -679,7 +683,7 @@ module.exports = function(RED) {
               }, 30 * 1000);
               done(null);
             } else {
-              debug("Error: Control %s:%s ->", device.host, device.port, err);
+              this.error(device.host + ":" + device.port + " -> " + err);
               node.status({
                 text: 'error',
                 shape: 'ring',
@@ -687,10 +691,10 @@ module.exports = function(RED) {
               });
               done(err);
             }
-          });
+          }.bind(this));
           break;
         default:
-          message = _createControlMessage(value, node, device);
+          message = _createControlMessage.call(this, value, node, device);
           debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
           if (message.characteristics.length > 0) {
             homebridge.HAPcontrol(device.host, device.port, JSON.stringify(message), function(err, status) {
@@ -706,7 +710,7 @@ module.exports = function(RED) {
                 }, 30 * 1000);
                 done(null);
               } else {
-                debug("Error: Control %s:%s ->", device.host, device.port, err, status);
+                this.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
                 node.status({
                   text: 'error',
                   shape: 'ring',
@@ -714,19 +718,20 @@ module.exports = function(RED) {
                 });
                 done(err);
               }
-            });
+            }.bind(this));
           } else {
             // Bad message
-            debug("Error: Control %s:%s ->", device.host, device.port, "Invalid message");
+            this.error("Invalid payload");
             node.status({
-              text: 'error - Invalid message',
+              text: 'error - Invalid payload',
               shape: 'ring',
               fill: 'red'
             });
+            done('Invalid payload');
           }
       } // End of switch
     } else {
-      debug("Control Device not found", node.fullName);
+      this.error("Device not found");
       node.status({
         text: 'error',
         shape: 'ring',
@@ -748,7 +753,6 @@ module.exports = function(RED) {
    */
 
   function _register(node, done) {
-    // debug("_register", node);
     var device = hbDevices.findDevice(node.device);
     // debug("Device", device);
     if (node.type === 'hb-event' || node.type === 'hb-state') {
@@ -761,10 +765,10 @@ module.exports = function(RED) {
           debug("%s registered: %s -> %s:%s", node.type, node.fullName, device.host, device.port, JSON.stringify(status));
           done(null);
         } else {
-          console.log("%s Error: Event Register %s -> %s:%s ->", node.type, node.fullName, device.host, device.port, err, status);
+          this.error(device.host + ":" + device.port + " -> " + err);
           done(err);
         }
-      });
+      }.bind(this));
     } else {
       done(null);
     }

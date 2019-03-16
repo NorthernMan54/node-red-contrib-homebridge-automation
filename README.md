@@ -38,11 +38,17 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
 
 # Introduction
 
-This is an Alpha release of the ability to integrate Homebridge Accessories into [Node-RED](https://nodered.org) so that you can start flows from Homebridge accessory events and control your existing homebridge accessories.  ( To create accessories in HomeKit, please use node-red-contrib-homekit-bridged. )
+This is an pre-beta release of the ability to integrate Homebridge Accessories into [Node-RED](https://nodered.org) so that you can start flows from Homebridge accessory events and control your existing homebridge accessories.  ( To create accessories in HomeKit, please use node-red-contrib-homekit-bridged. )
 
 ![Homebridge Nodes](docs/Homebridge%20Nodes.png)
 
-Four different node types are created, the first node "hb event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb state" holds the state of an accessory and supports creating a state restore function. The third node "hb status" allows you to poll an accessory for status. The forth node "hb control" allows you to control a homebridge accessory.  Each node is tied to an individual characteristic of an accessory (ie on/off or brightness).  Using a dimmable light bulb as an example, you would configure two nodes for it.  The first for On/Off and the second for brightness.
+Four different node types are created, the first node "hb-event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb-state" holds the state of an accessory and supports creating a state restore function. The third node "hb-status" allows you to poll an accessory for status. The forth node "hb-control" allows you to control a homebridge accessory.  Each node is tied to an individual Home App Tile/Service of an accessory (ie on/off and brightness).
+
+Payload from a dimmable lightbulb.
+
+```
+{ "On":true, "Brightness":100 }
+```
 
 ![Homebridge Nodes](docs/HAP%20Event%20Nodes.png)
 
@@ -50,7 +56,7 @@ Four different node types are created, the first node "hb event" listens for cha
 
 * Please keep in mind that this integration only works with devices supported/exposed with HomeBridge Plugins.  This does not have visibility to Native HomeKit devices.  ( Similar to my homebridge-alexa plugin. )
 
-* For the 'hb Event' node, the ability of a Accessory to generate events in Real Time is dependent on how the plugin was architected and the actual device.  Some are very good at generating events in real time, and others only generate events when the Home App is opened to the accessory. YMMV.
+* For the 'hb-event' node, the ability of a Accessory to generate events in Real Time is dependent on how the plugin was architected and the actual device.  Some are very good at generating events in real time, and others only generate events when the Home App is opened to the accessory. YMMV.
 
 With a plugin, you can see if it supports Real Time events, by opening the Home App, and looking at an accessory.  Then trigger a local event outside of homebridge/homekit.  If the accessory updates in real time, then it support Real Events.  ( An example of a local event can be turning on a Smart Light Switch, by the local switch.  Another example would be using the vendor app to control an accessory.)    
 
@@ -64,8 +70,8 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 * [ ] - Documentation/Naming - Normalize on Accessory, Service, Event and Characteristic
 * [x] - Hap-Node-Client is not reentrant, and multiple requests get lost.  Needs queuing at an instance level.
 * [x] - Refactor interface with Hap-Node-Client, and split events into a dedicated evented socket connection and use the regular request module for everything else.
-* [ ] - Create a service/characteristic based node approach mimicing homekit icons
-* [ ] - Adjust msg.payload to match other homekit / NodeRED integrations
+* [x] - Create a service/characteristic based node approach mimicing homekit icons
+* [x] - Adjust msg.payload to match other homekit / NodeRED integrations
 
 ## Dropped items
 
@@ -111,7 +117,7 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 * 5.7 Please wait about 30 seconds.  ( Node-RED is busy discovering all your accessories.)
 * 5.8 Initial setup and config is complete.
 
-## 6 - Configure 'hb event' to receive updates from your Accessories
+## 6 - Configure 'hb-event' to receive updates from your Accessories
 
 * 6.1 Double click on hb event node ( now called 'Choose accessory/event')
 
@@ -123,7 +129,7 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 
 The accessory naming convention is:
 
-Accessory Name, Accessory Service Type and Accessory characteristic
+Accessory Name and Accessory Service Type
 
 # Node-RED HAP-NodeRed Message Structure
 
@@ -134,11 +140,10 @@ Message is structured like this
 ```
 msg = {
   name: node.name,
-  payload: event.status,
+  payload: { "On":true, "Brightness":100 }
   Homebridge: node.hbDevice.homebridge,
   Manufacturer: node.hbDevice.manufacturer,
   Type: node.hbDevice.deviceType,
-  Function: node.hbDevice.function,
   _confId: node.confId,
   _rawEvent: event
 };
@@ -150,11 +155,11 @@ msg = {
 
 Based on the message input payload and state of the accessory the output changes.
 
-For true, the node just passes the message to output.  For the first false, the output is the state of the accessory from prior to the last turn on.  For the second false, the out is false.
+For "On":true, the node just passes the message to output.  For the first "On":false, the output is the state of the accessory from prior to the last turn on.  For the second "On":false, the out is "On":false.
 
 ```
 msg = {
-  payload: true or false
+  payload: { "On":true, "Brightness":100 }
 };
 ```
 
@@ -162,7 +167,7 @@ msg = {
 
 ```
 msg = {
-  payload: true or false
+  payload: { "On":true, "Brightness":100 }
 };
 ```
 
@@ -173,11 +178,10 @@ Message is structured like this
 ```
 msg = {
   name: node.name,
-  payload: event.status,
+  payload: { "On":true, "Brightness":100 }
   Homebridge: node.hbDevice.homebridge,
   Manufacturer: node.hbDevice.manufacturer,
   Type: node.hbDevice.deviceType,
-  Function: node.hbDevice.function,
   _confId: node.confId
 };
 ```
@@ -188,7 +192,7 @@ The hb-control node only looks at msg.payload value, and ignore's all others.
 
 ```
 msg = {
-        payload: Changed value for accessories characteristic
+        payload: { "On":true, "Brightness":100 }
       }
 ```
 
