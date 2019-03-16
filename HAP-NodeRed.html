@@ -68,30 +68,28 @@
 
 <script type="text/x-red" data-help-name="hb-event">
   <p>Event emitter node for Homebridge accessories.</p>
-  <p>This node represents a homebridge accessory/event and emits messages when the accessory state changes.</p>
+  <p>This node represents a homebridge accessory/service and emits messages when the accessory state changes.</p>
 
   <h3>Outputs</h3>
   <dl class="message-properties">
       <dt>name<span class="property-type">string</span></dt>
-      <dd>Homebridge accessory name and function </dd>
-      <dt>payload<span class="property-type">various</span></dt>
+      <dd>Homebridge accessory name</dd>
+      <dt>payload<span class="property-type">object</span></dt>
       <dd>Accessory characteristic status</dd>
       <dt>Homebridge<span class="property-type">string</span></dt>
       <dd>Homebridge bridge name from config.json </dd>
       <dt>Manufacturer<span class="property-type">string</span></dt>
       <dd>Plugin Manufacturer</dd>
-      <dt>Type<span class="property-type">string</span></dt>
+      <dt>Service<span class="property-type">string</span></dt>
       <dd>Accessory service type</dd>
-      <dt>Function<span class="property-type">string</span></dt>
-      <dd>Accessory characteristic/event</dd>
       <dt>_device<span class="property-type">string</span></dt>
       <dd>Internal device identifier</dd>
       <dt>_rawEvent<span class="property-type">string</span></dt>
       <dd>Event as received from homebridge</dd>
   </dl>
 <h3>Details</h3>
-<p>Each Homebridge Event node, will emit a message containing the updated status of a single characteristic that has changed.</p>
-<p>For accessories with mulitple characteristics, a Homebridge Event node will need to be created for each characteristic you are interested in.</p>
+<p>Each Homebridge Event node, will emit a message containing the updated status of the service that has changed.</p>
+<p>For accessories with mulitple services, a Homebridge Event node will need to be created for each service you are interested in.</p>
 </script>
 
 <script type="text/javascript">
@@ -105,10 +103,7 @@
       Manufacturer: {
         value: ""
       },
-      Type: {
-        value: ""
-      },
-      Function: {
+      Service: {
         value: ""
       },
       device: {
@@ -124,24 +119,23 @@
     color: '#F3B567',
     icon: 'inject.png',
     label: function() {
-      return this.name || "Choose accessory/event";
+      return this.name || "Choose accessory/service";
     },
     oneditsave: function() {
       var n = $('#node-input-device option:selected').text();
       // console.log("selected name ", $('#node-input-device option:selected'));
 
-      this.sname = $('#node-input-device option:selected').attr('name').toString();
+      this.name = $('#node-input-device option:selected').attr('name').toString();
+      // this.fullName = $('#node-input-device option:selected').attr('text').toString();
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
-      this.Function = $('#node-input-device option:selected').attr('function').toString();
-      $('#node-input-name').val(this.sname + " - " + this.Function);
+      this.Service = $('#node-input-device option:selected').attr('service').toString();
+      $('#node-input-name').val(this.name);
     },
     oneditprepare: function() {
       var node = this;
       //console.log("foo " + node.device);
       if (typeof node.acknoledge === 'undefined') {
-        console.log("ben");
         $('#node-input-acknoledge').prop('checked', true);
       }
       $('#node-input-device').change(function() {
@@ -153,13 +147,11 @@
           for (d in data) {
             $('<option/>', {
               value: data[d].uniqueId,
-              fullName: data[d].fullName,
               name: data[d].name,
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              deviceType: data[d].deviceType,
-              function: data[d].function
+              service: data[d].service
             }).appendTo('#node-input-device');
           }
           if (node.device) {
@@ -232,17 +224,15 @@
   <h3>Outputs</h3>
   <dl class="message-properties">
       <dt>name<span class="property-type">string</span></dt>
-      <dd>Homebridge accessory name and function </dd>
+      <dd>Homebridge accessory name</dd>
       <dt>payload<span class="property-type">various</span></dt>
       <dd>Accessory characteristic status</dd>
       <dt>Homebridge<span class="property-type">string</span></dt>
       <dd>Homebridge bridge name from config.json </dd>
       <dt>Manufacturer<span class="property-type">string</span></dt>
       <dd>Plugin Manufacturer</dd>
-      <dt>Type<span class="property-type">string</span></dt>
+      <dt>Service<span class="property-type">string</span></dt>
       <dd>Accessory service type</dd>
-      <dt>Function<span class="property-type">string</span></dt>
-      <dd>Accessory characteristic/event</dd>
       <dt>_device<span class="property-type">string</span></dt>
       <dd>Internal device identifier</dd>
       <dt>_rawEvent<span class="property-type">string</span></dt>
@@ -263,10 +253,7 @@
       Manufacturer: {
         value: ""
       },
-      Type: {
-        value: ""
-      },
-      Function: {
+      Service: {
         value: ""
       },
       device: {
@@ -282,7 +269,7 @@
     color: '#F3B567',
     icon: 'serial.png',
     label: function() {
-      return this.name || "Choose accessory/event";
+      return this.name || "Choose accessory/service";
     },
     oneditsave: function() {
       var n = $('#node-input-device option:selected').text();
@@ -291,9 +278,8 @@
       this.sname = $('#node-input-device option:selected').attr('name').toString();
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
-      this.Function = $('#node-input-device option:selected').attr('function').toString();
-      $('#node-input-name').val(this.sname + " - " + this.Function);
+      this.Service = $('#node-input-device option:selected').attr('service').toString();
+      $('#node-input-name').val(this.sname);
     },
     oneditprepare: function() {
       var node = this;
@@ -316,8 +302,7 @@
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              deviceType: data[d].deviceType,
-              function: data[d].function
+              service: data[d].service
             }).appendTo('#node-input-device');
           }
           if (node.device) {
@@ -397,16 +382,14 @@
       <dd>Homebridge bridge name from config.json </dd>
       <dt>Manufacturer<span class="property-type">string</span></dt>
       <dd>Plugin Manufacturer</dd>
-      <dt>Type<span class="property-type">string</span></dt>
+      <dt>Service<span class="property-type">string</span></dt>
       <dd>Accessory service type</dd>
-      <dt>Function<span class="property-type">string</span></dt>
-      <dd>Accessory characteristic/event</dd>
       <dt>_device<span class="property-type">string</span></dt>
       <dd>Internal device identifier</dd>
   </dl>
   <h3>Details</h3>
-  <p>On receipt of any input message this node will poll the homebridge accessory and retrieve the status of the characteristic.</p>
-  <p>For accessories with multiple characteristics, a need will need to be created for characteristic you status for.</p>
+  <p>On receipt of any input message this node will poll the homebridge accessory and retrieve the status of the service.</p>
+  <p>For accessories with multiple services, a need will need to be created for characteristic you status for.</p>
 </script>
 
 <script type="text/javascript">
@@ -420,10 +403,7 @@
       Manufacturer: {
         value: ""
       },
-      Type: {
-        value: ""
-      },
-      Function: {
+      Service: {
         value: ""
       },
       device: {
@@ -440,7 +420,7 @@
     color: '#F3B567',
     icon: 'link-out.png',
     label: function() {
-      return this.name || "Choose accessory/characteristic";
+      return this.name || "Choose accessory/service";
     },
     oneditsave: function() {
       var n = $('#node-input-device option:selected').text();
@@ -448,9 +428,8 @@
       this.sname = $('#node-input-device option:selected').attr('name').toString();
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
-      this.Function = $('#node-input-device option:selected').attr('function').toString();
-      $('#node-input-name').val(this.sname + " - " + this.Function);
+      this.Service = $('#node-input-device option:selected').attr('service').toString();
+      $('#node-input-name').val(this.sname);
     },
     oneditprepare: function() {
       var node = this;
@@ -473,8 +452,7 @@
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              deviceType: data[d].deviceType,
-              function: data[d].function
+              service: data[d].service
             }).appendTo('#node-input-device');
           }
           if (node.device) {
@@ -542,14 +520,14 @@
 
 <script type="text/x-red" data-help-name="hb-control">
   <p>Control node for Homebridge accessories.</p>
-  <p>This node allows control of a single characteristic of an homebridge accessory.</p>
+  <p>This node allows control of a single service of an homebridge accessory.</p>
   <h3>Inputs</h3>
   <dl class="message-properties">
-      <dt>payload<span class="property-type">various</span></dt>
-      <dd>Accessory characteristic value</dd>
+      <dt>payload<span class="property-type">object</span></dt>
+      <dd>Accessory characteristic object</dd>
   </dl>
   <h3>Details</h3>
-  <p>This node allows control of a single characteristic of an homebridge accessory. The message payload needs to be a valid value for controlling a homebridge accessory.  Invalid values will ??</p>
+  <p>This node allows control of a single characteristic of an homebridge accessory. The message payload needs to be a valid value for controlling a homebridge accessory.  Invalid values will ??</p> <p>{"On":false,"Brightness":0}</p>
 </script>
 
 <script type="text/javascript">
@@ -563,10 +541,7 @@
       Manufacturer: {
         value: ""
       },
-      Type: {
-        value: ""
-      },
-      Function: {
+      Service: {
         value: ""
       },
       device: {
@@ -583,17 +558,16 @@
     color: '#F3B567',
     icon: 'light.png',
     label: function() {
-      return this.name || "Choose accessory/characteristic";
+      return this.name || "Choose accessory/service";
     },
     oneditsave: function() {
       var n = $('#node-input-device option:selected').text();
       //console.log("selected name " + n);
-      this.sname = $('#node-input-device option:selected').attr('name').toString();
+      this.name = $('#node-input-device option:selected').attr('name').toString();
       this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
       this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Type = $('#node-input-device option:selected').attr('deviceType').toString();
-      this.Function = $('#node-input-device option:selected').attr('function').toString();
-      $('#node-input-name').val(this.sname + " - " + this.Function);
+      this.Service = $('#node-input-device option:selected').attr('service').toString();
+      $('#node-input-name').val(this.name);
     },
     oneditprepare: function() {
       var node = this;
@@ -616,8 +590,7 @@
               text: data[d].fullName,
               homebridge: data[d].homebridge,
               manufacturer: data[d].manufacturer,
-              deviceType: data[d].deviceType,
-              function: data[d].function
+              service: data[d].service
             }).appendTo('#node-input-device');
           }
           if (node.device) {
