@@ -266,7 +266,8 @@ module.exports = function(RED) {
         setTimeout(function() {
           node.status({});
         }, 30 * 1000);
-        node.send(newMsg);
+        // Off messages should not include brightness
+        node.send((newMsg.payload.On ? newMsg : newMsg.payload = { On: false }, newMsg));
         node.lastMessageValue = newMsg.payload;
         node.lastMessageTime = Date.now();
         node.lastPayload = msg.payload;
@@ -555,12 +556,13 @@ module.exports = function(RED) {
     // debug("Device", device, device.characteristics[event.aid + '.' + event.iid]);
     var payload = {};
     // characteristics = Object.assign(characteristics, characteristic.characteristic);
-    hbMessage.forEach(function(characteristic) {
-      payload = Object.assign(payload, {
-        [device.characteristics[characteristic.aid + '.' + characteristic.iid].characteristic]: characteristic.value
+    if (device) {
+      hbMessage.forEach(function(characteristic) {
+        payload = Object.assign(payload, {
+          [device.characteristics[characteristic.aid + '.' + characteristic.iid].characteristic]: characteristic.value
+        });
       });
-    });
-
+    }
     return (payload);
   }
 

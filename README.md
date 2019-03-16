@@ -21,7 +21,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [3 - Install HAP-NodeRED into Node-Red](#3---install-hap-nodered-into-node-red)
       * [4 - Start Node-Red](#4---start-node-red)
       * [5 - Initial setup and configuration inside Node-Red](#5---initial-setup-and-configuration-inside-node-red)
-      * [6 - Configure 'hb event' to receive updates from your Accessories](#6---configure-hb-event-to-receive-updates-from-your-accessories)
+      * [6 - Configure 'hb-event' to receive updates from your Accessories](#6---configure-hb-event-to-receive-updates-from-your-accessories)
    * [Node-RED HAP-NodeRed Message Structure](#node-red-hap-nodered-message-structure)
       * [hb-Event](#hb-event)
       * [hb-state](#hb-state)

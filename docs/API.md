@@ -12,14 +12,17 @@
     -   [Parameters][8]
 -   [hbStatus][9]
     -   [Parameters][10]
--   [\_status][11]
+-   [\_convertHBcharactericToNode][11]
     -   [Parameters][12]
--   [\_control][13]
+-   [\_createControlMessage][13]
     -   [Parameters][14]
--   [\_register][15]
+-   [\_status][15]
     -   [Parameters][16]
--   [\_findEndpoint][17]
+-   [\_control][17]
     -   [Parameters][18]
+-   [\_register][19]
+    -   [Parameters][20]
+    -   [Properties][21]
 
 ## hbConf
 
@@ -89,6 +92,29 @@ hbStatus - description
 
 Returns **type** description
 
+## \_convertHBcharactericToNode
+
+\_convertHBcharactericToNode - Convert homebridge characteric array to Node Payload
+
+### Parameters
+
+-   `hbMessage` **[array][22]** description
+-   `node` **[object][23]** description
+
+Returns **type** description
+
+## \_createControlMessage
+
+\_createControlMessage - description
+
+### Parameters
+
+-   `msg` **type** description
+-   `node` **type** description
+-   `device` **type** description
+
+Returns **type** description
+
 ## \_status
 
 \_status - description
@@ -108,10 +134,10 @@ Returns **type** description
 
 ### Parameters
 
--   `nrDevice` **type** description
 -   `node` **type** description
 -   `value` **type** description
 -   `done` **type** description
+-   `nrDevice` **type** description
 
 Returns **type** description
 
@@ -121,21 +147,14 @@ Returns **type** description
 
 ### Parameters
 
--   `options` **type** description
--   `done` **type** description
+-   `node` **type** Node object
+-   `done` **type** callback
 
-Returns **type** description
+### Properties
 
-## \_findEndpoint
-
-\_findEndpoint - description
-
-### Parameters
-
--   `devices` **type** description
--   `nrDevice` **type** description
-
-Returns **type** description
+-   `name` **[boolean][24]** Node name
+-   `device` **[string][25]** Node unique device identifier
+-   `type` **[number][26]** Node type
 
 [1]: #hbconf
 
@@ -157,18 +176,34 @@ Returns **type** description
 
 [10]: #parameters-4
 
-[11]: #_status
+[11]: #_converthbcharacterictonode
 
 [12]: #parameters-5
 
-[13]: #_control
+[13]: #_createcontrolmessage
 
 [14]: #parameters-6
 
-[15]: #_register
+[15]: #_status
 
 [16]: #parameters-7
 
-[17]: #_findendpoint
+[17]: #_control
 
 [18]: #parameters-8
+
+[19]: #_register
+
+[20]: #parameters-9
+
+[21]: #properties
+
+[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[25]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[26]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
