@@ -302,8 +302,8 @@ module.exports = function(RED) {
         debug("hbState - updating stored event >5", payload);
         node.state = payload;
       } else if (_getObjectDiff(payload, node.lastMessageValue).length > 0) {
-        debug("hbState - updating stored event !=", payload, node.lastMessageValue);
-        node.state = payload;
+        // debug("hbState - updating stored event !=", payload, node.lastMessageValue);
+        // node.state = payload;
       }
     };
 
