@@ -146,7 +146,7 @@ module.exports = function(RED) {
         _rawEvent: event
       };
       node.status({
-        text: 'sent',
+        text: JSON.stringify(msg.payload),
         shape: 'dot',
         fill: 'green'
       });
@@ -231,50 +231,56 @@ module.exports = function(RED) {
 
     node.on('input', function(msg) {
       if (typeof msg.payload === "object") {
-        var newMsg;
-        if (!msg.payload.On) {
-          // false / Turn Off
-          // debug("hbState-Node", node);
-          if (node.lastPayload.On) {
-            // last msg was on, restore previous state
-            newMsg = {
-              name: node.name,
-              _device: node.device,
-              _confId: node.confId
-            };
-            if (node.hbDevice) {
-              newMsg.Homebridge = node.hbDevice.homebridge;
-              newMsg.Manufacturer = node.hbDevice.manufacturer;
-              newMsg.Type = node.hbDevice.deviceType;
-              newMsg.Function = node.hbDevice.function;
+        // Using this to validate input message contains valid Accessory Characteristics
+        var message = _createControlMessage.call(this, msg.payload, node, node.hbDevice);
+
+        if (message.characteristics.length > 0) {
+          var newMsg;
+          if (!msg.payload.On) {
+            // false / Turn Off
+            // debug("hbState-Node", node);
+            if (node.lastPayload.On) {
+              // last msg was on, restore previous state
+              newMsg = {
+                name: node.name,
+                _device: node.device,
+                _confId: node.confId
+              };
+              if (node.hbDevice) {
+                newMsg.Homebridge = node.hbDevice.homebridge;
+                newMsg.Manufacturer = node.hbDevice.manufacturer;
+                newMsg.Type = node.hbDevice.deviceType;
+              }
+              newMsg.payload = node.state;
+            } else {
+              // last msg was off, pass thru
+              node.state = msg.payload;
+              newMsg = msg;
             }
-            newMsg.payload = node.state;
           } else {
-            // last msg was off, pass thru
-            node.state = msg.payload;
+            // True / Turn on
             newMsg = msg;
           }
-        } else {
-          // True / Turn on
-          newMsg = msg;
+          // Off messages should not include brightness
+          node.send((newMsg.payload.On ? newMsg : newMsg.payload = {
+            On: false
+          }, newMsg));
+          node.status({
+            text: JSON.stringify(newMsg.payload),
+            shape: 'dot',
+            fill: 'green'
+          });
+          setTimeout(function() {
+            node.status({});
+          }, 3 * 1000);
+          node.lastMessageValue = newMsg.payload;
+          node.lastMessageTime = Date.now();
+          node.lastPayload = msg.payload;
         }
-        node.status({
-          text: 'sent',
-          shape: 'dot',
-          fill: 'green'
-        });
-        setTimeout(function() {
-          node.status({});
-        }, 30 * 1000);
-        // Off messages should not include brightness
-        node.send((newMsg.payload.On ? newMsg : newMsg.payload = { On: false }, newMsg));
-        node.lastMessageValue = newMsg.payload;
-        node.lastMessageTime = Date.now();
-        node.lastPayload = msg.payload;
       } else {
-        this.error("Invalid payload: " + msg.payload);
+        this.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + node.hbDevice.descriptions);
         node.status({
-          text: 'Invalid payload',
+          text: 'error - Invalid payload',
           shape: 'ring',
           fill: 'red'
         });
@@ -365,11 +371,11 @@ module.exports = function(RED) {
     var node = this;
 
     node.on('input', function(msg) {
-      const ordered = {};
+      const payload = {};
       Object.keys(msg.payload).sort().forEach(function(key) {
-        ordered[key] = msg.payload[key];
+        payload[key] = msg.payload[key];
       });
-      _control.call(this, node, ordered, function() {});
+      _control.call(this, node, msg.payload, function() {});
     });
 
     node.on('close', function(done) {
@@ -569,31 +575,36 @@ module.exports = function(RED) {
   /**
    * _createControlMessage - description
    *
-   * @param  {type} msg    description
+   * @param  {type} payload    {"On":false,"Brightness":0}
    * @param  {type} node   description
    * @param  {type} device description
    * @return {type}        description
    */
 
-  function _createControlMessage(msg, node, device) {
+  function _createControlMessage(payload, node, device) {
     // debug("_createControlMessage", msg, device);
     // debug("Device", device, device.characteristics[event.aid + '.' + event.iid]);
-    var payload = [];
+    var response = [];
 
-    for (var key in msg) {
+    for (var key in payload) {
       // debug("IID", key, _getKey(device.characteristics, key));
       if (_getKey(device.characteristics, key)) {
-        payload.push({
+        response.push({
           "aid": device.aid,
           "iid": _getKey(device.characteristics, key).iid,
-          "value": msg[key]
+          "value": payload[key]
         });
       } else {
-        this.warn("missing characteristic: " + key + " available " + device.descriptions);
+        this.warn("Characteristic '" + key + "' is not valid.\nTry one of these: " + device.descriptions);
+        node.status({
+          text: 'warn - Invalid Characteristic ' + key,
+          shape: 'ring',
+          fill: 'yellow'
+        });
       }
     }
     return ({
-      "characteristics": payload
+      "characteristics": response
     });
   }
 
@@ -655,12 +666,12 @@ module.exports = function(RED) {
    *
    * @param  {type} nrDevice description
    * @param  {type} node     description
-   * @param  {type} value    description
+   * @param  {type} payload    {"On":false, "Brightness":0}
    * @param  {type} done     description
    * @return {type}          description
    */
 
-  function _control(node, value, done) {
+  function _control(node, payload, done) {
     var device = hbDevices.findDevice(node.device);
     if (device) {
       var message;
@@ -676,7 +687,7 @@ module.exports = function(RED) {
             if (!err) {
               debug("Controlled %s:%s ->", device.host, device.port);
               node.status({
-                text: 'sent',
+                text: JSON.stringify(payload),
                 shape: 'dot',
                 fill: 'green'
               });
@@ -696,34 +707,47 @@ module.exports = function(RED) {
           }.bind(this));
           break;
         default:
-          message = _createControlMessage.call(this, value, node, device);
-          debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
-          if (message.characteristics.length > 0) {
-            homebridge.HAPcontrol(device.host, device.port, JSON.stringify(message), function(err, status) {
-              if (!err && status.characteristics[0].status === 0) {
-                debug("Controlled %s:%s ->", device.host, device.port, JSON.stringify(status));
-                node.status({
-                  text: 'sent',
-                  shape: 'dot',
-                  fill: 'green'
-                });
-                setTimeout(function() {
-                  node.status({});
-                }, 30 * 1000);
-                done(null);
-              } else {
-                this.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
-                node.status({
-                  text: 'error',
-                  shape: 'ring',
-                  fill: 'red'
-                });
-                done(err);
-              }
-            }.bind(this));
+          // debug("Object type", typeof payload);
+          if (typeof payload === "object") {
+            message = _createControlMessage.call(this, payload, node, device);
+            debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
+            if (message.characteristics.length > 0) {
+              homebridge.HAPcontrol(device.host, device.port, JSON.stringify(message), function(err, status) {
+                if (!err && status.characteristics[0].status === 0) {
+                  debug("Controlled %s:%s ->", device.host, device.port, JSON.stringify(status));
+                  node.status({
+                    text: JSON.stringify(payload),
+                    shape: 'dot',
+                    fill: 'green'
+                  });
+                  setTimeout(function() {
+                    node.status({});
+                  }, 3000);
+                  done(null);
+                } else {
+                  this.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
+                  node.status({
+                    text: 'error',
+                    shape: 'ring',
+                    fill: 'red'
+                  });
+                  done(err);
+                }
+              }.bind(this));
+            } else {
+              // Bad message
+              /* - This is handled in createcontrolmessage
+              this.warn("Invalid payload-");
+              node.status({
+                text: 'error - Invalid payload',
+                shape: 'ring',
+                fill: 'red'
+              });
+              */
+              done('Invalid payload');
+            }
           } else {
-            // Bad message
-            this.error("Invalid payload");
+            this.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + device.descriptions);
             node.status({
               text: 'error - Invalid payload',
               shape: 'ring',
@@ -793,7 +817,9 @@ function _getObjectDiff(obj1, obj2) {
 
 function _getKey(obj, value) {
   for (var key in obj) {
-    if (obj[key].characteristic === value) {
+    // debug("%s === %s", obj[key].characteristic, value);
+    // debug("%s === %s", obj[key].characteristic.toLowerCase(), value.toLowerCase());
+    if (obj[key].characteristic.toLowerCase() === value.toLowerCase()) {
       return obj[key];
     }
   }
