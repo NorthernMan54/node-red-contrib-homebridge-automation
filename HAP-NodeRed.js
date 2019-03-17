@@ -296,10 +296,10 @@ module.exports = function(RED) {
 
       // debug("should be false", _getObjectDiff(payload, node.state).length);
 
-      debug("hbState.event %s %s -> %s", node.fullName, JSON.stringify(node.state), JSON.stringify(payload));
+      debug("hbState.event: %s %s -> %s", node.fullName, JSON.stringify(node.state), JSON.stringify(payload));
 
       if ((Date.now() - node.lastMessageTime) > 5000) {
-        debug("hbState - updating stored event >5", payload);
+        debug("hbState.update: %s - updating stored event >5", node.fullName, payload);
         node.state = payload;
       } else if (_getObjectDiff(payload, node.lastMessageValue).length > 0) {
         // debug("hbState - updating stored event !=", payload, node.lastMessageValue);
@@ -308,7 +308,7 @@ module.exports = function(RED) {
     };
 
     node.conf.register(node, function() {
-      debug("hbState.register", node.fullName);
+      debug("hbState.register:", node.fullName);
       this.hbDevice = hbDevices.findDevice(node.device);
       if (this.hbDevice) {
         _status(node.device, node, '', function(err, message) {
