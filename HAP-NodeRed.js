@@ -230,6 +230,7 @@ module.exports = function(RED) {
     };
 
     node.on('input', function(msg) {
+      debug("hbResume.input: %s input", node.fullName, JSON.stringify(msg));
       if (typeof msg.payload === "object") {
         // Using this to validate input message contains valid Accessory Characteristics
         var message = _createControlMessage.call(this, msg.payload, node, node.hbDevice);
@@ -265,6 +266,7 @@ module.exports = function(RED) {
           node.send((newMsg.payload.On ? newMsg : newMsg.payload = {
             On: false
           }, newMsg));
+          debug("hbResume.input: %s output", node.fullName, JSON.stringify(newMsg));
           node.status({
             text: JSON.stringify(newMsg.payload),
             shape: 'dot',
