@@ -6,7 +6,7 @@
     -   [Parameters][2]
 -   [hbEvent][3]
     -   [Parameters][4]
--   [hbState][5]
+-   [hbResume][5]
     -   [Parameters][6]
 -   [hbControl][7]
     -   [Parameters][8]
@@ -44,9 +44,9 @@ hbEvent - Node that listens to HomeKit Events, and sends message into NodeRED
 
 Returns **type** description
 
-## hbState
+## hbResume
 
-hbState - description
+hbResume - description
 
 State operating model
 
@@ -164,7 +164,7 @@ Returns **type** description
 
 [4]: #parameters-1
 
-[5]: #hbstate
+[5]: #hbresume
 
 [6]: #parameters-2
 

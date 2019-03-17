@@ -198,7 +198,7 @@
   });
 </script>
 
-<script type="text/x-red" data-template-name="hb-state">
+<script type="text/x-red" data-template-name="hb-resume">
   <div class="form-row">
 		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
 		<input type="text" id="node-input-conf">
@@ -216,7 +216,7 @@
 </script>
 
 
-<script type="text/x-red" data-help-name="hb-state">
+<script type="text/x-red" data-help-name="hb-resume">
   <p>Statefull message passthru node.</p>
   <p>This node allows the creation of a state resume flow.  When a true/On message is input, it is passed directly to the output.  When the first false/Off message is received, the output is the accessories On state from prior to the most recent true/On.  If a second false/off is received it is passed directly to output.</p>
 
@@ -243,7 +243,7 @@
 </script>
 
 <script type="text/javascript">
-  RED.nodes.registerType('hb-state', {
+  RED.nodes.registerType('hb-resume', {
     category: 'Homebridge',
     defaults: {
       name: {},

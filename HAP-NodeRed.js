@@ -163,9 +163,9 @@ module.exports = function(RED) {
         _status(node.device, node, '', function(err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
-            debug("hbState received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
+            debug("hbResume received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
           } else {
-            this.error("hbState _status: error", node.fullName, err);
+            this.error("hbResume _status: error", node.fullName, err);
           }
         });
         node.hbDevice = this.hbDevice;
@@ -192,7 +192,7 @@ module.exports = function(RED) {
   RED.nodes.registerType("hb-event", hbEvent);
 
   /**
-   * hbState - description
+   * hbResume - description
    *
    * State operating model
    * - Store msg into node.lastPayload
@@ -212,7 +212,7 @@ module.exports = function(RED) {
    * @return {type}   description
    */
 
-  function hbState(n) {
+  function hbResume(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
     this.confId = n.conf;
@@ -238,7 +238,7 @@ module.exports = function(RED) {
           var newMsg;
           if (!msg.payload.On) {
             // false / Turn Off
-            // debug("hbState-Node", node);
+            // debug("hbResume-Node", node);
             if (node.lastPayload.On) {
               // last msg was on, restore previous state
               newMsg = {
@@ -288,8 +288,8 @@ module.exports = function(RED) {
     });
 
     node.command = function(event) {
-      // debug("hbState received event: %s ->", node.fullName, event);
-      // debug("hbState - internals %s millis, old %s, event %s, previous %s", Date.now() - node.lastMessageTime, node.lastMessageValue, event.status, node.state);
+      // debug("hbResume received event: %s ->", node.fullName, event);
+      // debug("hbResume - internals %s millis, old %s, event %s, previous %s", Date.now() - node.lastMessageTime, node.lastMessageValue, event.status, node.state);
       // Don't update for events originating from here
       // if Elapsed is greater than 5 seconds, update stored state
       // if Elapsed is less then 5, and lastMessage doesn't match event update stored state
@@ -302,25 +302,25 @@ module.exports = function(RED) {
 
       // debug("should be false", _getObjectDiff(payload, node.state).length);
 
-      debug("hbState.event: %s %s -> %s", node.fullName, JSON.stringify(node.state), JSON.stringify(payload));
+      debug("hbResume.event: %s %s -> %s", node.fullName, JSON.stringify(node.state), JSON.stringify(payload));
 
       if ((Date.now() - node.lastMessageTime) > 5000) {
-        debug("hbState.update: %s - updating stored event >5", node.fullName, payload);
+        debug("hbResume.update: %s - updating stored event >5", node.fullName, payload);
         node.state = payload;
       } else if (_getObjectDiff(payload, node.lastMessageValue).length > 0) {
-        // debug("hbState - updating stored event !=", payload, node.lastMessageValue);
+        // debug("hbResume - updating stored event !=", payload, node.lastMessageValue);
         // node.state = payload;
       }
     };
 
     node.conf.register(node, function() {
-      debug("hbState.register:", node.fullName);
+      debug("hbResume.register:", node.fullName);
       this.hbDevice = hbDevices.findDevice(node.device);
       if (this.hbDevice) {
         _status(node.device, node, '', function(err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
-            debug("hbState received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
+            debug("hbResume received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
           } else {
             this.error(err);
           }
@@ -350,7 +350,7 @@ module.exports = function(RED) {
     });
   }
 
-  RED.nodes.registerType("hb-state", hbState);
+  RED.nodes.registerType("hb-resume", hbResume);
 
   /**
    * hbControl - description
@@ -484,7 +484,7 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.post('/hap-device/refresh/:id', RED.auth.needsPermission('hb-state.read'), function(req, res) {
+  RED.httpAdmin.post('/hap-device/refresh/:id', RED.auth.needsPermission('hb-resume.read'), function(req, res) {
     var id = req.params.id;
     var conf = RED.nodes.getNode(id);
     if (conf) {
@@ -496,7 +496,7 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/evDevices/', RED.auth.needsPermission('hb-state.read'), function(req, res) {
+  RED.httpAdmin.get('/hap-device/evDevices/', RED.auth.needsPermission('hb-resume.read'), function(req, res) {
     debug("evDevices", hbDevices.toList({
       perms: 'ev'
     }).length);
@@ -509,7 +509,7 @@ module.exports = function(RED) {
     }
   });
 
-  RED.httpAdmin.get('/hap-device/evDevices/:id', RED.auth.needsPermission('hb-state.read'), function(req, res) {
+  RED.httpAdmin.get('/hap-device/evDevices/:id', RED.auth.needsPermission('hb-resume.read'), function(req, res) {
     debug("evDevices", hbDevices.toList({
       perms: 'ev'
     }).length);
@@ -781,7 +781,7 @@ module.exports = function(RED) {
   function _register(node, done) {
     var device = hbDevices.findDevice(node.device);
     // debug("Device", device);
-    if (node.type === 'hb-event' || node.type === 'hb-state') {
+    if (node.type === 'hb-event' || node.type === 'hb-resume') {
       var message = {
         "characteristics": device.eventRegisters
       };
