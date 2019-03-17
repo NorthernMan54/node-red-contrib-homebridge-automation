@@ -152,7 +152,7 @@ module.exports = function(RED) {
       });
       setTimeout(function() {
         node.status({});
-      }, 30 * 1000);
+      }, 3 * 1000);
       node.send(msg);
     };
 

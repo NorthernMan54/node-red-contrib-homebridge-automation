@@ -109,7 +109,7 @@ Returns **type** description
 
 ### Parameters
 
--   `msg` **type** description
+-   `payload` **type** {"On":false,"Brightness":0}
 -   `node` **type** description
 -   `device` **type** description
 
@@ -135,7 +135,7 @@ Returns **type** description
 ### Parameters
 
 -   `node` **type** description
--   `value` **type** description
+-   `payload` **type** {"On":false, "Brightness":0}
 -   `done` **type** description
 -   `nrDevice` **type** description
 
