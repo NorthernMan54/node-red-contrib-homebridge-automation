@@ -24,7 +24,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [6 - Configure 'hb-event' to receive updates from your Accessories](#6---configure-hb-event-to-receive-updates-from-your-accessories)
    * [Node-RED HAP-NodeRed Message Structure](#node-red-hap-nodered-message-structure)
       * [hb-Event](#hb-event)
-      * [hb-state](#hb-state)
+      * [hb-resume](#hb-resume)
          * [input](#input)
          * [output](#output)
       * [hb-Status](#hb-status)
@@ -42,7 +42,7 @@ This is an pre-beta release of the ability to integrate Homebridge Accessories i
 
 ![Homebridge Nodes](docs/Homebridge%20Nodes.png)
 
-Four different node types are created, the first node "hb-event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb-state" holds the state of an accessory and supports creating a state restore function. The third node "hb-status" allows you to poll an accessory for status. The forth node "hb-control" allows you to control a homebridge accessory.  Each node is tied to an individual Home App Tile/Service of an accessory (ie on/off and brightness).
+Four different node types are created, the first node "hb-event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb-resume" holds the state of an accessory and supports creating a state restore function. The third node "hb-status" allows you to poll an accessory for status. The forth node "hb-control" allows you to control a homebridge accessory.  Each node is tied to an individual Home App Tile/Service of an accessory (ie on/off and brightness).
 
 Payload from a dimmable lightbulb.
 
@@ -149,7 +149,7 @@ msg = {
 };
 ```
 
-## hb-state
+## hb-resume
 
 ### input
 
