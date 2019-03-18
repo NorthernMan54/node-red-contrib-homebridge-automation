@@ -278,7 +278,7 @@ module.exports = function(RED) {
           node.lastMessageValue = newMsg.payload;
           node.lastMessageTime = Date.now();
           debug("hbResume.input: %s updating lastPayload %s", node.fullName, JSON.stringify(msg.payload));
-          node.lastPayload = msg.payload;
+          node.lastPayload = JSON.parse(JSON.stringify(msg.payload)); // store value not reference
         }
       } else {
         this.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + node.hbDevice.descriptions);
