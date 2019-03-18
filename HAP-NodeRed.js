@@ -255,7 +255,7 @@ module.exports = function(RED) {
               newMsg.payload = node.state;
             } else {
               // last msg was off, pass thru
-              node.state = msg.payload;
+              node.state = JSON.parse(JSON.stringify(msg.payload));
               newMsg = msg;
             }
           } else {
@@ -309,7 +309,7 @@ module.exports = function(RED) {
 
       if ((Date.now() - node.lastMessageTime) > 5000) {
         debug("hbResume.update: %s - updating stored event >5", node.fullName, payload);
-        node.state = payload;
+        node.state = JSON.parse(JSON.stringify(payload));
       } else if (_getObjectDiff(payload, node.lastMessageValue).length > 0) {
         // debug("hbResume - updating stored event !=", payload, node.lastMessageValue);
         // node.state = payload;
