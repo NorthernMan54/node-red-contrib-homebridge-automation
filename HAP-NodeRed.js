@@ -277,6 +277,7 @@ module.exports = function(RED) {
           }, 3 * 1000);
           node.lastMessageValue = newMsg.payload;
           node.lastMessageTime = Date.now();
+          debug("hbResume.input: %s updating lastPayload %s", node.fullName, JSON.stringify(msg.payload));
           node.lastPayload = msg.payload;
         }
       } else {
