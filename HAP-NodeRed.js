@@ -239,7 +239,7 @@ module.exports = function(RED) {
           var newMsg;
           if (!msg.payload.On) {
             // false / Turn Off
-            // debug("hbResume-Node", node);
+            debug("hbResume-Node lastPayload %s", node.lastPayload);
             if (node.lastPayload.On) {
               // last msg was on, restore previous state
               newMsg = {

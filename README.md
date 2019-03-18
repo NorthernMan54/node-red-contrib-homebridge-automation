@@ -24,7 +24,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [6 - Configure 'hb-event' to receive updates from your Accessories](#6---configure-hb-event-to-receive-updates-from-your-accessories)
    * [Node-RED HAP-NodeRed Message Structure](#node-red-hap-nodered-message-structure)
       * [hb-Event](#hb-event)
-      * [hb-resume](#hb-resume)
+      * [hb-Resume](#hb-resume)
          * [input](#input)
          * [output](#output)
       * [hb-Status](#hb-status)
@@ -149,7 +149,7 @@ msg = {
 };
 ```
 
-## hb-resume
+## hb-Resume
 
 ### input
 
