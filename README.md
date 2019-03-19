@@ -131,7 +131,7 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 
 ## 6 - Configure 'hb-event' to receive updates from your Accessories
 
-* 6.1 Double click on hb event node ( now called 'Choose accessory/event')
+* 6.1 Double click on hb event node ( now called 'Choose accessory/service')
 
 ![Populated](docs/HAP%20Event%20Populated.png)
 
@@ -162,6 +162,10 @@ msg = {
 };
 ```
 
+Message payload will vary depending on characteristics support by the device, this example is from a dimmable light.
+
+Please note that multiple event messages may be received from a single device event, this is due to how homebridge controls devices.
+
 ## hb-Resume
 
 ### input
@@ -183,12 +187,15 @@ msg = {
   payload: { "On":true, "Brightness":100 }
 };
 ```
+Message payload will vary depending on characteristics support by the device, this sample is from a dimmable light.
+
+To find supported characteristics for a device, please send an invalid message payload to the node, and it will output the supported characteristics in the debug log.
 
 ## hb-Status
 
 ### input
 
-
+Anything
 
 ### output
 
@@ -206,6 +213,7 @@ msg = {
   _rawEvent: Raw event message
 };
 ```
+Message payload will vary depending on characteristics support by the device, this sample is from a dimmable light.
 
 ## hb-control
 
@@ -216,6 +224,9 @@ msg = {
         payload: { "On":true, "Brightness":100 }
       }
 ```
+Message payload will vary depending on characteristics support by the device, this sample is from a dimmable light.
+
+To find supported characteristics for a device, please send an invalid message payload to the node, and it will output the supported characteristics in the debug log.
 
 # Troubleshooting / DEBUG MODE
 
