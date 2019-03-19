@@ -239,7 +239,7 @@ module.exports = function(RED) {
           var newMsg;
           if (!msg.payload.On) {
             // false / Turn Off
-            debug("hbResume-Node lastPayload %s", JSON.stringify(node.lastPayload));
+            // debug("hbResume-Node lastPayload %s", JSON.stringify(node.lastPayload));
             if (node.lastPayload.On) {
               // last msg was on, restore previous state
               newMsg = {
@@ -277,7 +277,7 @@ module.exports = function(RED) {
           }, 3 * 1000);
           node.lastMessageValue = newMsg.payload;
           node.lastMessageTime = Date.now();
-          debug("hbResume.input: %s updating lastPayload %s", node.fullName, JSON.stringify(msg.payload));
+          // debug("hbResume.input: %s updating lastPayload %s", node.fullName, JSON.stringify(msg.payload));
           node.lastPayload = JSON.parse(JSON.stringify(msg.payload)); // store value not reference
         }
       } else {

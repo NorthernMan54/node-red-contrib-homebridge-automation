@@ -1,15 +1,15 @@
-# HAP-NodeRED - Homebridge Accessory and Node-RED Integration
+# HAP-NodeRED - Homebridge Accessory Automationn utilizing Node-RED
 
 <p align="center">
     <img src="docs/Homebridge and Node Red.png"/>
 </p>
 
-The above Node-RED Flow, turns on my 'Outside Office' light when the powder room is turned on, and turns them both off after 10 seconds. Not practical but a good sample of the power behind Node-RED.
+The above Node-RED Flow, turns on my 'Outside Office' light when the powder room is turned on, and turns them both off after 10 seconds. Not practical but a good sample of the power behind Node-RED. [Link](docs/sample.json) to exported flow for above.
 
 # Table of Contents
 
 <!--ts-->
-   * [HAP-NodeRED - Homebridge Accessory and Node-RED Integration](#hap-nodered---homebridge-accessory-and-node-red-integration)
+   * [HAP-NodeRED - Homebridge Accessory Automationn utilizing Node-RED](#hap-nodered---homebridge-accessory-automationn-utilizing-node-red)
    * [Table of Contents](#table-of-contents)
    * [Introduction](#introduction)
       * [Caveats](#caveats)
@@ -28,6 +28,8 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [input](#input)
          * [output](#output)
       * [hb-Status](#hb-status)
+         * [input](#input-1)
+         * [output](#output-1)
       * [hb-control](#hb-control)
    * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
       * [To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-hap-nodered-debug-logs-start-node-red-like-this)
@@ -42,7 +44,7 @@ This is an pre-beta release of the ability to integrate Homebridge Accessories i
 
 ![Homebridge Nodes](docs/Homebridge%20Nodes.png)
 
-Four different node types are created, the first node "hb-event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb-resume" holds the state of an accessory and supports creating a state restore function. The third node "hb-status" allows you to poll an accessory for status. The forth node "hb-control" allows you to control a homebridge accessory.  Each node is tied to an individual Home App Tile/Service of an accessory (ie on/off and brightness).
+Four different node types are created, the first node "hb-event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb-resume" holds the state of an accessory and supports creating a state resume function. The third node "hb-status" allows you to poll an accessory for status. The forth node "hb-control" allows you to control a homebridge accessory.  Each node is tied to an individual Home App Tile/Service of an accessory (ie on/off and brightness).
 
 Payload from a dimmable lightbulb.
 
@@ -63,7 +65,7 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 # Backlog / Roadmap
 
 * [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )
-* [X] - Do I need a node that emits events for all homebridge devices?
+* [ ] - Do I need a node that emits events for all homebridge devices?
 * [x] - Sort device drop down listing
 * [x] - Trim Node name to just accessory Name
 * [x] - Documentation - Fix README with latest options
@@ -139,13 +141,14 @@ Message is structured like this
 
 ```
 msg = {
-  name: node.name,
+  name: Accessory Name,
   payload: { "On":true, "Brightness":100 }
-  Homebridge: node.hbDevice.homebridge,
-  Manufacturer: node.hbDevice.manufacturer,
-  Type: node.hbDevice.deviceType,
+  Homebridge: Homebridge instance name,
+  Manufacturer: Plugin Manufacturer,
+  Type: Homebridge device type,
+  _device: Unique device identifier,
   _confId: node.confId,
-  _rawEvent: event
+  _rawEvent: Raw event message
 };
 ```
 
@@ -173,16 +176,24 @@ msg = {
 
 ## hb-Status
 
+### input
+
+
+
+### output
+
 Message is structured like this
 
 ```
 msg = {
-  name: node.name,
+  name: Accessory Name,
   payload: { "On":true, "Brightness":100 }
-  Homebridge: node.hbDevice.homebridge,
-  Manufacturer: node.hbDevice.manufacturer,
-  Type: node.hbDevice.deviceType,
-  _confId: node.confId
+  Homebridge: Homebridge instance name,
+  Manufacturer: Plugin Manufacturer,
+  Type: Homebridge device type,
+  _device: Unique device identifier,
+  _confId: node.confId,
+  _rawEvent: Raw event message
 };
 ```
 

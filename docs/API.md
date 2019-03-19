@@ -23,6 +23,8 @@
 -   [\_register][19]
     -   [Parameters][20]
     -   [Properties][21]
+-   [toList][22]
+    -   [Parameters][23]
 
 ## hbConf
 
@@ -98,8 +100,8 @@ Returns **type** description
 
 ### Parameters
 
--   `hbMessage` **[array][22]** description
--   `node` **[object][23]** description
+-   `hbMessage` **[array][24]** description
+-   `node` **[object][25]** description
 
 Returns **type** description
 
@@ -152,9 +154,19 @@ Returns **type** description
 
 ### Properties
 
--   `name` **[boolean][24]** Node name
--   `device` **[string][25]** Node unique device identifier
--   `type` **[number][26]** Node type
+-   `name` **[boolean][26]** Node name
+-   `device` **[string][27]** Node unique device identifier
+-   `type` **[number][28]** Node type
+
+## toList
+
+Homebridges.toList - description
+
+### Parameters
+
+-   `opt` **type** description
+
+Returns **type** description
 
 [1]: #hbconf
 
@@ -198,12 +210,16 @@ Returns **type** description
 
 [21]: #properties
 
-[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[22]: #tolist
 
-[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[23]: #parameters-10
 
-[24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[25]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[25]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[26]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[26]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[27]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[28]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
