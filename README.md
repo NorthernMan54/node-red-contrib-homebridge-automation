@@ -1,4 +1,4 @@
-# HAP-NodeRED - Homebridge Accessory Automationn utilizing Node-RED
+# HAP-NodeRED - Homebridge Automation utilizing Node-RED
 
 <p align="center">
     <img src="docs/Homebridge and Node Red.png"/>
@@ -9,7 +9,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
 # Table of Contents
 
 <!--ts-->
-   * [HAP-NodeRED - Homebridge Accessory Automationn utilizing Node-RED](#hap-nodered---homebridge-accessory-automationn-utilizing-node-red)
+   * [HAP-NodeRED - Homebridge Automation utilizing Node-RED](#hap-nodered---homebridge-automation-utilizing-node-red)
    * [Table of Contents](#table-of-contents)
    * [Introduction](#introduction)
       * [Caveats](#caveats)
