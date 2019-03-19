@@ -13,6 +13,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
    * [Table of Contents](#table-of-contents)
    * [Introduction](#introduction)
       * [Caveats](#caveats)
+      * [Changes](#changes)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
@@ -60,7 +61,16 @@ Payload from a dimmable lightbulb.
 
 * For the 'hb-event' node, the ability of a Accessory to generate events in Real Time is dependent on how the plugin was architected and the actual device.  Some are very good at generating events in real time, and others only generate events when the Home App is opened to the accessory. YMMV.
 
-With a plugin, you can see if it supports Real Time events, by opening the Home App, and looking at an accessory.  Then trigger a local event outside of homebridge/homekit.  If the accessory updates in real time, then it support Real Events.  ( An example of a local event can be turning on a Smart Light Switch, by the local switch.  Another example would be using the vendor app to control an accessory.)    
+With a plugin, you can see if it supports Real Time events, by opening the Home App, and looking at an accessory.  Then trigger a local event outside of homebridge/homekit.  If the accessory updates in real time, then it support Real Events.  ( An example of a local event can be turning on a Smart Light Switch, by the local switch.  Another example would be using the vendor app to control an accessory.)
+
+## Changes
+
+Mar 18, 2019 - Version 0.0.39
+- Changed `hb state` to `hb resume` to make the use case for the node more self-explanitory. If you had used the `hb state` node in your existing flow, nodeRed will not start unless you manually change the node type in the flow file.  To fix the issue, manually edit the flow file in your .node-red directory, and change the type reference `hb-state` to `hb-resume`
+- Changed individual nodes from being charactistic based to device/service based.  When updating from previous versions, you will need to select your devices again.
+- With the change in nodes to be device/service based, the payload message structure changed from being individual characteristic basaed to a JSON object with the containing all the characteristics you want to update on a node.  ie a device control message payload of `true` going to the On characteristic, would be be represented with a message payload of `{ "On":true, "Brightness":100 }`.  This particular would turn on a light and set the brightness to 100.  I made this change to enable easier intgretation with node-red-contrib-homekit-bridged.
+- If you send an incorrect message payload to the `hb resume` or `hb control` nodes it would output a debug message containing the valid characteristics for use in the payload object.
+- Updated the Homebridge accessory parser, so more devices diverse devices will now be exposed.
 
 # Backlog / Roadmap
 
