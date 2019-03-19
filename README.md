@@ -68,9 +68,9 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 Mar 18, 2019 - Version 0.0.39
 - Changed `hb state` to `hb resume` to make the use case for the node more self-explanitory. If you had used the `hb state` node in your existing flow, nodeRed will not start unless you manually change the node type in the flow file.  To fix the issue, manually edit the flow file in your .node-red directory, and change the type reference `hb-state` to `hb-resume`
 - Changed individual nodes from being charactistic based to device/service based.  When updating from previous versions, you will need to select your devices again.
-- With the change in nodes to be device/service based, the payload message structure changed from being individual characteristic basaed to a JSON object with the containing all the characteristics you want to update on a node.  ie a device control message payload of `true` going to the On characteristic, would be be represented with a message payload of `{ "On":true, "Brightness":100 }`.  This particular would turn on a light and set the brightness to 100.  I made this change to enable easier intgretation with node-red-contrib-homekit-bridged.
-- If you send an incorrect message payload to the `hb resume` or `hb control` nodes it would output a debug message containing the valid characteristics for use in the payload object.
-- Updated the Homebridge accessory parser, so more devices diverse devices will now be exposed.
+- With the change in nodes to be device/service based, the payload message structure changed from being individual characteristic based to a JSON object containing all the characteristics you want to update on the device.  ie in the previous version a device control message payload of `true` going to the On characteristic would turn on a light, with this version it would be be represented with a message payload of `{ "On":true, "Brightness":100 }`.  This particular payload would turn on a light and set the brightness to 100.  I made this change to enable easier intgretation with node-red-contrib-homekit-bridged.
+- If you send an incorrect message payload to the `hb resume` or `hb control` nodes it would output a debug message containing the valid/supported characteristics for use in the payload object.
+- Updated the Homebridge accessory parser, so more diverse devices will now be exposed.
 
 # Backlog / Roadmap
 
