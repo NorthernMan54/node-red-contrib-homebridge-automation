@@ -152,7 +152,7 @@ Accessory Name and Accessory Service Type
 
 ## hb-Event
 
-This node generates a message every time an Accessory changes status, and generates an event containing the updated status of all the characteristics.
+This node generates a message every time an Accessory changes status, and generates a message containing the updated status of all the characteristics.
 
 ### Output
 
@@ -173,7 +173,7 @@ msg = {
 
 Message payload will vary depending on characteristics support by the device, this example is from a dimmable light.
 
-Please note that multiple event messages may be received from a single device event, this is due to how homebridge controls devices.
+Please note that multiple event messages may be received from a single device event, this is due to how homebridge controls devices and emits events.
 
 ## hb-Resume
 
@@ -232,7 +232,7 @@ Message payload will vary depending on characteristics support by the device, th
 
 This node allows you to control all the characteristics of a Homebridge accessory.  The message payload needs to be a JSON object containing the values of all the characteristics you want to change.  If you send the node an invalid payload, it will output all the available characteristics of the accessory in the debug tab.
 
-### Output
+### Input
 
 The hb-control node only looks at msg.payload value, and ignore's all others.
 
