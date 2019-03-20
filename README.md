@@ -22,16 +22,16 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [3 - Install HAP-NodeRED into Node-Red](#3---install-hap-nodered-into-node-red)
       * [4 - Start Node-Red](#4---start-node-red)
       * [5 - Initial setup and configuration inside Node-Red](#5---initial-setup-and-configuration-inside-node-red)
-      * [6 - Configure 'hb-event' to receive updates from your Accessories](#6---configure-hb-event-to-receive-updates-from-your-accessories)
+      * [6 - Configure 'hb event' to receive updates from your Accessories](#6---configure-hb event-to-receive-updates-from-your-accessories)
    * [Node-RED HAP-NodeRed Message Structure](#node-red-hap-nodered-message-structure)
-      * [hb-Event](#hb-event)
-      * [hb-Resume](#hb-resume)
+      * [hb event](#hb event)
+      * [hb resume](#hb resume)
          * [input](#input)
          * [output](#output)
-      * [hb-Status](#hb-status)
+      * [hb status](#hb status)
          * [input](#input-1)
          * [output](#output-1)
-      * [hb-control](#hb-control)
+      * [hb control](#hb control)
    * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
       * [To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-hap-nodered-debug-logs-start-node-red-like-this)
 
@@ -45,7 +45,7 @@ This is an pre-beta release of the ability to integrate Homebridge Accessories i
 
 ![Homebridge Nodes](docs/Homebridge%20Nodes.png)
 
-Four different node types are created, the first node "hb-event" listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node "hb-resume" holds the state of an accessory and supports creating a state resume function. The third node "hb-status" allows you to poll an accessory for status. The forth node "hb-control" allows you to control a homebridge accessory.  Each node is tied to an individual Home App Tile/Service of an accessory (ie on/off and brightness).
+Four different node types are created, the first node `hb event` listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node `hb resume` holds the state of an accessory and supports creating a state resume function. The third node `hb status` allows you to poll an accessory for status. The forth node `hb control` allows you to control a homebridge accessory.  Each node is tied to an individual Home App Tile/Service of an accessory (ie on/off and brightness).
 
 Payload from a dimmable lightbulb.
 
@@ -59,7 +59,7 @@ Payload from a dimmable lightbulb.
 
 * Please keep in mind that this integration only works with devices supported/exposed with HomeBridge Plugins.  This does not have visibility to Native HomeKit devices.  ( Similar to my homebridge-alexa plugin. )
 
-* For the 'hb-event' node, the ability of a Accessory to generate events in Real Time is dependent on how the plugin was architected and the actual device.  Some are very good at generating events in real time, and others only generate events when the Home App is opened to the accessory. YMMV.
+* For the `hb event` node, the ability of a Accessory to generate events in Real Time is dependent on how the plugin was architected and the actual device.  Some are very good at generating events in real time, and others only generate events when the Home App is opened to the accessory. YMMV.
 
 With a plugin, you can see if it supports Real Time events, by opening the Home App, and looking at an accessory.  Then trigger a local event outside of homebridge/homekit.  If the accessory updates in real time, then it support Real Events.  ( An example of a local event can be turning on a Smart Light Switch, by the local switch.  Another example would be using the vendor app to control an accessory.)
 
@@ -67,7 +67,7 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 ### Mar 18, 2019 - Version 0.0.39
 
-- Changed `hb state` to `hb resume` to make the use case for the node more self-explanatory. If you had used the `hb state` node in your existing flow, nodeRed will not start unless you manually change the node type in the flow file.  To fix the issue, manually edit the flow file in your .node-red directory, and change the type reference `hb-state` to `hb-resume`
+- Changed `hb state` to `hb resume` to make the use case for the node more self-explanatory. If you had used the `hb state` node in your existing flow, nodeRed will not start unless you manually change the node type in the flow file.  To fix the issue, manually edit the flow file in your .node-red directory, and change the type reference `hb-state` to `hb resume`
 - Changed individual nodes from being characteristic based to device/service based.  When updating from previous versions, you will need to select your devices again.
 - With the change in nodes to be device/service based, the payload message structure changed from being individual characteristic based to a JSON object containing all the characteristics you want to update on the device.  ie in the previous version a device control message payload of `true` going to the On characteristic would turn on a light, with this version it would be be represented with a message payload of `{ "On":true, "Brightness":100 }`.  This particular payload would turn on a light and set the brightness to 100.  I made this change to enable easier intergradation with node-red-contrib-homekit-bridged.
 - If you send an incorrect message payload to the `hb resume` or `hb control` nodes it would output a debug message containing the valid/supported characteristics for use in the payload object.
@@ -134,7 +134,7 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 * 5.7 Please wait about 30 seconds.  ( Node-RED is busy discovering all your accessories.)
 * 5.8 Initial setup and config is complete.
 
-## 6 - Configure 'hb-event' to receive updates from your Accessories
+## 6 - Configure 'hb event' to receive updates from your Accessories
 
 * 6.1 Double click on hb event node ( now called 'Choose accessory/service')
 
@@ -150,7 +150,7 @@ Accessory Name and Accessory Service Type
 
 # Node-RED HAP-NodeRed Message Structure
 
-## hb-Event
+## hb event
 
 This node generates a message every time an Accessory changes status, and generates a message containing the updated status of all the characteristics.
 
@@ -175,7 +175,7 @@ Message payload will vary depending on characteristics support by the device, th
 
 Please note that multiple event messages may be received from a single device event, this is due to how homebridge controls devices and emits events.
 
-## hb-Resume
+## hb resume
 
 This node can be used to create a resume previous state flow.  Where you change the state of an accessory, and have it resume the previous state afterwards.  I'm using this, in conjunction with Alexa to give the ability to turn on and off the lights in a room, but not turn any lights that were already on.  I'm also using it with the HomeKit "I'm home" automation, to turn a group of lights for a few minutes then turn off.  But at the same time have any lights you already had on, stay on.
 
@@ -202,7 +202,7 @@ Message payload will vary depending on characteristics support by the device, th
 
 To find supported characteristics for a device, please send an invalid message payload to the node, and it will output the supported characteristics in the debug log.
 
-## hb-Status
+## hb status
 
 This node allows you to poll a Homebridge accessory and collect the current status of all the characteristics.
 
@@ -228,13 +228,13 @@ msg = {
 ```
 Message payload will vary depending on characteristics support by the device, this sample is from a dimmable light.
 
-## hb-control
+## hb control
 
 This node allows you to control all the characteristics of a Homebridge accessory.  The message payload needs to be a JSON object containing the values of all the characteristics you want to change.  If you send the node an invalid payload, it will output all the available characteristics of the accessory in the debug tab.
 
 ### Input
 
-The hb-control node only looks at msg.payload value, and ignore's all others.
+The hb control node only looks at msg.payload value, and ignore's all others.
 
 ```
 msg = {
