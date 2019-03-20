@@ -22,9 +22,8 @@
     -   [Parameters][18]
 -   [\_register][19]
     -   [Parameters][20]
-    -   [Properties][21]
--   [toList][22]
-    -   [Parameters][23]
+-   [toList][21]
+    -   [Parameters][22]
 
 ## hbConf
 
@@ -100,8 +99,8 @@ Returns **type** description
 
 ### Parameters
 
--   `hbMessage` **[array][24]** description
--   `node` **[object][25]** description
+-   `hbMessage` **[array][23]** description
+-   `node` **[object][24]** description
 
 Returns **type** description
 
@@ -126,7 +125,7 @@ Returns **type** description
 -   `nrDevice` **type** description
 -   `node` **type** description
 -   `value` **type** description
--   `done` **type** description
+-   `callback` **type** description
 
 Returns **type** description
 
@@ -138,7 +137,7 @@ Returns **type** description
 
 -   `node` **type** description
 -   `payload` **type** {"On":false, "Brightness":0}
--   `done` **type** description
+-   `callback` **type** description
 -   `nrDevice` **type** description
 
 Returns **type** description
@@ -149,14 +148,10 @@ Returns **type** description
 
 ### Parameters
 
--   `node` **type** Node object
--   `done` **type** callback
+-   `node` **type** description
+-   `callback` **type** callback
 
-### Properties
-
--   `name` **[boolean][26]** Node name
--   `device` **[string][27]** Node unique device identifier
--   `type` **[number][28]** Node type
+Returns **type** description
 
 ## toList
 
@@ -208,18 +203,10 @@ Returns **type** description
 
 [20]: #parameters-9
 
-[21]: #properties
+[21]: #tolist
 
-[22]: #tolist
+[22]: #parameters-10
 
-[23]: #parameters-10
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
-
-[25]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
-
-[26]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-
-[27]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
-
-[28]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object

@@ -65,11 +65,11 @@ module.exports = function(RED) {
 
     var node = this;
 
-    this.connect = function(done) {
-      done();
+    this.connect = function(callback) {
+      callback();
     };
 
-    this.register = function(deviceNode, done) {
+    this.register = function(deviceNode, callback) {
       debug("hbConf.register", deviceNode.fullName);
       node.users[deviceNode.id] = deviceNode;
       debug("Register %s -> %s", deviceNode.type, deviceNode.fullName);
@@ -80,11 +80,11 @@ module.exports = function(RED) {
         name: deviceNode.name,
         fullName: deviceNode.fullName,
         node: node
-      }, done);
+      }, callback);
       // debug("Register Queue - push", reqisterQueue.getStats());
     };
 
-    this.deregister = function(deviceNode, done) {
+    this.deregister = function(deviceNode, callback) {
       deviceNode.status({
         text: 'disconnected',
         shape: 'ring',
@@ -96,7 +96,7 @@ module.exports = function(RED) {
       if (homebridge.listenerCount(deviceNode.eventName)) {
         homebridge.removeListener(deviceNode.eventName, deviceNode.listener);
       }
-      done();
+      callback();
     };
 
     this.on('close', function() {
@@ -184,8 +184,8 @@ module.exports = function(RED) {
       }
     }.bind(this));
 
-    node.on('close', function(done) {
-      node.conf.deregister(node, done);
+    node.on('close', function(callback) {
+      node.conf.deregister(node, callback);
     });
   }
 
@@ -348,8 +348,8 @@ module.exports = function(RED) {
       }
     }.bind(this));
 
-    node.on('close', function(done) {
-      node.conf.deregister(node, done);
+    node.on('close', function(callback) {
+      node.conf.deregister(node, callback);
     });
   }
 
@@ -381,8 +381,8 @@ module.exports = function(RED) {
       _control.call(this, node, msg.payload, function() {});
     });
 
-    node.on('close', function(done) {
-      done();
+    node.on('close', function(callback) {
+      callback();
     });
   }
 
@@ -442,8 +442,8 @@ module.exports = function(RED) {
       });
     });
 
-    node.on('close', function(done) {
-      done();
+    node.on('close', function(callback) {
+      callback();
     });
   }
 
@@ -617,11 +617,11 @@ module.exports = function(RED) {
    * @param  {type} nrDevice description
    * @param  {type} node     description
    * @param  {type} value    description
-   * @param  {type} done     description
+   * @param  {type} callback     description
    * @return {type}          description
    */
 
-  function _status(nrDevice, node, value, done) {
+  function _status(nrDevice, node, value, callback) {
     var device = hbDevices.findDevice(node.device);
     // debug("_status", device);
     if (device) {
@@ -641,7 +641,7 @@ module.exports = function(RED) {
               setTimeout(function() {
                 node.status({});
               }, 30 * 1000);
-              done(null, status);
+              callback(null, status);
             } else {
               this.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
               node.status({
@@ -649,7 +649,7 @@ module.exports = function(RED) {
                 shape: 'ring',
                 fill: 'red'
               });
-              done(err);
+              callback(err);
             }
           });
       } // End of switch
@@ -660,7 +660,7 @@ module.exports = function(RED) {
         shape: 'ring',
         fill: 'red'
       });
-      done();
+      callback();
     }
   }
 
@@ -670,11 +670,11 @@ module.exports = function(RED) {
    * @param  {type} nrDevice description
    * @param  {type} node     description
    * @param  {type} payload    {"On":false, "Brightness":0}
-   * @param  {type} done     description
+   * @param  {type} callback     description
    * @return {type}          description
    */
 
-  function _control(node, payload, done) {
+  function _control(node, payload, callback) {
     var device = hbDevices.findDevice(node.device);
     if (device) {
       var message;
@@ -697,7 +697,7 @@ module.exports = function(RED) {
               setTimeout(function() {
                 node.status({});
               }, 30 * 1000);
-              done(null);
+              callback(null);
             } else {
               this.error(device.host + ":" + device.port + " -> " + err);
               node.status({
@@ -705,7 +705,7 @@ module.exports = function(RED) {
                 shape: 'ring',
                 fill: 'red'
               });
-              done(err);
+              callback(err);
             }
           }.bind(this));
           break;
@@ -726,7 +726,7 @@ module.exports = function(RED) {
                   setTimeout(function() {
                     node.status({});
                   }, 3000);
-                  done(null);
+                  callback(null);
                 } else {
                   this.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
                   node.status({
@@ -734,7 +734,7 @@ module.exports = function(RED) {
                     shape: 'ring',
                     fill: 'red'
                   });
-                  done(err);
+                  callback(err);
                 }
               }.bind(this));
             } else {
@@ -747,7 +747,8 @@ module.exports = function(RED) {
                 fill: 'red'
               });
               */
-              done('Invalid payload');
+              var err = 'Invalid payload';
+              callback(err);
             }
           } else {
             this.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + device.descriptions);
@@ -756,7 +757,8 @@ module.exports = function(RED) {
               shape: 'ring',
               fill: 'red'
             });
-            done('Invalid payload');
+            var err = 'Invalid payload';
+            callback(err);
           }
       } // End of switch
     } else {
@@ -766,22 +768,19 @@ module.exports = function(RED) {
         shape: 'ring',
         fill: 'red'
       });
-      done();
+      callback();
     }
   }
 
   /**
    * _register - description
    *
-   * @param  {type} node Node object
-   * @Type  {object}
-   * @property {boolean} name   - Node name
-   * @property {string} device  - Node unique device identifier
-   * @property {number} type    - Node type
-   * @param  {type} done        - callback
+   * @param  {type} node description
+   * @param  {type} callback callback
+   * @return {type}      description
    */
 
-  function _register(node, done) {
+  function _register(node, callback) {
     var device = hbDevices.findDevice(node.device);
     // debug("Device", device);
     if (node.type === 'hb-event' || node.type === 'hb-resume') {
@@ -792,14 +791,14 @@ module.exports = function(RED) {
       homebridge.HAPevent(device.host, device.port, JSON.stringify(message), function(err, status) {
         if (!err) {
           debug("%s registered: %s -> %s:%s", node.type, node.fullName, device.host, device.port, JSON.stringify(status));
-          done(null);
+          callback(null);
         } else {
           this.error(device.host + ":" + device.port + " -> " + err);
-          done(err);
+          callback(err);
         }
       }.bind(this));
     } else {
-      done(null);
+      callback(null);
     }
   }
 };
