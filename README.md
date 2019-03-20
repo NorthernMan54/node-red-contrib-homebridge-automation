@@ -1,4 +1,4 @@
-# HAP-NodeRED - Homebridge Automation utilizing Node-RED
+# HAP-NodeRED - Homebridge Automation powered by Node-RED
 
 <p align="center">
     <img src="docs/Homebridge and Node Red.png"/>
@@ -9,7 +9,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
 # Table of Contents
 
 <!--ts-->
-   * [HAP-NodeRED - Homebridge Automation utilizing Node-RED](#hap-nodered---homebridge-automation-utilizing-node-red)
+   * [HAP-NodeRED - Homebridge Automation powered by Node-RED](#hap-nodered---homebridge-automation-powered-by-node-red)
    * [Table of Contents](#table-of-contents)
    * [Introduction](#introduction)
       * [Caveats](#caveats)
@@ -65,12 +65,17 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 ## Changes
 
-Mar 18, 2019 - Version 0.0.39
-- Changed `hb state` to `hb resume` to make the use case for the node more self-explanitory. If you had used the `hb state` node in your existing flow, nodeRed will not start unless you manually change the node type in the flow file.  To fix the issue, manually edit the flow file in your .node-red directory, and change the type reference `hb-state` to `hb-resume`
-- Changed individual nodes from being charactistic based to device/service based.  When updating from previous versions, you will need to select your devices again.
-- With the change in nodes to be device/service based, the payload message structure changed from being individual characteristic based to a JSON object containing all the characteristics you want to update on the device.  ie in the previous version a device control message payload of `true` going to the On characteristic would turn on a light, with this version it would be be represented with a message payload of `{ "On":true, "Brightness":100 }`.  This particular payload would turn on a light and set the brightness to 100.  I made this change to enable easier intgretation with node-red-contrib-homekit-bridged.
+### Mar 18, 2019 - Version 0.0.39
+
+- Changed `hb state` to `hb resume` to make the use case for the node more self-explanatory. If you had used the `hb state` node in your existing flow, nodeRed will not start unless you manually change the node type in the flow file.  To fix the issue, manually edit the flow file in your .node-red directory, and change the type reference `hb-state` to `hb-resume`
+- Changed individual nodes from being characteristic based to device/service based.  When updating from previous versions, you will need to select your devices again.
+- With the change in nodes to be device/service based, the payload message structure changed from being individual characteristic based to a JSON object containing all the characteristics you want to update on the device.  ie in the previous version a device control message payload of `true` going to the On characteristic would turn on a light, with this version it would be be represented with a message payload of `{ "On":true, "Brightness":100 }`.  This particular payload would turn on a light and set the brightness to 100.  I made this change to enable easier intergradation with node-red-contrib-homekit-bridged.
 - If you send an incorrect message payload to the `hb resume` or `hb control` nodes it would output a debug message containing the valid/supported characteristics for use in the payload object.
 - Updated the Homebridge accessory parser, so more diverse devices will now be exposed.
+
+### Mar 19, 2019 - Version 0.0.42
+
+- Fix for events being missed after homebridge restarts
 
 # Backlog / Roadmap
 
@@ -82,7 +87,7 @@ Mar 18, 2019 - Version 0.0.39
 * [ ] - Documentation/Naming - Normalize on Accessory, Service, Event and Characteristic
 * [x] - Hap-Node-Client is not reentrant, and multiple requests get lost.  Needs queuing at an instance level.
 * [x] - Refactor interface with Hap-Node-Client, and split events into a dedicated evented socket connection and use the regular request module for everything else.
-* [x] - Create a service/characteristic based node approach mimicing homekit icons
+* [x] - Create a service/characteristic based node approach mimicking homekit icons
 * [x] - Adjust msg.payload to match other homekit / NodeRED integrations
 
 ## Dropped items
@@ -147,6 +152,10 @@ Accessory Name and Accessory Service Type
 
 ## hb-Event
 
+This node generates a message every time an Accessory changes status, and generates an event containing the updated status of all the characteristics.
+
+### Output
+
 Message is structured like this
 
 ```
@@ -168,11 +177,13 @@ Please note that multiple event messages may be received from a single device ev
 
 ## hb-Resume
 
+This node can be used to create a resume previous state flow.  Where you change the state of an accessory, and have it resume the previous state afterwards.  I'm using this, in conjunction with Alexa to give the ability to turn on and off the lights in a room, but not turn any lights that were already on.  I'm also using it with the HomeKit "I'm home" automation, to turn a group of lights for a few minutes then turn off.  But at the same time have any lights you already had on, stay on.
+
 ### input
 
 Based on the message input payload and state of the accessory the output changes.
 
-For "On":true, the node just passes the message to output.  For the first "On":false, the output is the state of the accessory from prior to the last turn on.  For the second "On":false, the out is "On":false.
+For  `{"On":true}`, the node just passes the message to output.  For the first `{"On":false}`, the output is the state of the accessory from prior to the last turn on.  For the second `{"On":false}`, the out is `{"On":false}`.
 
 ```
 msg = {
@@ -192,6 +203,8 @@ Message payload will vary depending on characteristics support by the device, th
 To find supported characteristics for a device, please send an invalid message payload to the node, and it will output the supported characteristics in the debug log.
 
 ## hb-Status
+
+This node allows you to poll a Homebridge accessory and collect the current status of all the characteristics.
 
 ### input
 
@@ -217,6 +230,10 @@ Message payload will vary depending on characteristics support by the device, th
 
 ## hb-control
 
+This node allows you to control all the characteristics of a Homebridge accessory.  The message payload needs to be a JSON object containing the values of all the characteristics you want to change.  If you send the node an invalid payload, it will output all the available characteristics of the accessory in the debug tab.
+
+### Output
+
 The hb-control node only looks at msg.payload value, and ignore's all others.
 
 ```
@@ -232,4 +249,6 @@ To find supported characteristics for a device, please send an invalid message p
 
 ## To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.
 
-    DEBUG=*,-express* node-red
+```
+DEBUG=*,-express* node-red
+```
