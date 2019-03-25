@@ -36,7 +36,7 @@ module.exports = function(RED) {
         "pin": n.username,
         "refresh": 900,
         "debug": true,
-        "timeout": 5
+        "timeout": 20
       });
       reqisterQueue.pause();
       homebridge.on('Ready', function(accessories) {
@@ -152,7 +152,7 @@ module.exports = function(RED) {
       });
       setTimeout(function() {
         node.status({});
-      }, 3 * 1000);
+      }, 10 * 1000);
       node.send(msg);
     };
 
@@ -274,7 +274,7 @@ module.exports = function(RED) {
           });
           setTimeout(function() {
             node.status({});
-          }, 3 * 1000);
+          }, 10 * 1000);
           node.lastMessageValue = newMsg.payload;
           node.lastMessageTime = Date.now();
           // debug("hbResume.input: %s updating lastPayload %s", node.fullName, JSON.stringify(msg.payload));
@@ -725,7 +725,7 @@ module.exports = function(RED) {
                   });
                   setTimeout(function() {
                     node.status({});
-                  }, 3000);
+                  }, 10 * 1000);
                   callback(null);
                 } else {
                   this.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
