@@ -1,14 +1,14 @@
 #! /bin/sh
 
 if npm audit; then
+  rm *orig* *toc\.*
   npm run-script document
   npm run-script api
-  rm *orig* *toc\.*
   git add .
-  git commit -m "$1"
-  npm version patch -m "$1"
-  git push origin master --tags
+  npm version patch -m "$1" --force
   npm publish
+  git commit -m "$1"
+  git push origin master --tags
 else
   echo "Not publishing due to security vulnerabilites"
 fi
