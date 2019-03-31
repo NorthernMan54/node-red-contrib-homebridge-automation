@@ -93,11 +93,11 @@ module.exports = function(RED) {
       // Should this also remove the homebridge registered event?
       //
       // debug("hbEvent deregistered:", deviceNode.name);
-      if (homebridge.listenerCount(deviceNode.eventName)) {
-        deviceNode.eventName.forEach(function(event) {
-          homebridge.removeListener(event, deviceNode.listener);
-        });
-      }
+      // if (homebridge.listenerCount(deviceNode.eventName)) {
+      deviceNode.eventName.forEach(function(event) {
+        homebridge.removeListener(event, deviceNode.listener);
+      });
+      // }
       callback();
     };
 
@@ -138,7 +138,7 @@ module.exports = function(RED) {
     node.command = function(event) {
       // False messages can be received from accessories with multiple services
       // if (Object.keys(_convertHBcharactericToNode(event, node)).length > 0) {
-      // debug("hbEvent", node.name, event);
+      debug("hbEvent", node.name, event);
       node.state = Object.assign(node.state, _convertHBcharactericToNode([event], node));
       var msg = {
         name: node.name,
