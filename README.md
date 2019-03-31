@@ -45,7 +45,7 @@ This is an pre-beta release of the ability to integrate Homebridge Accessories i
 
 ![Homebridge Nodes](docs/Homebridge%20Nodes.png)
 
-Four different node types are created, the first node `hb event` listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node `hb resume` holds the state of an accessory and supports creating a state resume function. The third node `hb status` allows you to poll an accessory for status. The forth node `hb control` allows you to control a homebridge accessory.  Each node is tied to an individual Home App Tile/Service of an accessory (ie on/off and brightness).
+Four different node types are available, the first node `hb event` listens for changes to an accessory (ie on/off) and sends a message into Node-Red containing the updated accessory status.  The second node `hb resume` holds the state of an accessory and supports creating a state resume function. The third node `hb status` allows you to poll an accessory for status. The forth node `hb control` allows you to control a homebridge accessory.  Each node is tied to an individual Home App Tile/Service of an accessory (ie on/off and brightness).
 
 Payload from a dimmable lightbulb.
 
@@ -77,22 +77,28 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 - Fix for events being missed after homebridge restarts
 
+### Mar 31, 2019 - Version 0.0.
+
+- Fix for a crash when events are received by an accessory with multiple services.
+
 # Backlog / Roadmap
 
 * [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )
-* [ ] - Do I need a node that emits events for all homebridge devices?
 * [x] - Sort device drop down listing
 * [x] - Trim Node name to just accessory Name
 * [x] - Documentation - Fix README with latest options
-* [ ] - Documentation/Naming - Normalize on Accessory, Service, Event and Characteristic
+* [x] - Documentation/Naming - Normalize on Accessory, Service, Event and Characteristic
 * [x] - Hap-Node-Client is not reentrant, and multiple requests get lost.  Needs queuing at an instance level.
 * [x] - Refactor interface with Hap-Node-Client, and split events into a dedicated evented socket connection and use the regular request module for everything else.
 * [x] - Create a service/characteristic based node approach mimicking homekit icons
 * [x] - Adjust msg.payload to match other homekit / NodeRED integrations
+* [ ] - Further stability testing
+* [ ] - With hb-event add a delay function of about 30ms to put back together device level events
 
 ## Dropped items
 
 * [ ] - Add timestamp to Node msg object
+* [ ] - Do I need a node that emits events for all homebridge devices?
 
 # Installation Steps
 
