@@ -217,8 +217,8 @@
 
 
 <script type="text/x-red" data-help-name="hb-resume">
-  <p>Statefull message passthru node.</p>
-  <p>This node allows the creation of a state resume flow.  When a true/On message is input, it is passed directly to the output.  When the first false/Off message is received, the output is the accessories On state from prior to the most recent true/On.  If a second false/off is received it is passed directly to output.</p>
+  <p>Accessory service State resume node,</p>
+  <p>This node allows the creation of a stateful resume flow.  When a true/On message is input, it is passed directly to the output.  When the first false/Off message is received, the output is the accessories On state from prior to the most recent true/On.  If a second false/off is received it is passed directly to output.</p>
 
 
   <h3>Outputs</h3>
@@ -240,6 +240,7 @@
   </dl>
 <h3>Where and why would you use this node?</h3>
 <p>I'm using this with a group of lights in a room, where I have either an automation to turn on all the lights for a short period of time ( ie arrive home turning on the lights around the door) or an Amazon Alexa.  And what it does is restore all the lights in the group to the state they where in, prior to being turned on.  So if you have a light on in a room, and you ask Alexa to turn on all the lights, then a few minutes later you can then ask her to turn them off, she will turn them all off except the one that was on previously.  If you ask her to turn off all the lights a second time, she will then turn them all off.</p>
+<p>To determine valid characteristicsfor the node, send an invalid message. ie {"Foo":"bar"} and the valid characteristics will be output in the debug tab.</p>
 </script>
 
 <script type="text/javascript">
@@ -389,7 +390,7 @@
   </dl>
   <h3>Details</h3>
   <p>On receipt of any input message this node will poll the homebridge accessory and retrieve the status of the service.</p>
-  <p>For accessories with multiple services, a need will need to be created for characteristic you status for.</p>
+  <p>For accessories with multiple services, a need will need to be created for service you want status for.</p>
 </script>
 
 <script type="text/javascript">
@@ -527,7 +528,8 @@
       <dd>Accessory characteristic object</dd>
   </dl>
   <h3>Details</h3>
-  <p>This node allows control of a single characteristic of an homebridge accessory. The message payload needs to be a valid value for controlling a homebridge accessory.  Invalid values will ??</p> <p>{"On":false,"Brightness":0}</p>
+  <p>This node allows control of a single service of a homebridge accessory. The message payload needs to be an object containing updated values. ie {"On":false,"Brightness":0}</p>
+  <p>To determine valid characteristics, send an invalid message. ie {"Foo":"bar"} and the valid characteristics will be output in the debug tab.</p>
 </script>
 
 <script type="text/javascript">
