@@ -261,5 +261,5 @@ To find supported characteristics for a device, please send an invalid message p
 ## To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.
 
 ```
-DEBUG=*,-express* node-red
+DEBUG=-express*,-send*,-body-parser*,* node-red
 ```
