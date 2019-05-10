@@ -13,7 +13,9 @@ module.exports = function(RED) {
     _register.call(node.that, node, cb);
   }, {
     concurrent: 1,
-    autoResume: false
+    autoResume: false,
+    maxRetries: 1000,
+    retryDelay: 30000
   });
   reqisterQueue.pause();
 
@@ -132,13 +134,14 @@ module.exports = function(RED) {
     this.service = n.Service;
     this.name = n.name;
     this.fullName = n.name + ' - ' + n.Service;
+    this.state = {};
 
     var node = this;
 
     node.command = function(event) {
       // False messages can be received from accessories with multiple services
       // if (Object.keys(_convertHBcharactericToNode(event, node)).length > 0) {
-      debug("hbEvent", node.name, event);
+      debug("hbEvent", node.name, event, node.state);
       node.state = Object.assign(node.state, _convertHBcharactericToNode([event], node));
       var msg = {
         name: node.name,
@@ -191,8 +194,7 @@ module.exports = function(RED) {
           fill: 'green'
         });
       } else {
-        node.error("Can't find device " + node.device, null);
-        // this.error("Missing device", node.device);
+        node.error("197:Can't find device " + node.device, null);
       }
     }.bind(this));
 
@@ -360,8 +362,7 @@ module.exports = function(RED) {
           node.status({});
         }, 30 * 1000);
       } else {
-        node.error("Can't find device " + node.device, null);
-        // this.error("Missing device " + node.device);
+        node.error("365:Can't find device " + node.device, null);
       }
     }.bind(this));
 
@@ -433,7 +434,7 @@ module.exports = function(RED) {
         node.listener = node.command;
         // node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
       } else {
-        node.error("Can't find device " + node.device, null);
+        node.error("437:Can't find device " + node.device, null);
         // this.error("Missing device " + node.device);
       }
     });
@@ -577,9 +578,9 @@ module.exports = function(RED) {
    */
 
   function _convertHBcharactericToNode(hbMessage, node) {
-    // debug("_convertHBcharactericToNode", node);
+    // debug("_convertHBcharactericToNode", node.device);
     var device = hbDevices.findDevice(node.device);
-    // debug("Device", device, device.characteristics[event.aid + '.' + event.iid]);
+    // debug("Device", device);
     var payload = {};
     // characteristics = Object.assign(characteristics, characteristic.characteristic);
     if (device) {
@@ -592,6 +593,7 @@ module.exports = function(RED) {
         }
       });
     }
+    // debug("payload", payload);
     return (payload);
   }
 
@@ -802,7 +804,6 @@ module.exports = function(RED) {
 
   function _register(node, callback) {
     var device = hbDevices.findDevice(node.device);
-    // debug("Device", device);
     if (node.type === 'hb-event' || node.type === 'hb-resume') {
       var message = {
         "characteristics": device.eventRegisters
