@@ -86,6 +86,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 - Fix for a crash when events are received by an accessory with multiple services.
 
+### May 9, 2019 - Version 0.0.43
+
+- Added retries for registering of events during startup.  ( 1000 retries, retry delay of 30 seconds )
+
 # Backlog / Roadmap
 
 * [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )
