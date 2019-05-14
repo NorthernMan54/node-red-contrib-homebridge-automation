@@ -174,7 +174,7 @@ module.exports = function(RED) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
             debug("hbEvent received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
           } else {
-            this.error("hbEvent _status: error", node.fullName, err);
+            node.error("hbEvent _status: error", node.fullName, err);
           }
         });
         node.hbDevice = this.hbDevice;
@@ -295,7 +295,7 @@ module.exports = function(RED) {
           node.lastPayload = JSON.parse(JSON.stringify(msg.payload)); // store value not reference
         }
       } else {
-        this.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + node.hbDevice.descriptions);
+        node.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + node.hbDevice.descriptions);
         node.status({
           text: 'error - Invalid payload',
           shape: 'ring',
@@ -339,7 +339,7 @@ module.exports = function(RED) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
             debug("hbResume received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
           } else {
-            this.error(err);
+            node.error(err);
           }
         });
         node.hbDevice = this.hbDevice;
@@ -455,7 +455,7 @@ module.exports = function(RED) {
           };
           node.send(msg);
         } else {
-          this.error(err);
+          node.error(err);
         }
       });
     });
@@ -644,45 +644,56 @@ module.exports = function(RED) {
    */
 
   function _status(nrDevice, node, value, callback) {
-    var device = hbDevices.findDevice(node.device);
-    // debug("_status", device);
-    if (device) {
-      switch (device.service) {
-        // Nothing specialized, yet
-        default:
-          var message = '?id=' + device.getCharacteristics;
-          debug("_status request: %s -> %s:%s ->", node.fullName, device.host, device.port, message);
-          homebridge.HAPstatus(device.host, device.port, message, function(err, status) {
-            if (!err) {
-              // debug("Status %s:%s ->", device.host, device.port, status);
-              node.status({
-                text: 'sent',
-                shape: 'dot',
-                fill: 'green'
-              });
-              setTimeout(function() {
-                node.status({});
-              }, 30 * 1000);
-              callback(null, status);
-            } else {
-              this.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
-              node.status({
-                text: 'error',
-                shape: 'ring',
-                fill: 'red'
-              });
-              callback(err);
-            }
-          });
-      } // End of switch
+    // debug("_status", new Error(), hbDevices);
+    var error;
+    if (hbDevices) {
+      var device = hbDevices.findDevice(node.device);
+      if (device) {
+        switch (device.service) {
+          // Nothing specialized, yet
+          default:
+            var message = '?id=' + device.getCharacteristics;
+            debug("_status request: %s -> %s:%s ->", node.fullName, device.host, device.port, message);
+            homebridge.HAPstatus(device.host, device.port, message, function(err, status) {
+              if (!err) {
+                // debug("Status %s:%s ->", device.host, device.port, status);
+                node.status({
+                  text: 'sent',
+                  shape: 'dot',
+                  fill: 'green'
+                });
+                setTimeout(function() {
+                  node.status({});
+                }, 30 * 1000);
+                callback(null, status);
+              } else {
+                error = device.host + ":" + device.port + " -> " + err + " -> " + status;
+                node.status({
+                  text: 'error',
+                  shape: 'ring',
+                  fill: 'red'
+                });
+                callback(error);
+              }
+            });
+        } // End of switch
+      } else {
+        error = "Device not found: " + nrDevice;
+        node.status({
+          text: 'error',
+          shape: 'ring',
+          fill: 'red'
+        });
+        callback(error);
+      } // end of device if
     } else {
-      this.error("Device not found: " + nrDevice);
+      error = "Homebridge not initialized: " + nrDevice;
       node.status({
         text: 'error',
         shape: 'ring',
         fill: 'red'
       });
-      callback();
+      callback(error);
     }
   }
 
@@ -697,6 +708,7 @@ module.exports = function(RED) {
    */
 
   function _control(node, payload, callback) {
+    // debug("_control", node.device);
     var device = hbDevices.findDevice(node.device);
     if (device) {
       var message;
@@ -721,7 +733,7 @@ module.exports = function(RED) {
               }, 30 * 1000);
               callback(null);
             } else {
-              this.error(device.host + ":" + device.port + " -> " + err);
+              node.error(device.host + ":" + device.port + " -> " + err);
               node.status({
                 text: 'error',
                 shape: 'ring',
@@ -729,7 +741,7 @@ module.exports = function(RED) {
               });
               callback(err);
             }
-          }.bind(this));
+          });
           break;
         default:
           // debug("Object type", typeof payload);
@@ -750,7 +762,7 @@ module.exports = function(RED) {
                   }, 10 * 1000);
                   callback(null);
                 } else {
-                  this.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
+                  node.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
                   node.status({
                     text: 'error',
                     shape: 'ring',
@@ -758,7 +770,7 @@ module.exports = function(RED) {
                   });
                   callback(err);
                 }
-              }.bind(this));
+              });
             } else {
               // Bad message
               /* - This is handled in createcontrolmessage
@@ -773,7 +785,7 @@ module.exports = function(RED) {
               callback(err);
             }
           } else {
-            this.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + device.descriptions);
+            node.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + device.descriptions);
             node.status({
               text: 'error - Invalid payload',
               shape: 'ring',
@@ -784,7 +796,7 @@ module.exports = function(RED) {
           }
       } // End of switch
     } else {
-      this.error("Device not found");
+      node.error("Device not found");
       node.status({
         text: 'error',
         shape: 'ring',
@@ -803,6 +815,7 @@ module.exports = function(RED) {
    */
 
   function _register(node, callback) {
+    // debug("_register", node.device);
     var device = hbDevices.findDevice(node.device);
     if (node.type === 'hb-event' || node.type === 'hb-resume') {
       var message = {
@@ -814,7 +827,7 @@ module.exports = function(RED) {
           debug("%s registered: %s -> %s:%s", node.type, node.fullName, device.host, device.port, JSON.stringify(status));
           callback(null);
         } else {
-          this.error(device.host + ":" + device.port + " -> " + err);
+          node.error(device.host + ":" + device.port + " -> " + err);
           callback(err);
         }
       }.bind(this));

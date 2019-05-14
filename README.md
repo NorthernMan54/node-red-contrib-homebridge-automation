@@ -17,6 +17,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [Mar 18, 2019 - Version 0.0.39](#mar-18-2019---version-0039)
          * [Mar 19, 2019 - Version 0.0.42](#mar-19-2019---version-0042)
          * [Mar 31, 2019 - Version 0.0.](#mar-31-2019---version-00)
+         * [May 9, 2019 - Version 0.0.43](#may-9-2019---version-0043)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
