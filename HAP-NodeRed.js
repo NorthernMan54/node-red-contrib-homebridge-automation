@@ -38,7 +38,8 @@ module.exports = function(RED) {
         "pin": n.username,
         "refresh": 900,
         "debug": true,
-        "timeout": 20
+        "timeout": 20,
+        "reqTimeout": 14000
       });
       reqisterQueue.pause();
       homebridge.on('Ready', function(accessories) {

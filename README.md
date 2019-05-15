@@ -18,6 +18,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [Mar 19, 2019 - Version 0.0.42](#mar-19-2019---version-0042)
          * [Mar 31, 2019 - Version 0.0.](#mar-31-2019---version-00)
          * [May 9, 2019 - Version 0.0.43](#may-9-2019---version-0043)
+         * [May 15, 2019 - Version 0.0.44](#may-15-2019---version-0044)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
@@ -90,6 +91,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 ### May 9, 2019 - Version 0.0.43
 
 - Added retries for registering of events during startup.  ( 1000 retries, retry delay of 30 seconds )
+
+### May 15, 2019 - Version 0.0.44
+
+- Added reqTimeout and set default timeout on homebridge requests to 14 seconds
 
 # Backlog / Roadmap
 

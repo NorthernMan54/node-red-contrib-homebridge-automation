@@ -1,6 +1,6 @@
 {
   "name": "hap-nodered",
-  "version": "0.0.44",
+  "version": "0.0.45",
   "description": "NodeRED Automation for HomeBridge",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "debug": ">2.6.9",
-    "hap-node-client": ">=0.0.21",
+    "hap-node-client": ">=0.0.26",
     "better-queue": ">=3.8.10"
   },
   "author": "NorthernMan54",
