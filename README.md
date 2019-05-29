@@ -1,4 +1,4 @@
-# HAP-NodeRED - Homebridge Automation powered by Node-RED
+# Homebridge Automation powered by Node-RED
 
 <p align="center">
     <img src="docs/Homebridge and Node Red.png"/>
@@ -9,7 +9,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
 # Table of Contents
 
 <!--ts-->
-   * [HAP-NodeRED - Homebridge Automation powered by Node-RED](#hap-nodered---homebridge-automation-powered-by-node-red)
+   * [Homebridge Automation powered by Node-RED](#homebridge-automation-powered-by-node-red)
    * [Table of Contents](#table-of-contents)
    * [Introduction](#introduction)
       * [Caveats](#caveats)
@@ -19,16 +19,17 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [Mar 31, 2019 - Version 0.0.](#mar-31-2019---version-00)
          * [May 9, 2019 - Version 0.0.43](#may-9-2019---version-0043)
          * [May 15, 2019 - Version 0.0.44](#may-15-2019---version-0044)
+         * [May 29, 2019 - Version 0.0.45](#may-29-2019---version-0045)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
       * [1 - Install Node-RED and Homebridge](#1---install-node-red-and-homebridge)
-      * [2 - Prepare Homebridge for integration with HAP-NodeRED](#2---prepare-homebridge-for-integration-with-hap-nodered)
-      * [3 - Install HAP-NodeRED into Node-Red](#3---install-hap-nodered-into-node-red)
+      * [2 - Prepare Homebridge for integration with Homebridge-Automation](#2---prepare-homebridge-for-integration-with-homebridge-automation)
+      * [3 - Install Homebridge-Automation into Node-Red](#3---install-homebridge-automation-into-node-red)
       * [4 - Start Node-Red](#4---start-node-red)
       * [5 - Initial setup and configuration inside Node-Red](#5---initial-setup-and-configuration-inside-node-red)
       * [6 - Configure 'hb event' to receive updates from your Accessories](#6---configure-hb-event-to-receive-updates-from-your-accessories)
-   * [Node-RED HAP-NodeRed Message Structure](#node-red-hap-nodered-message-structure)
+   * [Node-RED Homebridge-Automation Message Structure](#node-red-homebridge-automation-message-structure)
       * [hb event](#hb-event)
          * [Output](#output)
       * [hb resume](#hb-resume)
@@ -40,7 +41,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [hb control](#hb-control)
          * [Input](#input-2)
    * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
-      * [To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-hap-nodered-debug-logs-start-node-red-like-this)
+      * [To start Node-RED in DEBUG mode, and output Homebridge-Automation debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-homebridge-automation-debug-logs-start-node-red-like-this)
 
 <!-- Added by: sgracey, at:  -->
 
@@ -96,6 +97,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 - Added reqTimeout and set default timeout on homebridge requests to 14 seconds
 
+### May 29, 2019 - Version 0.0.45
+
+- Name Change to Homebridge-Automation
+
 # Backlog / Roadmap
 
 * [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )
@@ -121,14 +126,14 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 This is covered in alot of other places, so I won't cover it here.
 
-## 2 - Prepare Homebridge for integration with HAP-NodeRED
+## 2 - Prepare Homebridge for integration with Homebridge-Automation
 
 Place your homebridge instances into "INSECURE MODE".  This is same as my [Homebridge Alexa](https://github.com/NorthernMan54/homebridge-alexa) plugin, and you just need to follow the [Prepare homebridge for plugin](https://github.com/NorthernMan54/homebridge-alexa#prepare-homebridge-for-plugin-installation) instructions there.
 
-## 3 - Install HAP-NodeRED into Node-Red
+## 3 - Install Homebridge-Automation into Node-Red
 
     cd ~/.node-red
-    npm install -g https://github.com/NorthernMan54/HAP-NodeRed
+    npm install -g https://github.com/NorthernMan54/node-red-contrib-homebridge-automation
 
 ## 4 - Start Node-Red
 
@@ -169,7 +174,7 @@ The accessory naming convention is:
 
 Accessory Name and Accessory Service Type
 
-# Node-RED HAP-NodeRed Message Structure
+# Node-RED Homebridge-Automation Message Structure
 
 ## hb event
 
@@ -268,7 +273,7 @@ To find supported characteristics for a device, please send an invalid message p
 
 # Troubleshooting / DEBUG MODE
 
-## To start Node-RED in DEBUG mode, and output HAP-NodeRED debug logs start Node-RED like this.
+## To start Node-RED in DEBUG mode, and output Homebridge-Automation debug logs start Node-RED like this.
 
 ```
 DEBUG=-express*,-send*,-body-parser*,* node-red
