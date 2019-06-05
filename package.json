@@ -18,7 +18,7 @@
     "url": "git+https://github.com/NorthernMan54/HAP-NodeRed.git"
   },
   "devDependencies": {
-    "documentation": "8.1.2"
+    "documentation": "11.0.0"
   },
   "dependencies": {
     "debug": ">2.6.9",
