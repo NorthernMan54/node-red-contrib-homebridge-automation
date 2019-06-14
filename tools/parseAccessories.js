@@ -21,6 +21,6 @@ var endPoints = [{
 }];
 var hbDevices = new Homebridges(endPoints);
 
-console.log(hbDevices.toList({
+console.log(JSON.stringify(hbDevices.toList({
   perms: 'ev'
-}));
+}), null, 4));

@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NorthernMan54/HAP-NodeRed.git"
+    "url": "git+https://github.com/NorthernMan54/node-red-contrib-homebridge-automation.git"
   },
   "devDependencies": {
     "documentation": "11.0.0"
@@ -28,7 +28,7 @@
   "author": "NorthernMan54",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/NorthernMan54/HAP-NodeRed/issues"
+    "url": "https://github.com/NorthernMan54/node-red-contrib-homebridge-automation/issues"
   },
-  "homepage": "https://github.com/NorthernMan54/HAP-NodeRed#readme"
+  "homepage": "https://github.com/NorthernMan54/node-red-contrib-homebridge-automation#readme"
 }
