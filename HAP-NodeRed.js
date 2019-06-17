@@ -447,13 +447,15 @@ module.exports = function(RED) {
           var msg = {
             name: node.name,
             _rawMessage: message,
-            payload: _convertHBcharactericToNode(message.characteristics, node),
-            Homebridge: node.hbDevice.homebridge,
-            Manufacturer: node.hbDevice.manufacturer,
-            Service: node.hbDevice.deviceType,
-            _device: node.device,
-            _confId: node.confId
+            payload: _convertHBcharactericToNode(message.characteristics, node)
           };
+          if (node.hbDevice) {
+            msg.Homebridge = node.hbDevice.homebridge;
+            msg.Manufacturer = node.hbDevice.manufacturer;
+            msg.Service = node.hbDevice.deviceType;
+            msg._device = node.device;
+            msg._confId = node.confId;
+          }
           node.send(msg);
         } else {
           node.error(err);
