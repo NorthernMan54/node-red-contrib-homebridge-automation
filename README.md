@@ -20,6 +20,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [May 9, 2019 - Version 0.0.43](#may-9-2019---version-0043)
          * [May 15, 2019 - Version 0.0.44](#may-15-2019---version-0044)
          * [May 29, 2019 - Version 0.0.45](#may-29-2019---version-0045)
+         * [July 27, 2019 - Version 0.0.50](#july-27-2019---version-0050)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
@@ -101,6 +102,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 - Name Change to Homebridge-Automation
 
+### July 27, 2019 - Version 0.0.50
+
+- Publish as a NPM package to resolve #17
+
 # Backlog / Roadmap
 
 * [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )
@@ -133,7 +138,7 @@ Place your homebridge instances into "INSECURE MODE".  This is same as my [Homeb
 ## 3 - Install Homebridge-Automation into Node-Red
 
     cd ~/.node-red
-    npm install -g https://github.com/NorthernMan54/node-red-contrib-homebridge-automation
+    npm install node-red-contrib-homebridge-automation
 
 ## 4 - Start Node-Red
 
