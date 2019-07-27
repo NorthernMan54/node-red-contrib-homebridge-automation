@@ -8,6 +8,7 @@
     "api": "documentation build HAP-NodeRed.js -f md --config docs/documentation.yml > docs/API.md",
     "document": "./gh-md-toc --insert README.md"
   },
+  "keywords": [ "node-red", "HomeBridge" ],
   "node-red": {
     "nodes": {
       "HAP-NodeRed": "HAP-NodeRed.js"
