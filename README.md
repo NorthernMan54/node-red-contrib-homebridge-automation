@@ -50,7 +50,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
 
 # Introduction
 
-This is an pre-beta release of the ability to integrate Homebridge Accessories into [Node-RED](https://nodered.org) so that you can start flows from Homebridge accessory events and control your existing homebridge accessories.  ( To create accessories in HomeKit, please use node-red-contrib-homekit-bridged. )
+This is a release of the ability to integrate Homebridge Accessories into [Node-RED](https://nodered.org) so that you can start flows from Homebridge accessory events and control your existing homebridge accessories.  ( To create accessories in HomeKit, please use node-red-contrib-homekit-bridged. )
 
 ![Homebridge Nodes](docs/Homebridge%20Nodes.png)
 

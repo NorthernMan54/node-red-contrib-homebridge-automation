@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-homebridge-automation",
-  "version": "0.0.51",
+  "version": "0.0.52",
   "description": "NodeRED Automation for HomeBridge",
   "main": "HAP-NodeRed.js",
   "scripts": {
@@ -8,7 +8,10 @@
     "api": "documentation build HAP-NodeRed.js -f md --config docs/documentation.yml > docs/API.md",
     "document": "./gh-md-toc --insert README.md"
   },
-  "keywords": [ "node-red", "HomeBridge" ],
+  "keywords": [
+    "node-red",
+    "HomeBridge"
+  ],
   "node-red": {
     "nodes": {
       "HAP-NodeRed": "HAP-NodeRed.js"
