@@ -276,6 +276,12 @@ Message payload will vary depending on characteristics support by the device, th
 
 To find supported characteristics for a device, please send an invalid message payload to the node, and it will output the supported characteristics in the debug log.
 
+# Flows Shared from Community
+
+I have started collecting flows for useful functions on the wiki.
+
+https://github.com/NorthernMan54/node-red-contrib-homebridge-automation/wiki
+
 # Troubleshooting / DEBUG MODE
 
 ## To start Node-RED in DEBUG mode, and output Homebridge-Automation debug logs start Node-RED like this.
