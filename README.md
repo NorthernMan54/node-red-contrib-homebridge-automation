@@ -41,6 +41,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [output](#output-2)
       * [hb control](#hb-control)
          * [Input](#input-2)
+   * [Flows Shared from Community](#flows-shared-from-community)
    * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
       * [To start Node-RED in DEBUG mode, and output Homebridge-Automation debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-homebridge-automation-debug-logs-start-node-red-like-this)
 
