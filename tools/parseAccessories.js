@@ -33,18 +33,20 @@ var deleteSeen = [];
 
 for (var i = 0; i < list.length; i++) {
   var endpoint = list[i];
+  // console.log("Checking", endpoint.fullName);
   if (deleteSeen[endpoint.fullName]) {
     console.log("WARNING: Duplicate device name", endpoint.fullName);
     // response.event.payload.endpoints.splice(i, 1);
   } else {
-    deleteSeen[endpoint.friendlyName] = true;
+    deleteSeen[endpoint.fullName] = true;
   }
 }
 
 deleteSeen = [];
 
-for (i = 0; i < list.length.length; i++) {
+for (i = 0; i < list.length; i++) {
   endpoint = list[i];
+  // console.log("Checking uniqueId", endpoint.uniqueId);
   if (deleteSeen[endpoint.uniqueId]) {
     console.log("ERROR: Parsing failed, duplicate uniqueID.", endpoint.fullName);
     // response.event.payload.endpoints.splice(i, 1);

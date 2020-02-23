@@ -1,0 +1,490 @@
+[
+    {
+        "homebridge": "parseTest",
+        "host": "127.0.0.1",
+        "port": 51826,
+        "id": "CC:22:3D:E3:CE:30",
+        "manufacturer": "Nest",
+        "aid": 10,
+        "type": "0000008A",
+        "name": "Dining Room Temperature",
+        "service": "Temperature Sensor",
+        "fullName": "Dining Room Temperature - Temperature Sensor",
+        "sortName": "Dining Room Temperature:Temperature Sensor",
+        "uniqueId": "parseTestCC:22:3D:E3:CE:30NestDining Room Temperature0000008A",
+        "descriptions": "CurrentTemperature",
+        "characteristics": {
+            "10.38": {
+                "characteristic": "CurrentTemperature",
+                "iid": 38
+            }
+        },
+        "getCharacteristics": "10.38",
+        "eventRegisters": [
+            {
+                "aid": 10,
+                "iid": 38,
+                "ev": true
+            }
+        ]
+    },
+    {
+        "homebridge": "parseTest",
+        "host": "127.0.0.1",
+        "port": 51826,
+        "id": "CC:22:3D:E3:CE:30",
+        "manufacturer": "Nest",
+        "aid": 10,
+        "type": "0000004A",
+        "name": "Dining Room Thermostat",
+        "service": "Thermostat",
+        "fullName": "Dining Room Thermostat - Thermostat",
+        "sortName": "Dining Room Thermostat:Thermostat",
+        "uniqueId": "parseTestCC:22:3D:E3:CE:30NestDining Room Thermostat0000004A",
+        "descriptions": "CurrentHeatingCoolingState, TargetHeatingCoolingState, CurrentTemperature, TargetTemperature, TemperatureDisplayUnits, CurrentRelativeHumidity, CoolingThresholdTemperature, HeatingThresholdTemperature, StatusActive, FanTimerActive, FanTimerDuration, HasLeaf, SunlightCorrectionEnabled, SunlightCorrectionActive, UsingEmergencyHeat",
+        "characteristics": {
+            "10.9": {
+                "characteristic": "CurrentHeatingCoolingState",
+                "iid": 9
+            },
+            "10.10": {
+                "characteristic": "TargetHeatingCoolingState",
+                "iid": 10
+            },
+            "10.11": {
+                "characteristic": "CurrentTemperature",
+                "iid": 11
+            },
+            "10.12": {
+                "characteristic": "TargetTemperature",
+                "iid": 12
+            },
+            "10.13": {
+                "characteristic": "TemperatureDisplayUnits",
+                "iid": 13
+            },
+            "10.14": {
+                "characteristic": "CurrentRelativeHumidity",
+                "iid": 14
+            },
+            "10.15": {
+                "characteristic": "CoolingThresholdTemperature",
+                "iid": 15
+            },
+            "10.16": {
+                "characteristic": "HeatingThresholdTemperature",
+                "iid": 16
+            },
+            "10.17": {
+                "characteristic": "StatusActive",
+                "iid": 17
+            },
+            "10.18": {
+                "characteristic": "FanTimerActive",
+                "iid": 18
+            },
+            "10.19": {
+                "characteristic": "FanTimerDuration",
+                "iid": 19
+            },
+            "10.20": {
+                "characteristic": "HasLeaf",
+                "iid": 20
+            },
+            "10.21": {
+                "characteristic": "SunlightCorrectionEnabled",
+                "iid": 21
+            },
+            "10.22": {
+                "characteristic": "SunlightCorrectionActive",
+                "iid": 22
+            },
+            "10.23": {
+                "characteristic": "UsingEmergencyHeat",
+                "iid": 23
+            }
+        },
+        "getCharacteristics": "10.9,10.10,10.11,10.12,10.13,10.14,10.15,10.16,10.17,10.18,10.19,10.20,10.21,10.22,10.23",
+        "eventRegisters": [
+            {
+                "aid": 10,
+                "iid": 9,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 10,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 11,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 12,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 13,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 14,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 15,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 16,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 17,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 18,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 19,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 20,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 21,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 22,
+                "ev": true
+            },
+            {
+                "aid": 10,
+                "iid": 23,
+                "ev": true
+            }
+        ]
+    },
+    {
+        "homebridge": "parseTest",
+        "host": "127.0.0.1",
+        "port": 51826,
+        "id": "CC:22:3D:E3:CE:30",
+        "manufacturer": "Nest",
+        "aid": 9,
+        "type": "00000049",
+        "name": "Eco Mode",
+        "service": "Switch",
+        "fullName": "Eco Mode - Switch",
+        "sortName": "Eco Mode:Switch",
+        "uniqueId": "parseTestCC:22:3D:E3:CE:30NestEco Mode00000049",
+        "descriptions": "On",
+        "characteristics": {
+            "9.35": {
+                "characteristic": "On",
+                "iid": 35
+            }
+        },
+        "getCharacteristics": "9.35",
+        "eventRegisters": [
+            {
+                "aid": 9,
+                "iid": 35,
+                "ev": true
+            }
+        ]
+    },
+    {
+        "homebridge": "parseTest",
+        "host": "127.0.0.1",
+        "port": 51826,
+        "id": "CC:22:3D:E3:CE:30",
+        "manufacturer": "Nest",
+        "aid": 10,
+        "type": "00000049",
+        "name": "Eco Mode",
+        "service": "Switch",
+        "fullName": "Eco Mode - Switch",
+        "sortName": "Eco Mode:Switch",
+        "uniqueId": "parseTestCC:22:3D:E3:CE:30NestEco Mode00000049",
+        "descriptions": "On",
+        "characteristics": {
+            "10.35": {
+                "characteristic": "On",
+                "iid": 35
+            }
+        },
+        "getCharacteristics": "10.35",
+        "eventRegisters": [
+            {
+                "aid": 10,
+                "iid": 35,
+                "ev": true
+            }
+        ]
+    },
+    {
+        "homebridge": "parseTest",
+        "host": "127.0.0.1",
+        "port": 51826,
+        "id": "CC:22:3D:E3:CE:30",
+        "manufacturer": "Nest",
+        "aid": 9,
+        "type": "00000040",
+        "name": "Fan",
+        "service": "Fan",
+        "fullName": "Fan - Fan",
+        "sortName": "Fan:Fan",
+        "uniqueId": "parseTestCC:22:3D:E3:CE:30NestFan00000040",
+        "descriptions": "On",
+        "characteristics": {
+            "9.32": {
+                "characteristic": "On",
+                "iid": 32
+            }
+        },
+        "getCharacteristics": "9.32",
+        "eventRegisters": [
+            {
+                "aid": 9,
+                "iid": 32,
+                "ev": true
+            }
+        ]
+    },
+    {
+        "homebridge": "parseTest",
+        "host": "127.0.0.1",
+        "port": 51826,
+        "id": "CC:22:3D:E3:CE:30",
+        "manufacturer": "Nest",
+        "aid": 10,
+        "type": "00000040",
+        "name": "Fan",
+        "service": "Fan",
+        "fullName": "Fan - Fan",
+        "sortName": "Fan:Fan",
+        "uniqueId": "parseTestCC:22:3D:E3:CE:30NestFan00000040",
+        "descriptions": "On",
+        "characteristics": {
+            "10.32": {
+                "characteristic": "On",
+                "iid": 32
+            }
+        },
+        "getCharacteristics": "10.32",
+        "eventRegisters": [
+            {
+                "aid": 10,
+                "iid": 32,
+                "ev": true
+            }
+        ]
+    },
+    {
+        "homebridge": "parseTest",
+        "host": "127.0.0.1",
+        "port": 51826,
+        "id": "CC:22:3D:E3:CE:30",
+        "manufacturer": "Nest",
+        "aid": 9,
+        "type": "0000008A",
+        "name": "Master Bedroom Temperature",
+        "service": "Temperature Sensor",
+        "fullName": "Master Bedroom Temperature - Temperature Sensor",
+        "sortName": "Master Bedroom Temperature:Temperature Sensor",
+        "uniqueId": "parseTestCC:22:3D:E3:CE:30NestMaster Bedroom Temperature0000008A",
+        "descriptions": "CurrentTemperature",
+        "characteristics": {
+            "9.38": {
+                "characteristic": "CurrentTemperature",
+                "iid": 38
+            }
+        },
+        "getCharacteristics": "9.38",
+        "eventRegisters": [
+            {
+                "aid": 9,
+                "iid": 38,
+                "ev": true
+            }
+        ]
+    },
+    {
+        "homebridge": "parseTest",
+        "host": "127.0.0.1",
+        "port": 51826,
+        "id": "CC:22:3D:E3:CE:30",
+        "manufacturer": "Nest",
+        "aid": 9,
+        "type": "0000004A",
+        "name": "Master Bedroom Thermostat",
+        "service": "Thermostat",
+        "fullName": "Master Bedroom Thermostat - Thermostat",
+        "sortName": "Master Bedroom Thermostat:Thermostat",
+        "uniqueId": "parseTestCC:22:3D:E3:CE:30NestMaster Bedroom Thermostat0000004A",
+        "descriptions": "CurrentHeatingCoolingState, TargetHeatingCoolingState, CurrentTemperature, TargetTemperature, TemperatureDisplayUnits, CurrentRelativeHumidity, CoolingThresholdTemperature, HeatingThresholdTemperature, StatusActive, FanTimerActive, FanTimerDuration, HasLeaf, SunlightCorrectionEnabled, SunlightCorrectionActive, UsingEmergencyHeat",
+        "characteristics": {
+            "9.9": {
+                "characteristic": "CurrentHeatingCoolingState",
+                "iid": 9
+            },
+            "9.10": {
+                "characteristic": "TargetHeatingCoolingState",
+                "iid": 10
+            },
+            "9.11": {
+                "characteristic": "CurrentTemperature",
+                "iid": 11
+            },
+            "9.12": {
+                "characteristic": "TargetTemperature",
+                "iid": 12
+            },
+            "9.13": {
+                "characteristic": "TemperatureDisplayUnits",
+                "iid": 13
+            },
+            "9.14": {
+                "characteristic": "CurrentRelativeHumidity",
+                "iid": 14
+            },
+            "9.15": {
+                "characteristic": "CoolingThresholdTemperature",
+                "iid": 15
+            },
+            "9.16": {
+                "characteristic": "HeatingThresholdTemperature",
+                "iid": 16
+            },
+            "9.17": {
+                "characteristic": "StatusActive",
+                "iid": 17
+            },
+            "9.18": {
+                "characteristic": "FanTimerActive",
+                "iid": 18
+            },
+            "9.19": {
+                "characteristic": "FanTimerDuration",
+                "iid": 19
+            },
+            "9.20": {
+                "characteristic": "HasLeaf",
+                "iid": 20
+            },
+            "9.21": {
+                "characteristic": "SunlightCorrectionEnabled",
+                "iid": 21
+            },
+            "9.22": {
+                "characteristic": "SunlightCorrectionActive",
+                "iid": 22
+            },
+            "9.23": {
+                "characteristic": "UsingEmergencyHeat",
+                "iid": 23
+            }
+        },
+        "getCharacteristics": "9.9,9.10,9.11,9.12,9.13,9.14,9.15,9.16,9.17,9.18,9.19,9.20,9.21,9.22,9.23",
+        "eventRegisters": [
+            {
+                "aid": 9,
+                "iid": 9,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 10,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 11,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 12,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 13,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 14,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 15,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 16,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 17,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 18,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 19,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 20,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 21,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 22,
+                "ev": true
+            },
+            {
+                "aid": 9,
+                "iid": 23,
+                "ev": true
+            }
+        ]
+    }
+]
+WARNING: Duplicate device name Eco Mode - Switch
+WARNING: Duplicate device name Fan - Fan
+ERROR: Parsing failed, duplicate uniqueID. Eco Mode - Switch
+ERROR: Parsing failed, duplicate uniqueID. Fan - Fan
