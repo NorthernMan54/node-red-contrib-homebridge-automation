@@ -24,3 +24,31 @@ var hbDevices = new Homebridges(endPoints);
 console.log(JSON.stringify(hbDevices.toList({
   perms: 'ev'
 }), null, 4));
+
+var list = hbDevices.toList({
+  perms: 'ev'
+});
+
+var deleteSeen = [];
+
+for (var i = 0; i < list.length; i++) {
+  var endpoint = list[i];
+  if (deleteSeen[endpoint.fullName]) {
+    console.log("WARNING: Duplicate device name", endpoint.fullName);
+    // response.event.payload.endpoints.splice(i, 1);
+  } else {
+    deleteSeen[endpoint.friendlyName] = true;
+  }
+}
+
+deleteSeen = [];
+
+for (i = 0; i < list.length.length; i++) {
+  endpoint = list[i];
+  if (deleteSeen[endpoint.uniqueId]) {
+    console.log("ERROR: Parsing failed, duplicate uniqueID.", endpoint.fullName);
+    // response.event.payload.endpoints.splice(i, 1);
+  } else {
+    deleteSeen[endpoint.uniqueId] = true;
+  }
+}

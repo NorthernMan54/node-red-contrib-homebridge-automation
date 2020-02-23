@@ -53,6 +53,34 @@ module.exports = function(RED) {
           perms: 'ev'
         }).length);
         // debug(hbDevices.toList({perms: 'pw'}));
+
+        var list = hbDevices.toList({
+          perms: 'ev'
+        });
+
+        var deleteSeen = [];
+
+        for (var i = 0; i < list.length; i++) {
+          var endpoint = list[i];
+          if (deleteSeen[endpoint.fullName]) {
+            console.log("WARNING: Duplicate device name", endpoint.fullName);
+            // response.event.payload.endpoints.splice(i, 1);
+          } else {
+            deleteSeen[endpoint.friendlyName] = true;
+          }
+        }
+
+        deleteSeen = [];
+
+        for (i = 0; i < list.length.length; i++) {
+          endpoint = list[i];
+          if (deleteSeen[endpoint.uniqueId]) {
+            console.log("ERROR: Parsing failed, duplicate uniqueID.", endpoint.fullName);
+            // response.event.payload.endpoints.splice(i, 1);
+          } else {
+            deleteSeen[endpoint.uniqueId] = true;
+          }
+        }
         // evDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
         // ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
 
