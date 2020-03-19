@@ -783,10 +783,21 @@ module.exports = function(RED) {
             debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
             if (message.characteristics.length > 0) {
               homebridge.HAPcontrol(device.host, device.port, JSON.stringify(message), function(err, status) {
-                if (!err && status.characteristics[0].status === 0) {
+                if (!err && status && status.characteristics[0].status === 0) {
                   debug("Controlled %s:%s ->", device.host, device.port, JSON.stringify(status));
                   node.status({
                     text: JSON.stringify(payload),
+                    shape: 'dot',
+                    fill: 'green'
+                  });
+                  setTimeout(function() {
+                    node.status({});
+                  }, 10 * 1000);
+                  callback(null);
+                } else if (!err) {
+                  debug("Controlled %s:%s ->", device.host, device.port);
+                  node.status({
+                    text: "Ok",
                     shape: 'dot',
                     fill: 'green'
                   });
