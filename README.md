@@ -112,6 +112,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 - Fix for device naming for Nest FAN and ECO Mode
 
+### Mar 18, 2020 - Version 0.0.59
+
+- Support for the new version of HAP-NodeJS
+
 # Backlog / Roadmap
 
 * [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )
