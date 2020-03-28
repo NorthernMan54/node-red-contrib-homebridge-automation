@@ -189,7 +189,7 @@ module.exports = function(RED) {
         shape: 'dot',
         fill: 'green'
       });
-      setTimeout(function() {
+      node.timeout = setTimeout(function() {
         node.status({});
       }, 10 * 1000);
       node.send(msg);
@@ -317,7 +317,7 @@ module.exports = function(RED) {
             shape: 'dot',
             fill: 'green'
           });
-          setTimeout(function() {
+          node.timeout = setTimeout(function() {
             node.status({});
           }, 10 * 1000);
           node.lastMessageValue = newMsg.payload;
@@ -389,7 +389,7 @@ module.exports = function(RED) {
           shape: 'dot',
           fill: 'green'
         });
-        setTimeout(function() {
+        node.timeout = setTimeout(function() {
           node.status({});
         }, 30 * 1000);
       } else {
@@ -695,7 +695,7 @@ module.exports = function(RED) {
                   shape: 'dot',
                   fill: 'green'
                 });
-                setTimeout(function() {
+                node.timeout = setTimeout(function() {
                   node.status({});
                 }, 30 * 1000);
                 callback(null, status);
@@ -761,7 +761,7 @@ module.exports = function(RED) {
                 shape: 'dot',
                 fill: 'green'
               });
-              setTimeout(function() {
+              node.timeout = setTimeout(function() {
                 node.status({});
               }, 30 * 1000);
               callback(null);
@@ -790,7 +790,7 @@ module.exports = function(RED) {
                     shape: 'dot',
                     fill: 'green'
                   });
-                  setTimeout(function() {
+                  node.timeout = setTimeout(function() {
                     node.status({});
                   }, 10 * 1000);
                   callback(null);
@@ -801,7 +801,7 @@ module.exports = function(RED) {
                     shape: 'dot',
                     fill: 'green'
                   });
-                  setTimeout(function() {
+                  node.timeout = setTimeout(function() {
                     node.status({});
                   }, 10 * 1000);
                   callback(null);
