@@ -1,5 +1,9 @@
 var Homebridges = require('../lib/Homebridges.js').Homebridges;
+var normalizeUUID = require('../node_modules/hap-node-client/lib/util.js').normalizeUUID;
 var fs = require('fs');
+var response = fs.readFileSync(process.argv[2]).toString();
+var accessories = normalizeUUID(JSON.parse(response.replace(/\uFFFD/g, '')));
+accessories = JSON.parse(response.replace(/\uFFFD/g, ''));
 
 var endPoints = [{
   ipAddress: "127.0.0.1",
@@ -17,7 +21,7 @@ var endPoints = [{
       sh: 'kD1sXg=='
     }
   },
-  accessories: JSON.parse(fs.readFileSync(process.argv[2]).toString())
+  accessories: accessories
 }];
 var hbDevices = new Homebridges(endPoints);
 
