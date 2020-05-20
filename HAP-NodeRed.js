@@ -871,7 +871,8 @@ module.exports = function(RED) {
           debug("%s registered: %s -> %s:%s", node.type, node.fullName, device.host, device.port, JSON.stringify(status));
           callback(null);
         } else {
-          node.error(device.host + ":" + device.port + " -> " + err);
+          // Fix for # 47
+          // node.error(device.host + ":" + device.port + " -> " + err);
           callback(err);
         }
       }.bind(this));
