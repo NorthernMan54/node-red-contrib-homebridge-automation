@@ -878,7 +878,7 @@ module.exports = function(RED) {
         "characteristics": device.eventRegisters
       };
       // debug("Message", message);
-      homebridge.HAPevent(device.host, device.port, node.pin, JSON.stringify(message), function(err, status) {
+      homebridge.HAPevent(device.host, device.port, node.node.pin, JSON.stringify(message), function(err, status) {
         if (!err) {
           debug("%s registered: %s -> %s:%s", node.type, node.fullName, device.host, device.port, JSON.stringify(status));
           callback(null);
