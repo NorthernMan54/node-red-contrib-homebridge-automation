@@ -28,7 +28,7 @@ module.exports = function(RED) {
 
   function hbConf(n) {
     RED.nodes.createNode(this, n);
-    this.username = n.username;
+    this.pin = n.username;
     this.password = this.credentials.password;
 
     this.users = {};
@@ -160,6 +160,9 @@ module.exports = function(RED) {
     // debug("hbEvent", n);
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
+    if (this.conf) {
+      this.pin = this.conf.pin;
+    }
     this.confId = n.conf;
     this.device = n.device;
     this.service = n.Service;
@@ -260,6 +263,9 @@ module.exports = function(RED) {
   function hbResume(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf);
+    if (this.conf) {
+      this.pin = this.conf.pin;
+    }
     this.confId = n.conf;
     this.device = n.device;
     this.service = n.Service;
@@ -414,6 +420,9 @@ module.exports = function(RED) {
   function hbControl(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf); // The configuration node
+    if (this.conf) {
+      this.pin = this.conf.pin;
+    }
     this.confId = n.conf;
     this.device = n.device;
     this.service = n.Service;
@@ -447,6 +456,9 @@ module.exports = function(RED) {
   function hbStatus(n) {
     RED.nodes.createNode(this, n);
     this.conf = RED.nodes.getNode(n.conf); // The configuration node
+    if (this.conf) {
+      this.pin = this.conf.pin;
+    }
     this.confId = n.conf;
     this.device = n.device;
     this.service = n.Service;
@@ -687,7 +699,7 @@ module.exports = function(RED) {
           default:
             var message = '?id=' + device.getCharacteristics;
             debug("_status request: %s -> %s:%s ->", node.fullName, device.host, device.port, message);
-            homebridge.HAPstatus(device.host, device.port, message, function(err, status) {
+            homebridge.HAPstatus(device.host, device.port, node.pin, message, function(err, status) {
               if (!err) {
                 // debug("Status %s:%s ->", device.host, device.port, status);
                 node.status({
@@ -753,7 +765,7 @@ module.exports = function(RED) {
             "image-height": 1080
           };
           debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
-          homebridge.HAPresource(device.host, device.port, JSON.stringify(message), function(err, status) {
+          homebridge.HAPresource(device.host, device.port, node.pin, JSON.stringify(message), function(err, status) {
             if (!err) {
               debug("Controlled %s:%s ->", device.host, device.port);
               node.status({
@@ -782,7 +794,7 @@ module.exports = function(RED) {
             message = _createControlMessage.call(this, payload, node, device);
             debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
             if (message.characteristics.length > 0) {
-              homebridge.HAPcontrol(device.host, device.port, JSON.stringify(message), function(err, status) {
+              homebridge.HAPcontrol(device.host, device.port, node.pin, JSON.stringify(message), function(err, status) {
                 if (!err && status && status.characteristics[0].status === 0) {
                   debug("Controlled %s:%s ->", device.host, device.port, JSON.stringify(status));
                   node.status({
@@ -866,7 +878,7 @@ module.exports = function(RED) {
         "characteristics": device.eventRegisters
       };
       // debug("Message", message);
-      homebridge.HAPevent(device.host, device.port, JSON.stringify(message), function(err, status) {
+      homebridge.HAPevent(device.host, device.port, node.pin, JSON.stringify(message), function(err, status) {
         if (!err) {
           debug("%s registered: %s -> %s:%s", node.type, node.fullName, device.host, device.port, JSON.stringify(status));
           callback(null);
