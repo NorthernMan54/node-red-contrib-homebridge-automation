@@ -746,7 +746,8 @@ module.exports = function(RED) {
     if (device) {
       var message;
       switch (device.type) {
-        case "00000111": // Camera
+        case "00000110": // Camera RTPStream Management
+        case "00000111": // Camera Control
           message = {
             "resource-type": "image",
             "image-width": 1920,
