@@ -189,6 +189,7 @@ module.exports = function(RED) {
         shape: 'dot',
         fill: 'green'
       });
+      clearTimeout(node.timeout);
       node.timeout = setTimeout(function() {
         node.status({});
       }, 10 * 1000);
@@ -317,6 +318,7 @@ module.exports = function(RED) {
             shape: 'dot',
             fill: 'green'
           });
+          clearTimeout(node.timeout);
           node.timeout = setTimeout(function() {
             node.status({});
           }, 10 * 1000);
@@ -389,6 +391,7 @@ module.exports = function(RED) {
           shape: 'dot',
           fill: 'green'
         });
+        clearTimeout(node.timeout);
         node.timeout = setTimeout(function() {
           node.status({});
         }, 30 * 1000);
@@ -695,6 +698,7 @@ module.exports = function(RED) {
                   shape: 'dot',
                   fill: 'green'
                 });
+                clearTimeout(node.timeout);
                 node.timeout = setTimeout(function() {
                   node.status({});
                 }, 30 * 1000);
@@ -762,6 +766,7 @@ module.exports = function(RED) {
                 shape: 'dot',
                 fill: 'green'
               });
+              clearTimeout(node.timeout);
               node.timeout = setTimeout(function() {
                 node.status({});
               }, 30 * 1000);
@@ -791,6 +796,7 @@ module.exports = function(RED) {
                     shape: 'dot',
                     fill: 'green'
                   });
+                  clearTimeout(node.timeout);
                   node.timeout = setTimeout(function() {
                     node.status({});
                   }, 10 * 1000);
@@ -802,6 +808,7 @@ module.exports = function(RED) {
                     shape: 'dot',
                     fill: 'green'
                   });
+                  clearTimeout(node.timeout);
                   node.timeout = setTimeout(function() {
                     node.status({});
                   }, 10 * 1000);
