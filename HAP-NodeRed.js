@@ -189,6 +189,7 @@ module.exports = function(RED) {
         shape: 'dot',
         fill: 'green'
       });
+      clearTimeout(node.timeout);
       node.timeout = setTimeout(function() {
         node.status({});
       }, 10 * 1000);
@@ -317,6 +318,7 @@ module.exports = function(RED) {
             shape: 'dot',
             fill: 'green'
           });
+          clearTimeout(node.timeout);
           node.timeout = setTimeout(function() {
             node.status({});
           }, 10 * 1000);
@@ -389,6 +391,7 @@ module.exports = function(RED) {
           shape: 'dot',
           fill: 'green'
         });
+        clearTimeout(node.timeout);
         node.timeout = setTimeout(function() {
           node.status({});
         }, 30 * 1000);
@@ -695,6 +698,7 @@ module.exports = function(RED) {
                   shape: 'dot',
                   fill: 'green'
                 });
+                clearTimeout(node.timeout);
                 node.timeout = setTimeout(function() {
                   node.status({});
                 }, 30 * 1000);
@@ -746,7 +750,8 @@ module.exports = function(RED) {
     if (device) {
       var message;
       switch (device.type) {
-        case "00000111": // Camera
+        case "00000110": // Camera RTPStream Management
+        case "00000111": // Camera Control
           message = {
             "resource-type": "image",
             "image-width": 1920,
@@ -761,6 +766,7 @@ module.exports = function(RED) {
                 shape: 'dot',
                 fill: 'green'
               });
+              clearTimeout(node.timeout);
               node.timeout = setTimeout(function() {
                 node.status({});
               }, 30 * 1000);
@@ -790,6 +796,7 @@ module.exports = function(RED) {
                     shape: 'dot',
                     fill: 'green'
                   });
+                  clearTimeout(node.timeout);
                   node.timeout = setTimeout(function() {
                     node.status({});
                   }, 10 * 1000);
@@ -801,6 +808,7 @@ module.exports = function(RED) {
                     shape: 'dot',
                     fill: 'green'
                   });
+                  clearTimeout(node.timeout);
                   node.timeout = setTimeout(function() {
                     node.status({});
                   }, 10 * 1000);
