@@ -615,19 +615,24 @@ module.exports = function(RED) {
 
   function _convertHBcharactericToNode(hbMessage, node) {
     // debug("_convertHBcharactericToNode", node.device);
-    var device = hbDevices.findDevice(node.device);
-    // debug("Device", device);
     var payload = {};
-    // characteristics = Object.assign(characteristics, characteristic.characteristic);
-    if (device) {
-      hbMessage.forEach(function(characteristic) {
-        // debug("Exists", (device.characteristics[characteristic.aid + '.' + characteristic.iid]));
-        if (device.characteristics[characteristic.aid + '.' + characteristic.iid]) {
-          payload = Object.assign(payload, {
-            [device.characteristics[characteristic.aid + '.' + characteristic.iid].characteristic]: characteristic.value
-          });
-        }
-      });
+    if (!hbMessage.payload) {
+      var device = hbDevices.findDevice(node.device);
+      // debug("Device", device);
+
+      // characteristics = Object.assign(characteristics, characteristic.characteristic);
+      if (device) {
+        hbMessage.forEach(function(characteristic) {
+          // debug("Exists", (device.characteristics[characteristic.aid + '.' + characteristic.iid]));
+          if (device.characteristics[characteristic.aid + '.' + characteristic.iid]) {
+            payload = Object.assign(payload, {
+              [device.characteristics[characteristic.aid + '.' + characteristic.iid].characteristic]: characteristic.value
+            });
+          }
+        });
+      }
+    } else {
+      payload = hbMessage.payload;
     }
     // debug("payload", payload);
     return (payload);
@@ -685,8 +690,46 @@ module.exports = function(RED) {
     if (hbDevices) {
       var device = hbDevices.findDevice(node.device);
       if (device) {
-        switch (device.service) {
-          // Nothing specialized, yet
+        // debug("device.type", device.type);
+        switch (device.type) {
+          case "00000110": // Camera RTPStream Management
+          case "00000111": // Camera Control
+            var message = {
+              "resource-type": "image",
+              "image-width": 1920,
+              "image-height": 1080
+            };
+            debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
+            homebridge.HAPresource(device.host, device.port, JSON.stringify(message), function(err, status) {
+              // debug("status", btoa(status));
+              if (!err) {
+                debug("Controlled %s:%s ->", device.host, device.port);
+                node.status({
+                  text: 'sent',
+                  shape: 'dot',
+                  fill: 'green'
+                });
+                clearTimeout(node.timeout);
+                node.timeout = setTimeout(function() {
+                  node.status({});
+                }, 30 * 1000);
+                // {"characteristics":[{"aid":19,"iid":10,"value":false},{"aid":19,"iid":11,"value":0}]}
+                callback(null, {
+                  characteristics: {
+                    payload: btoa(status)
+                  }
+                });
+              } else {
+                node.error(device.host + ":" + device.port + " -> " + err);
+                node.status({
+                  text: 'error',
+                  shape: 'ring',
+                  fill: 'red'
+                });
+                callback(err);
+              }
+            });
+            break;
           default:
             var message = '?id=' + device.getCharacteristics;
             debug("_status request: %s -> %s:%s ->", node.fullName, device.host, device.port, message);
@@ -913,4 +956,16 @@ function _getKey(obj, value) {
     }
   }
   return null;
+}
+
+function btoa(str) {
+  var buffer;
+
+  if (str instanceof Buffer) {
+    buffer = str;
+  } else {
+    buffer = Buffer.from(str.toString(), 'binary');
+  }
+
+  return buffer.toString('base64');
 }
