@@ -23,6 +23,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [July 27, 2019 - Version 0.0.50](#july-27-2019---version-0050)
          * [Feb 24, 2020 - Version 0.0.56](#feb-24-2020---version-0056)
          * [Mar 18, 2020 - Version 0.0.59](#mar-18-2020---version-0059)
+         * [Oct 13, 2020 - Version 0.0.71](#oct-13-2020---version-0071)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
@@ -116,6 +117,15 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 ### Mar 18, 2020 - Version 0.0.59
 
 - Support for the new version of HAP-NodeJS
+
+### Oct 13, 2020 - Version 0.0.71
+
+- Realize that I have not updated the change log for a while, so this is a laundry list of changes since 0.0.59
+- Additional error logging
+- Fix for issue #47 and #48
+- Support camera devices - tks dxdc
+- Improved timeout support
+- Support for the latest version of homebridge
 
 # Backlog / Roadmap
 
