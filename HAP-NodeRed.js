@@ -62,10 +62,10 @@ module.exports = function(RED) {
 
         for (var i = 0; i < list.length; i++) {
           var endpoint = list[i];
-          console.log("Checking", endpoint.fullName);
+          // console.log("Checking", endpoint.fullName);
           if (deleteSeen[endpoint.fullName]) {
             console.log("WARNING: Duplicate device name", endpoint.fullName);
-            debug('Duplicate', endpoint);
+            // debug('Duplicate', endpoint);
             // response.event.payload.endpoints.splice(i, 1);
           } else {
             deleteSeen[endpoint.fullName] = true;
