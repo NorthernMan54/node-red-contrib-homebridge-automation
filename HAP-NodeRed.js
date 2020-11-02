@@ -204,7 +204,9 @@ module.exports = function(RED) {
         perms: 'pr'
       });
       if (this.hbDevice) {
-        _status(node.device, node, '', function(err, message) {
+        _status(node.device, node, {
+          perms: 'ev'
+        }, function(err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
             debug("hbEvent received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
@@ -368,9 +370,13 @@ module.exports = function(RED) {
 
     node.conf.register(node, function() {
       debug("hbResume.register:", node.fullName);
-      this.hbDevice = hbDevices.findDevice(node.device);
+      this.hbDevice = hbDevices.findDevice(node.device, {
+        perms: 'pw'
+      });
       if (this.hbDevice) {
-        _status(node.device, node, '', function(err, message) {
+        _status(node.device, node, {
+          perms: 'pw'
+        }, function(err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
             debug("hbResume received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
@@ -477,7 +483,9 @@ module.exports = function(RED) {
     });
 
     node.on('input', function(msg) {
-      _status(this.device, node, msg.payload, function(err, message) {
+      _status(this.device, node, {
+        perms: 'pr'
+      }, function(err, message) {
         if (!err) {
           debug("hbStatus received: %s = %s", JSON.stringify(node.fullName), JSON.stringify(message));
           var msg = {
@@ -682,13 +690,11 @@ module.exports = function(RED) {
    * @return {type}          description
    */
 
-  function _status(nrDevice, node, value, callback) {
+  function _status(nrDevice, node, perms, callback) {
     // debug("_status", new Error(), hbDevices);
     var error;
     if (hbDevices) {
-      var device = hbDevices.findDevice(node.device, {
-        perms: 'pr'
-      });
+      var device = hbDevices.findDevice(node.device, perms);
       if (device) {
         switch (device.service) {
           // Nothing specialized, yet
