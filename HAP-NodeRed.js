@@ -62,9 +62,10 @@ module.exports = function(RED) {
 
         for (var i = 0; i < list.length; i++) {
           var endpoint = list[i];
-          // console.log("Checking", endpoint.fullName);
+          console.log("Checking", endpoint.fullName);
           if (deleteSeen[endpoint.fullName]) {
             console.log("WARNING: Duplicate device name", endpoint.fullName);
+            debug('Duplicate', endpoint);
             // response.event.payload.endpoints.splice(i, 1);
           } else {
             deleteSeen[endpoint.fullName] = true;
@@ -199,7 +200,9 @@ module.exports = function(RED) {
 
     node.conf.register(node, function() {
       debug("hbEvent.register", node.fullName);
-      this.hbDevice = hbDevices.findDevice(node.device);
+      this.hbDevice = hbDevices.findDevice(node.device, {
+        perms: 'pr'
+      });
       if (this.hbDevice) {
         _status(node.device, node, '', function(err, message) {
           if (!err) {
@@ -216,8 +219,8 @@ module.exports = function(RED) {
         // node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
         // debug("DEVICE", this.hbDevice);
         this.hbDevice.eventRegisters.forEach(function(event) {
-          homebridge.on(node.hbDevice.host + node.hbDevice.port + event.aid + event.iid, node.command);
-          node.eventName.push(node.hbDevice.host + node.hbDevice.port + event.aid + event.iid);
+          homebridge.on(node.hbDevice.id + event.aid + event.iid, node.command);
+          node.eventName.push(node.hbDevice.id + event.aid + event.iid);
         });
         // homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid, node.command);
         node.status({
@@ -383,8 +386,8 @@ module.exports = function(RED) {
         // node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
         // homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid, node.command);
         this.hbDevice.eventRegisters.forEach(function(event) {
-          homebridge.on(node.hbDevice.host + node.hbDevice.port + event.aid + event.iid, node.command);
-          node.eventName.push(node.hbDevice.host + node.hbDevice.port + event.aid + event.iid);
+          homebridge.on(node.hbDevice.id + event.aid + event.iid, node.command);
+          node.eventName.push(node.hbDevice.id + event.aid + event.iid);
         });
         node.status({
           text: 'sent',
@@ -683,14 +686,16 @@ module.exports = function(RED) {
     // debug("_status", new Error(), hbDevices);
     var error;
     if (hbDevices) {
-      var device = hbDevices.findDevice(node.device);
+      var device = hbDevices.findDevice(node.device, {
+        perms: 'pr'
+      });
       if (device) {
         switch (device.service) {
           // Nothing specialized, yet
           default:
             var message = '?id=' + device.getCharacteristics;
-            debug("_status request: %s -> %s:%s ->", node.fullName, device.host, device.port, message);
-            homebridge.HAPstatus(device.host, device.port, message, function(err, status) {
+            debug("_status request: %s -> %s:%s ->", node.fullName, device.id, message);
+            homebridge.HAPstatusByDeviceID(device.id, message, function(err, status) {
               if (!err) {
                 // debug("Status %s:%s ->", device.host, device.port, status);
                 node.status({
@@ -704,7 +709,7 @@ module.exports = function(RED) {
                 }, 30 * 1000);
                 callback(null, status);
               } else {
-                error = device.host + ":" + device.port + " -> " + err + " -> " + status;
+                error = device.id + " -> " + err + " -> " + status;
                 node.status({
                   text: 'error',
                   shape: 'ring',
@@ -746,7 +751,9 @@ module.exports = function(RED) {
 
   function _control(node, payload, callback) {
     // debug("_control", node.device);
-    var device = hbDevices.findDevice(node.device);
+    var device = hbDevices.findDevice(node.device, {
+      perms: 'pw'
+    });
     if (device) {
       var message;
       switch (device.type) {
@@ -757,10 +764,10 @@ module.exports = function(RED) {
             "image-width": 1920,
             "image-height": 1080
           };
-          debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
-          homebridge.HAPresource(device.host, device.port, JSON.stringify(message), function(err, status) {
+          debug("Control %s ->", device.id, JSON.stringify(message));
+          homebridge.HAPresourceByDeviceID(device.id, JSON.stringify(message), function(err, status) {
             if (!err) {
-              debug("Controlled %s:%s ->", device.host, device.port);
+              debug("Controlled %s ->", device.id);
               node.status({
                 text: JSON.stringify(payload),
                 shape: 'dot',
@@ -772,7 +779,7 @@ module.exports = function(RED) {
               }, 30 * 1000);
               callback(null);
             } else {
-              node.error(device.host + ":" + device.port + " -> " + err);
+              node.error(device.id + " -> " + err);
               node.status({
                 text: 'error',
                 shape: 'ring',
@@ -786,11 +793,11 @@ module.exports = function(RED) {
           // debug("Object type", typeof payload);
           if (typeof payload === "object") {
             message = _createControlMessage.call(this, payload, node, device);
-            debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
+            debug("Control %s ->", device.id, JSON.stringify(message));
             if (message.characteristics.length > 0) {
-              homebridge.HAPcontrol(device.host, device.port, JSON.stringify(message), function(err, status) {
+              homebridge.HAPcontrolByDeviceID(device.id, JSON.stringify(message), function(err, status) {
                 if (!err && status && status.characteristics[0].status === 0) {
-                  debug("Controlled %s:%s ->", device.host, device.port, JSON.stringify(status));
+                  debug("Controlled %s ->", device.id, JSON.stringify(status));
                   node.status({
                     text: JSON.stringify(payload),
                     shape: 'dot',
@@ -802,7 +809,7 @@ module.exports = function(RED) {
                   }, 10 * 1000);
                   callback(null);
                 } else if (!err) {
-                  debug("Controlled %s:%s ->", device.host, device.port);
+                  debug("Controlled %s ->", device.id);
                   node.status({
                     text: "Ok",
                     shape: 'dot',
@@ -814,7 +821,7 @@ module.exports = function(RED) {
                   }, 10 * 1000);
                   callback(null);
                 } else {
-                  node.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
+                  node.error(device.id + " -> " + err + " -> " + status);
                   node.status({
                     text: 'error',
                     shape: 'ring',
@@ -868,15 +875,17 @@ module.exports = function(RED) {
 
   function _register(node, callback) {
     // debug("_register", node.device);
-    var device = hbDevices.findDevice(node.device);
+    var device = hbDevices.findDevice(node.device, {
+      perms: 'ev'
+    });
     if (node.type === 'hb-event' || node.type === 'hb-resume') {
       var message = {
         "characteristics": device.eventRegisters
       };
-      // debug("Message", message);
-      homebridge.HAPevent(device.host, device.port, JSON.stringify(message), function(err, status) {
+      debug("_register", node.fullName, device.id, message);
+      homebridge.HAPeventByDeviceID(device.id, JSON.stringify(message), function(err, status) {
         if (!err) {
-          debug("%s registered: %s -> %s:%s", node.type, node.fullName, device.host, device.port, JSON.stringify(status));
+          debug("%s registered: %s -> %s", node.type, node.fullName, device.id, JSON.stringify(status));
           callback(null);
         } else {
           // Fix for # 47

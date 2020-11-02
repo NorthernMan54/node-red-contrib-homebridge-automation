@@ -24,6 +24,8 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [Feb 24, 2020 - Version 0.0.56](#feb-24-2020---version-0056)
          * [Mar 18, 2020 - Version 0.0.59](#mar-18-2020---version-0059)
          * [Oct 13, 2020 - Version 0.0.71](#oct-13-2020---version-0071)
+         * [Oct 24, 2020 - Version 0.0.71](#oct-24-2020---version-0071)
+         * [Nov 1, 2020 - Version 0.0.73](#nov-1-2020---version-0073)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
@@ -126,6 +128,15 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 - Support camera devices - tks dxdc
 - Improved timeout support
 - Support for the latest version of homebridge
+
+### Oct 24, 2020 - Version 0.0.71
+
+- Added support for plugins that allow device name editing within the Home app.
+
+### Nov 1, 2020 - Version 0.0.73
+
+- Added support for Air Pressure and Power devices
+- Fixed issue #69 TV accessory events not firing since update of homebridge-broadlink-rm plugin
 
 # Backlog / Roadmap
 
