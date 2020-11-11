@@ -174,27 +174,41 @@ module.exports = function(RED) {
       // False messages can be received from accessories with multiple services
       // if (Object.keys(_convertHBcharactericToNode(event, node)).length > 0) {
       debug("hbEvent", node.name, event, node.state);
-      node.state = Object.assign(node.state, _convertHBcharactericToNode([event], node));
-      var msg = {
-        name: node.name,
-        payload: node.state,
-        Homebridge: node.hbDevice.homebridge,
-        Manufacturer: node.hbDevice.manufacturer,
-        Service: node.hbDevice.deviceType,
-        _device: node.device,
-        _confId: node.confId,
-        _rawEvent: event
-      };
-      node.status({
-        text: JSON.stringify(msg.payload),
-        shape: 'dot',
-        fill: 'green'
-      });
-      clearTimeout(node.timeout);
-      node.timeout = setTimeout(function() {
-        node.status({});
-      }, 10 * 1000);
-      node.send(msg);
+      if (event.status === true && event.value !== undefined) {
+        node.state = Object.assign(node.state, _convertHBcharactericToNode([event], node));
+        var msg = {
+          name: node.name,
+          payload: node.state,
+          Homebridge: node.hbDevice.homebridge,
+          Manufacturer: node.hbDevice.manufacturer,
+          Service: node.hbDevice.deviceType,
+          _device: node.device,
+          _confId: node.confId,
+          _rawEvent: event
+        };
+        node.status({
+          text: JSON.stringify(msg.payload),
+          shape: 'dot',
+          fill: 'green'
+        });
+        clearTimeout(node.timeout);
+        node.timeout = setTimeout(function() {
+          node.status({});
+        }, 10 * 1000);
+        node.send(msg);
+      } else if (event.status === true) {
+        node.status({
+          text: 'connected',
+          shape: 'dot',
+          fill: 'green'
+        });
+      } else {
+        node.status({
+          text: 'disconnected: ' + event.status,
+          shape: 'ring',
+          fill: 'red'
+        });
+      }
     };
     // };
 
@@ -359,12 +373,26 @@ module.exports = function(RED) {
 
       debug("hbResume.event: %s %s -> %s", node.fullName, JSON.stringify(node.state), JSON.stringify(payload));
 
-      if ((Date.now() - node.lastMessageTime) > 5000) {
-        debug("hbResume.update: %s - updating stored event >5", node.fullName, payload);
-        node.state = JSON.parse(JSON.stringify(payload));
-      } else if (_getObjectDiff(payload, node.lastMessageValue).length > 0) {
-        // debug("hbResume - updating stored event !=", payload, node.lastMessageValue);
-        // node.state = payload;
+      if (event.status === true && event.value !== undefined) {
+        if ((Date.now() - node.lastMessageTime) > 5000) {
+          debug("hbResume.update: %s - updating stored event >5", node.fullName, payload);
+          node.state = JSON.parse(JSON.stringify(payload));
+        } else if (_getObjectDiff(payload, node.lastMessageValue).length > 0) {
+          // debug("hbResume - updating stored event !=", payload, node.lastMessageValue);
+          // node.state = payload;
+        }
+      } else if (event.status === true) {
+        node.status({
+          text: 'connected',
+          shape: 'dot',
+          fill: 'green'
+        });
+      } else {
+        node.status({
+          text: 'disconnected: ' + event.status,
+          shape: 'ring',
+          fill: 'red'
+        });
       }
     };
 
@@ -396,7 +424,7 @@ module.exports = function(RED) {
           node.eventName.push(node.hbDevice.id + event.aid + event.iid);
         });
         node.status({
-          text: 'sent',
+          text: 'connected',
           shape: 'dot',
           fill: 'green'
         });
@@ -500,6 +528,11 @@ module.exports = function(RED) {
             msg._device = node.device;
             msg._confId = node.confId;
           }
+          node.status({
+            text: JSON.stringify(msg.payload),
+            shape: 'dot',
+            fill: 'green'
+          });
           node.send(msg);
         } else {
           node.error(err);
@@ -890,7 +923,10 @@ module.exports = function(RED) {
       };
       debug("_register", node.fullName, device.id, message);
       homebridge.HAPeventByDeviceID(device.id, JSON.stringify(message), function(err, status) {
-        if (!err) {
+        if (!err && status === null) {
+          debug("%s registered: %s -> %s", node.type, node.fullName, device.id);
+          callback(null);
+        } else if (!err) {
           debug("%s registered: %s -> %s", node.type, node.fullName, device.id, JSON.stringify(status));
           callback(null);
         } else {
