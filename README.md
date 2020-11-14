@@ -26,6 +26,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [Oct 13, 2020 - Version 0.0.71](#oct-13-2020---version-0071)
          * [Oct 24, 2020 - Version 0.0.71](#oct-24-2020---version-0071)
          * [Nov 1, 2020 - Version 0.0.73](#nov-1-2020---version-0073)
+         * [Nov 13, 2020 - Version 0.0.76](#nov-13-2020---version-0076)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
@@ -137,6 +138,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 - Added support for Air Pressure and Power devices
 - Fixed issue #69 TV accessory events not firing since update of homebridge-broadlink-rm plugin
+
+### Nov 13, 2020 - Version 0.0.76
+
+- Update HB Control Node to ouput snapshot images from camera's.  Payload output format is a buffer object containing image.
 
 # Backlog / Roadmap
 

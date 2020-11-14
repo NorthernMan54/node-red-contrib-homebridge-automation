@@ -467,11 +467,28 @@ module.exports = function(RED) {
       Object.keys(msg.payload).sort().forEach(function(key) {
         payload[key] = msg.payload[key];
       });
-      _control.call(this, node, msg.payload, function() {});
+      _control.call(this, node, msg.payload, function(err, data) {
+        if (!err && data) {
+          // debug('hbControl', err, data); // Images produce alot of noise
+          const msg = {};
+          msg.payload = data;
+          node.send(msg);
+        }
+      });
     });
 
     node.on('close', function(callback) {
       callback();
+    });
+
+    node.conf.register(node, function() {
+      // debug("hbControl.register:", node.fullName, node);
+      switch (node.service) {
+        case "Camera Control": // Camera Control
+          // debug("hbControl camera");
+          break;
+        default:
+      }
     });
   }
 
@@ -816,7 +833,7 @@ module.exports = function(RED) {
               node.timeout = setTimeout(function() {
                 node.status({});
               }, 30 * 1000);
-              callback(null);
+              callback(null, status);
             } else {
               node.error(device.id + " -> " + err);
               node.status({
