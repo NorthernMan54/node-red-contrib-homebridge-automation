@@ -173,7 +173,7 @@ module.exports = function(RED) {
     node.command = function(event) {
       // False messages can be received from accessories with multiple services
       // if (Object.keys(_convertHBcharactericToNode(event, node)).length > 0) {
-      debug("hbEvent", node.name, event, node.state);
+      debug("hbEvent", node.name, event);
       if (event.status === true && event.value !== undefined) {
         node.state = Object.assign(node.state, _convertHBcharactericToNode([event], node));
         var msg = {
