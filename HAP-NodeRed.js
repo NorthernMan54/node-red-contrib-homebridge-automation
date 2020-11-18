@@ -298,53 +298,62 @@ module.exports = function(RED) {
       debug("hbResume.input: %s input", node.fullName, JSON.stringify(msg));
       if (typeof msg.payload === "object") {
         // Using this to validate input message contains valid Accessory Characteristics
-        var message = _createControlMessage.call(this, msg.payload, node, node.hbDevice);
+        if (node.hbDevice) { // not populated until initialization is complete
+          var message = _createControlMessage.call(this, msg.payload, node, node.hbDevice);
 
-        if (message.characteristics.length > 0) {
-          var newMsg;
-          if (!msg.payload.On) {
-            // false / Turn Off
-            // debug("hbResume-Node lastPayload %s", JSON.stringify(node.lastPayload));
-            if (node.lastPayload.On) {
-              // last msg was on, restore previous state
-              newMsg = {
-                name: node.name,
-                _device: node.device,
-                _confId: node.confId
-              };
-              if (node.hbDevice) {
-                newMsg.Homebridge = node.hbDevice.homebridge;
-                newMsg.Manufacturer = node.hbDevice.manufacturer;
-                newMsg.Type = node.hbDevice.deviceType;
+          if (message.characteristics.length > 0) {
+            var newMsg;
+            if (!msg.payload.On) {
+              // false / Turn Off
+              // debug("hbResume-Node lastPayload %s", JSON.stringify(node.lastPayload));
+              if (node.lastPayload.On) {
+                // last msg was on, restore previous state
+                newMsg = {
+                  name: node.name,
+                  _device: node.device,
+                  _confId: node.confId
+                };
+                if (node.hbDevice) {
+                  newMsg.Homebridge = node.hbDevice.homebridge;
+                  newMsg.Manufacturer = node.hbDevice.manufacturer;
+                  newMsg.Type = node.hbDevice.deviceType;
+                }
+                newMsg.payload = node.state;
+              } else {
+                // last msg was off, pass thru
+                node.state = JSON.parse(JSON.stringify(msg.payload));
+                newMsg = msg;
               }
-              newMsg.payload = node.state;
             } else {
-              // last msg was off, pass thru
-              node.state = JSON.parse(JSON.stringify(msg.payload));
+              // True / Turn on
               newMsg = msg;
             }
-          } else {
-            // True / Turn on
-            newMsg = msg;
+            // Off messages should not include brightness
+            node.send((newMsg.payload.On ? newMsg : newMsg.payload = {
+              On: false
+            }, newMsg));
+            debug("hbResume.input: %s output", node.fullName, JSON.stringify(newMsg));
+            node.status({
+              text: JSON.stringify(newMsg.payload),
+              shape: 'dot',
+              fill: 'green'
+            });
+            clearTimeout(node.timeout);
+            node.timeout = setTimeout(function() {
+              node.status({});
+            }, 10 * 1000);
+            node.lastMessageValue = newMsg.payload;
+            node.lastMessageTime = Date.now();
+            // debug("hbResume.input: %s updating lastPayload %s", node.fullName, JSON.stringify(msg.payload));
+            node.lastPayload = JSON.parse(JSON.stringify(msg.payload)); // store value not reference
           }
-          // Off messages should not include brightness
-          node.send((newMsg.payload.On ? newMsg : newMsg.payload = {
-            On: false
-          }, newMsg));
-          debug("hbResume.input: %s output", node.fullName, JSON.stringify(newMsg));
+        } else {
+          node.error("Homebridge not initialized");
           node.status({
-            text: JSON.stringify(newMsg.payload),
-            shape: 'dot',
-            fill: 'green'
+            text: 'Homebridge not initialized',
+            shape: 'ring',
+            fill: 'red'
           });
-          clearTimeout(node.timeout);
-          node.timeout = setTimeout(function() {
-            node.status({});
-          }, 10 * 1000);
-          node.lastMessageValue = newMsg.payload;
-          node.lastMessageTime = Date.now();
-          // debug("hbResume.input: %s updating lastPayload %s", node.fullName, JSON.stringify(msg.payload));
-          node.lastPayload = JSON.parse(JSON.stringify(msg.payload)); // store value not reference
         }
       } else {
         node.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + node.hbDevice.descriptions);
@@ -704,7 +713,7 @@ module.exports = function(RED) {
    */
 
   function _createControlMessage(payload, node, device) {
-    // debug("_createControlMessage", msg, device);
+    // debug("_createControlMessage", payload, device);
     // debug("Device", device, device.characteristics[event.aid + '.' + event.iid]);
     var response = [];
 
@@ -743,7 +752,7 @@ module.exports = function(RED) {
   function _status(nrDevice, node, perms, callback) {
     // debug("_status", new Error(), hbDevices);
     var error;
-    if (hbDevices) {
+    try {
       var device = hbDevices.findDevice(node.device, perms);
       if (device) {
         switch (device.service) {
@@ -784,10 +793,10 @@ module.exports = function(RED) {
         });
         callback(error);
       } // end of device if
-    } else {
-      error = "Homebridge not initialized: " + nrDevice;
+    } catch (err) {
+      error = "Homebridge not initialized";
       node.status({
-        text: 'Homebridge not initialized',
+        text: error,
         shape: 'ring',
         fill: 'red'
       });
@@ -806,7 +815,7 @@ module.exports = function(RED) {
    */
 
   function _control(node, payload, callback) {
-    debug("_control", node.device);
+    // debug("_control", node.device);
     try {
       var device = hbDevices.findDevice(node.device, {
         perms: 'pw'
@@ -912,8 +921,8 @@ module.exports = function(RED) {
             }
         } // End of switch
       } else {
-        node.error("Device not available");
         var err = 'Device not available';
+        node.error(err);
         node.status({
           text: err,
           shape: 'ring',
@@ -922,15 +931,14 @@ module.exports = function(RED) {
         callback(err);
       }
     } catch (err) {
-      console.log('errer');
-      var err = 'Device not available';
-      node.error("Device not available");
+      var error = "Homebridge not initialized";
+      node.error(error);
       node.status({
-        text: err,
+        text: error,
         shape: 'ring',
         fill: 'red'
       });
-      callback(err);
+      callback(error);
     }
   }
 
@@ -943,7 +951,7 @@ module.exports = function(RED) {
    */
 
   function _register(node, callback) {
-    // debug("_register", node.device);
+    debug("_register", node.device);
     var device = hbDevices.findDevice(node.device, {
       perms: 'ev'
     });
