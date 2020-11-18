@@ -143,6 +143,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 - Update HB Control Node to ouput snapshot images from camera's.  Payload output format is a buffer object containing image.
 
+### Nov 15, 2020 - Version 0.0.78
+
+- Change hb-control to display control message payload rather than 'Ok'
+
 # Backlog / Roadmap
 
 * [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )
