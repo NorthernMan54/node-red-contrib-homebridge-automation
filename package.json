@@ -22,7 +22,7 @@
     "url": "git+https://github.com/NorthernMan54/node-red-contrib-homebridge-automation.git"
   },
   "devDependencies": {
-    "documentation": "13.0.1"
+    "documentation": "13.1.1"
   },
   "dependencies": {
     "debug": ">2.6.9",
