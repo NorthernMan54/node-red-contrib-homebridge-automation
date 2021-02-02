@@ -27,6 +27,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [Oct 24, 2020 - Version 0.0.71](#oct-24-2020---version-0071)
          * [Nov 1, 2020 - Version 0.0.73](#nov-1-2020---version-0073)
          * [Nov 13, 2020 - Version 0.0.76](#nov-13-2020---version-0076)
+         * [Feb 2, 2021 - Version 0.0.78](#feb-2-2021---version-0078)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
@@ -141,11 +142,14 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 ### Nov 13, 2020 - Version 0.0.76
 
-- Update HB Control Node to ouput snapshot images from camera's.  Payload output format is a buffer object containing image.
+- Update HB Control Node to output snapshot images from camera's.  Payload output format is a buffer object containing image.
 
-### Nov 15, 2020 - Version 0.0.78
+### Feb 2, 2021 - Version 0.0.78
 
 - Change hb-control to display control message payload rather than 'Ok'
+- Tweak device parser to remove these duplicates
+    - Camera RTPStream Management
+    - Input Source with a name of 'dummy'
 
 # Backlog / Roadmap
 
