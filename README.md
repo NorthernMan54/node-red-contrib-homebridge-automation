@@ -28,6 +28,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [Nov 1, 2020 - Version 0.0.73](#nov-1-2020---version-0073)
          * [Nov 13, 2020 - Version 0.0.76](#nov-13-2020---version-0076)
          * [Feb 2, 2021 - Version 0.0.78](#feb-2-2021---version-0078)
+         * [Mar 9, 2021 - Version 0.0.80](#mar-9-2021---version-0080)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
@@ -150,6 +151,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 - Tweak device parser to remove these duplicates
     - Camera RTPStream Management
     - Input Source with a name of 'dummy'
+
+### Mar 9, 2021 - Version 0.0.80
+
+- hbEvent: add option to send initial state
 
 # Backlog / Roadmap
 
