@@ -166,6 +166,7 @@ module.exports = function(RED) {
     this.service = n.Service;
     this.name = n.name;
     this.fullName = n.name + ' - ' + n.Service;
+    this.sendInitialState = n.sendInitialState === true;
     this.state = {};
 
     var node = this;
@@ -218,17 +219,41 @@ module.exports = function(RED) {
         perms: 'pr'
       });
       if (this.hbDevice) {
+        node.hbDevice = this.hbDevice;
+        node.deviceType = this.hbDevice.deviceType;
+
         _status(node.device, node, {
           perms: 'ev'
         }, function(err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
             debug("hbEvent received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
+            if (node.sendInitialState) {
+              var msg = {
+                name: node.name,
+                payload: node.state,
+                Homebridge: node.hbDevice.homebridge,
+                Manufacturer: node.hbDevice.manufacturer,
+                Service: node.hbDevice.deviceType,
+                _device: node.device,
+                _confId: node.confId,
+                _rawMessage: message,
+              };
+              node.status({
+                text: JSON.stringify(msg.payload),
+                shape: 'dot',
+                fill: 'green'
+              });
+              clearTimeout(node.timeout);
+              node.timeout = setTimeout(function() {
+                node.status({});
+              }, 10 * 1000);
+              node.send(msg);
+            }
           } else {
             node.error("hbEvent _status: error", node.fullName, err);
           }
         });
-        node.hbDevice = this.hbDevice;
         // Register for events
         node.listener = node.command;
         node.eventName = [];

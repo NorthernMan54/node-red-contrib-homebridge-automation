@@ -58,11 +58,18 @@
 		<select id="node-input-device">
 
 		</select>
-        <a id="node-input-device-refresh" class="btn"><i class="fa fa-refresh"></i></a>
+    <a id="node-input-device-refresh" class="btn"><i class="fa fa-refresh"></i></a>
 	</div>
-
-    <input type="hidden" id="node-input-name">
+  <div class="form-row" style="height: 34px;">
+    <label>Options</label>
+    <div class="form-row" style="display: inline;">
+      <input type="checkbox" id="node-input-sendInitialState" style="display: inline-block; width: auto; vertical-align: top;">
+      <label for="node-input-sendInitialState" style="width: auto;"> Send initial state</label>
     </div>
+  </div>
+  <div>
+    <input type="hidden" id="node-input-name">
+  </div>
 </script>
 
 
@@ -112,6 +119,10 @@
       conf: {
         value: "",
         type: "hb-conf"
+      },
+      sendInitialState: {
+        value: false,
+        required: false
       }
     },
     outputs: 1,
