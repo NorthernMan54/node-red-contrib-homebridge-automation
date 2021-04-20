@@ -29,11 +29,17 @@ module.exports = function(RED) {
   function hbConf(n) {
     RED.nodes.createNode(this, n);
     this.username = n.username;
+    this.macAddress = n.macAddress || '';
     this.password = this.credentials.password;
 
     this.users = {};
 
-    if (!homebridge) {
+    if (homebridge) {
+      if (this.macAddress) {
+        // register additional PIN on existing instance
+        homebridge.RegisterPin(this.macAddress, n.username);
+      }
+    } else {
       homebridge = new HAPNodeJSClient({
         "pin": n.username,
         "refresh": 900,
@@ -936,12 +942,12 @@ module.exports = function(RED) {
               }
             } else {
               node.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + device.descriptions);
+              var err = 'Invalid payload';
               node.status({
-                text: 'Invalid payload',
+                text: err,
                 shape: 'ring',
                 fill: 'red'
               });
-              var err = 'Invalid payload';
               callback(err);
             }
         } // End of switch
