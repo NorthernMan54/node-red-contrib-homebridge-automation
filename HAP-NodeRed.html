@@ -1,20 +1,41 @@
 <script type="text/x-red" data-template-name="hb-conf">
   <div class="form-row">
 	    <label for="node-config-input-username"><i class="icon-tag"></i> Pin</label>
-	    <input type="text" id="node-config-input-username">
-	</div>
+	    <input type="text" id="node-config-input-username" placeholder="031-45-154">
+  </div>
+  <div class="form-row">
+	    <label for="node-config-input-macAddress"><i class="icon-wifi"></i> MAC Address (optional)</label>
+	    <input type="text" id="node-config-input-macAddress" placeholder="00:00:00:A1:2B:CC">
+  </div>
 </script>
 
 <script type="text/x-red" data-help-name="hb-conf">
   <p>This allows you to register your homebridge PIN</p>
-
 </script>
 
 <script type="text/javascript">
   RED.nodes.registerType('hb-conf', {
     category: 'config',
     defaults: {
-      username: {}
+      username: {
+        value: '',
+        validate: function (v) {
+            if (v === '') {
+                return true;
+            }
+            return /^\d{3}-\d{2}-\d{3}$/.test(v);
+        },
+      },
+      macAddress: {
+        value: '',
+        validate: function (v) {
+            if (v === '') {
+                return true;
+            }
+            return /^([\da-fA-F]{2}:){5}[\da-fA-F]{2}$/.test(v);
+        },
+        required: false
+      },
     },
     credentials: {
       password: {
@@ -26,8 +47,8 @@
       return this.username;
     },
     oneditsave: function() {
-      var node = this;
-      var user = $('#node-config-input-PIN').val();
+      // var node = this;
+      // var user = $('#node-config-input-PIN').val();
       // var pass = $('#node-config-input-password').val();
       // console.log("pass: ", pass);
       // if (pass != '_PWD_') {
