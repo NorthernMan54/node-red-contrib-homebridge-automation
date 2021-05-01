@@ -863,7 +863,6 @@ module.exports = function(RED) {
             };
             debug("Control %s ->", device.id, JSON.stringify(message));
             homebridge.HAPresourceByDeviceID(device.id, JSON.stringify(message), function(err, status) {
-              console.log("ERROR", err );
               if (!err) {
                 debug("Controlled %s ->", device.id, JSON.stringify(payload));
                 node.status({
