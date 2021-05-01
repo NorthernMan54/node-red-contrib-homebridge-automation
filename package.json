@@ -4,9 +4,12 @@
   "description": "NodeRED Automation for HomeBridge",
   "main": "HAP-NodeRed.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "api": "documentation build HAP-NodeRed.js -f md --config docs/documentation.yml > docs/API.md",
-    "document": "./gh-md-toc --insert README.md"
+    "coverage": "nyc npm t",
+    "document": "./gh-md-toc --insert README.md",
+    "format": "prettier --write {.,test}/*.js *.html *.md",
+    "lint": "eslint {.,test}/*.js",
+    "test": "mocha \"test/**/*_spec.js\""
   },
   "keywords": [
     "node-red",
@@ -22,7 +25,16 @@
     "url": "git+https://github.com/NorthernMan54/node-red-contrib-homebridge-automation.git"
   },
   "devDependencies": {
-    "documentation": "13.2.4"
+    "@types/node-red": "^1.1.1",
+    "documentation": "13.2.5",
+    "eslint": "^7.25.0",
+    "eslint-plugin-mocha": "^8.1.0",
+    "mocha": "^8.3.2",
+    "node-red": "^1.3.4",
+    "node-red-node-test-helper": "^0.2.7",
+    "nyc": "^15.1.0",
+    "prettier": "^2.2.1",
+    "rimraf": "^3.0.2"
   },
   "dependencies": {
     "debug": ">2.6.9",
