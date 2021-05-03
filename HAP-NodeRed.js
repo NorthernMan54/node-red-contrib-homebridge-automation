@@ -515,7 +515,7 @@ module.exports = function(RED) {
           node.send(msg);
         }
       });
-    });
+    });    
 
     node.on('close', function(callback) {
       callback();
@@ -904,7 +904,7 @@ module.exports = function(RED) {
                     node.timeout = setTimeout(function() {
                       node.status({});
                     }, 10 * 1000);
-                    callback(null);
+                    callback(null, payload);
                   } else if (!err) {
                     debug("Controlled %s ->", device.id, payload);
                     node.status({
@@ -916,7 +916,7 @@ module.exports = function(RED) {
                     node.timeout = setTimeout(function() {
                       node.status({});
                     }, 10 * 1000);
-                    callback(null);
+                    callback(null, payload);
                   } else {
                     node.error(device.id + " -> " + err + " -> " + status);
                     node.status({
