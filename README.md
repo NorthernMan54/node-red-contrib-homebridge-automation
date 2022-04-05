@@ -30,6 +30,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [Feb 2, 2021 - Version 0.0.78](#feb-2-2021---version-0078)
          * [Mar 9, 2021 - Version 0.0.80](#mar-9-2021---version-0080)
          * [April 23, 2021 - Version 0.0.82](#april-23-2021---version-0082)
+         * [April 23, 2022 - Version 0.0.85](#april-23-2022---version-0085)
    * [Backlog / Roadmap](#backlog--roadmap)
       * [Dropped items](#dropped-items)
    * [Installation Steps](#installation-steps)
@@ -160,6 +161,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 ### April 23, 2021 - Version 0.0.82
 
 - Support for homebridge instances with different PINS.  Tks @dxdc
+
+### April 23, 2022 - Version 0.0.85
+
+- Removal of request from hap-node-client
 
 # Backlog / Roadmap
 
