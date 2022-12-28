@@ -1,20 +1,41 @@
 <script type="text/x-red" data-template-name="hb-conf">
   <div class="form-row">
 	    <label for="node-config-input-username"><i class="icon-tag"></i> Pin</label>
-	    <input type="text" id="node-config-input-username">
-	</div>
+	    <input type="text" id="node-config-input-username" placeholder="031-45-154">
+  </div>
+  <div class="form-row">
+	    <label for="node-config-input-macAddress"><i class="icon-wifi"></i> MAC Address (optional)</label>
+	    <input type="text" id="node-config-input-macAddress" placeholder="00:00:00:A1:2B:CC">
+  </div>
 </script>
 
 <script type="text/x-red" data-help-name="hb-conf">
   <p>This allows you to register your homebridge PIN</p>
-
 </script>
 
 <script type="text/javascript">
   RED.nodes.registerType('hb-conf', {
     category: 'config',
     defaults: {
-      username: {}
+      username: {
+        value: '',
+        validate: function (v) {
+            if (v === '') {
+                return true;
+            }
+            return /^\d{3}-\d{2}-\d{3}$/.test(v);
+        },
+      },
+      macAddress: {
+        value: '',
+        validate: function (v) {
+            if (v === '') {
+                return true;
+            }
+            return /^([\da-fA-F]{2}:){5}[\da-fA-F]{2}$/.test(v);
+        },
+        required: false
+      },
     },
     credentials: {
       password: {
@@ -26,8 +47,8 @@
       return this.username;
     },
     oneditsave: function() {
-      var node = this;
-      var user = $('#node-config-input-PIN').val();
+      // var node = this;
+      // var user = $('#node-config-input-PIN').val();
       // var pass = $('#node-config-input-password').val();
       // console.log("pass: ", pass);
       // if (pass != '_PWD_') {
@@ -36,13 +57,13 @@
       //    user: user,
       //    pass: pass
       //  }
-        // $.ajax({
-        //  data: JSON.stringify(account),
-        //  url: 'alexa-home/new-account',
-        //  contentType: 'application/json',
-        //  type: 'POST',
-        //  processData: false
-        // });
+      // $.ajax({
+      //  data: JSON.stringify(account),
+      //  url: 'alexa-home/new-account',
+      //  contentType: 'application/json',
+      //  type: 'POST',
+      //  processData: false
+      // });
       // }
     }
   });
@@ -58,11 +79,18 @@
 		<select id="node-input-device">
 
 		</select>
-        <a id="node-input-device-refresh" class="btn"><i class="fa fa-refresh"></i></a>
+    <a id="node-input-device-refresh" class="btn"><i class="fa fa-refresh"></i></a>
 	</div>
-
-    <input type="hidden" id="node-input-name">
+  <div class="form-row" style="height: 34px;">
+    <label>Options</label>
+    <div class="form-row" style="display: inline;">
+      <input type="checkbox" id="node-input-sendInitialState" style="display: inline-block; width: auto; vertical-align: top;">
+      <label for="node-input-sendInitialState" style="width: auto;"> Send initial state</label>
     </div>
+  </div>
+  <div>
+    <input type="hidden" id="node-input-name">
+  </div>
 </script>
 
 
@@ -112,6 +140,10 @@
       conf: {
         value: "",
         type: "hb-conf"
+      },
+      sendInitialState: {
+        value: false,
+        required: false
       }
     },
     outputs: 1,
@@ -390,7 +422,7 @@
   </dl>
   <h3>Details</h3>
   <p>On receipt of any input message this node will poll the homebridge accessory and retrieve the status of the service.</p>
-  <p>For accessories with multiple services, a need will need to be created for service you want status for.</p>
+  <p>For accessories with multiple services, a Homebridge Status node will need to be created for each service you want status for.</p>
 </script>
 
 <script type="text/javascript">
@@ -504,19 +536,25 @@
 
 <script type="text/x-red" data-template-name="hb-control">
   <div class="form-row">
-		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
+		<label for="node-input-conf"><i class="icon-tag"></i>Homebridge Pin</label>
 		<input type="text" id="node-input-conf">
 	</div>
 	<div class="form-row">
-		<label for="node-input-device"><i class="icon-tag"></i> Device</label>
+		<label for="node-input-device"><i class="icon-tag"></i>Device</label>
 		<select id="node-input-device">
 
 		</select>
         <a id="node-input-device-refresh" class="btn"><i class="fa fa-refresh"></i></a>
+
 	</div>
+  <div class="form-row" style="margin-bottom: 0px">
+       <label for="node-input-outputs"><i class="icon-tag"></i>Outputs</label>
+       <input id="node-input-outputs" style="width: 60px;" value="1">
+   </div>
 
     <input type="hidden" id="node-input-name">
     </div>
+
 </script>
 
 <script type="text/x-red" data-help-name="hb-control">
@@ -527,9 +565,14 @@
       <dt>payload<span class="property-type">object</span></dt>
       <dd>Accessory characteristic object</dd>
   </dl>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+      <dd>Only on Camera control nodes, select 1 to output an image buffer object as a payload.</dd>
+  </dl>
   <h3>Details</h3>
   <p>This node allows control of a single service of a homebridge accessory. The message payload needs to be an object containing updated values. ie {"On":false,"Brightness":0}</p>
   <p>To determine valid characteristics, send an invalid message. ie {"Foo":"bar"} and the valid characteristics will be output in the debug tab.</p>
+  <p>For camera control nodes, send any message and the node will outout a snapshot image as the payload from the camera.  Payload format is a buffer object.</p>
 </script>
 
 <script type="text/javascript">
@@ -552,6 +595,9 @@
       conf: {
         value: "",
         type: "hb-conf"
+      },
+      outputs: {
+        value: 0
       }
     },
     outputs: 0,

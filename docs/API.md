@@ -2,28 +2,28 @@
 
 ### Table of Contents
 
--   [hbConf][1]
-    -   [Parameters][2]
--   [hbEvent][3]
-    -   [Parameters][4]
--   [hbResume][5]
-    -   [Parameters][6]
--   [hbControl][7]
-    -   [Parameters][8]
--   [hbStatus][9]
-    -   [Parameters][10]
--   [\_convertHBcharactericToNode][11]
-    -   [Parameters][12]
--   [\_createControlMessage][13]
-    -   [Parameters][14]
--   [\_status][15]
-    -   [Parameters][16]
--   [\_control][17]
-    -   [Parameters][18]
--   [\_register][19]
-    -   [Parameters][20]
--   [toList][21]
-    -   [Parameters][22]
+*   [hbConf][1]
+    *   [Parameters][2]
+*   [hbEvent][3]
+    *   [Parameters][4]
+*   [hbResume][5]
+    *   [Parameters][6]
+*   [hbControl][7]
+    *   [Parameters][8]
+*   [hbStatus][9]
+    *   [Parameters][10]
+*   [\_convertHBcharactericToNode][11]
+    *   [Parameters][12]
+*   [\_createControlMessage][13]
+    *   [Parameters][14]
+*   [\_status][15]
+    *   [Parameters][16]
+*   [\_control][17]
+    *   [Parameters][18]
+*   [\_register][19]
+    *   [Parameters][20]
+*   [toList][21]
+    *   [Parameters][22]
 
 ## hbConf
 
@@ -31,7 +31,7 @@ hbConf - Configuration
 
 ### Parameters
 
--   `n` **type** description
+*   `n` **type** description
 
 Returns **type** description
 
@@ -41,7 +41,7 @@ hbEvent - Node that listens to HomeKit Events, and sends message into NodeRED
 
 ### Parameters
 
--   `n` **type** description
+*   `n` **type** description
 
 Returns **type** description
 
@@ -51,25 +51,25 @@ hbResume - description
 
 State operating model
 
--   Store msg into node.lastPayload
--   Store device state into node.state on events
+*   Store msg into node.lastPayload
+*   Store device state into node.state on events
 
 Turn on message just passes thru
 
--   if msg = on
+*   if msg = on
 
 First turn off message restores state from Turn on
 
--   if msg = off and node.lastPayload === on
+*   if msg = off and node.lastPayload === on
 
 Second turn off message just passes thru
 
--   if msg = off and node.lastPayload === off
--   Update stored device state to off
+*   if msg = off and node.lastPayload === off
+*   Update stored device state to off
 
 ### Parameters
 
--   `n` **type** description
+*   `n` **type** description
 
 Returns **type** description
 
@@ -79,7 +79,7 @@ hbControl - description
 
 ### Parameters
 
--   `n` **type** description
+*   `n` **type** description
 
 Returns **type** description
 
@@ -89,7 +89,7 @@ hbStatus - description
 
 ### Parameters
 
--   `n` **type** description
+*   `n` **type** description
 
 Returns **type** description
 
@@ -99,8 +99,8 @@ Returns **type** description
 
 ### Parameters
 
--   `hbMessage` **[array][23]** description
--   `node` **[object][24]** description
+*   `hbMessage` **[array][23]** description
+*   `node` **[object][24]** description
 
 Returns **type** description
 
@@ -110,9 +110,9 @@ Returns **type** description
 
 ### Parameters
 
--   `payload` **type** {"On":false,"Brightness":0}
--   `node` **type** description
--   `device` **type** description
+*   `payload` **type** {"On":false,"Brightness":0}
+*   `node` **type** description
+*   `device` **type** description
 
 Returns **type** description
 
@@ -122,10 +122,11 @@ Returns **type** description
 
 ### Parameters
 
--   `nrDevice` **type** description
--   `node` **type** description
--   `value` **type** description
--   `callback` **type** description
+*   `nrDevice` **type** description
+*   `node` **type** description
+*   `perms`  
+*   `callback` **type** description
+*   `value` **type** description
 
 Returns **type** description
 
@@ -135,10 +136,10 @@ Returns **type** description
 
 ### Parameters
 
--   `node` **type** description
--   `payload` **type** {"On":false, "Brightness":0}
--   `callback` **type** description
--   `nrDevice` **type** description
+*   `node` **type** description
+*   `payload` **type** {"On":false, "Brightness":0}
+*   `callback` **type** description
+*   `nrDevice` **type** description
 
 Returns **type** description
 
@@ -148,8 +149,8 @@ Returns **type** description
 
 ### Parameters
 
--   `node` **type** description
--   `callback` **type** callback
+*   `node` **type** description
+*   `callback` **type** callback
 
 Returns **type** description
 
@@ -159,7 +160,7 @@ Homebridges.toList - description
 
 ### Parameters
 
--   `opt` **type** description
+*   `opt` **type** description
 
 Returns **type** description
 

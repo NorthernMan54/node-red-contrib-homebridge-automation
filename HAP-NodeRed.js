@@ -29,11 +29,17 @@ module.exports = function(RED) {
   function hbConf(n) {
     RED.nodes.createNode(this, n);
     this.username = n.username;
+    this.macAddress = n.macAddress || '';
     this.password = this.credentials.password;
 
     this.users = {};
 
-    if (!homebridge) {
+    if (homebridge) {
+      if (this.macAddress) {
+        // register additional PIN on existing instance
+        homebridge.RegisterPin(this.macAddress, n.username);
+      }
+    } else {
       homebridge = new HAPNodeJSClient({
         "pin": n.username,
         "refresh": 900,
@@ -65,6 +71,7 @@ module.exports = function(RED) {
           // console.log("Checking", endpoint.fullName);
           if (deleteSeen[endpoint.fullName]) {
             console.log("WARNING: Duplicate device name", endpoint.fullName);
+            // debug('Duplicate', endpoint);
             // response.event.payload.endpoints.splice(i, 1);
           } else {
             deleteSeen[endpoint.fullName] = true;
@@ -165,6 +172,7 @@ module.exports = function(RED) {
     this.service = n.Service;
     this.name = n.name;
     this.fullName = n.name + ' - ' + n.Service;
+    this.sendInitialState = n.sendInitialState === true;
     this.state = {};
 
     var node = this;
@@ -172,52 +180,94 @@ module.exports = function(RED) {
     node.command = function(event) {
       // False messages can be received from accessories with multiple services
       // if (Object.keys(_convertHBcharactericToNode(event, node)).length > 0) {
-      debug("hbEvent", node.name, event, node.state);
-      node.state = Object.assign(node.state, _convertHBcharactericToNode([event], node));
-      var msg = {
-        name: node.name,
-        payload: node.state,
-        Homebridge: node.hbDevice.homebridge,
-        Manufacturer: node.hbDevice.manufacturer,
-        Service: node.hbDevice.deviceType,
-        _device: node.device,
-        _confId: node.confId,
-        _rawEvent: event
-      };
-      node.status({
-        text: JSON.stringify(msg.payload),
-        shape: 'dot',
-        fill: 'green'
-      });
-      clearTimeout(node.timeout);
-      node.timeout = setTimeout(function() {
-        node.status({});
-      }, 10 * 1000);
-      node.send(msg);
+      debug("hbEvent", node.name, event);
+      if (event.status === true && event.value !== undefined) {
+        node.state = Object.assign(node.state, _convertHBcharactericToNode([event], node));
+        var msg = {
+          name: node.name,
+          payload: node.state,
+          Homebridge: node.hbDevice.homebridge,
+          Manufacturer: node.hbDevice.manufacturer,
+          Service: node.hbDevice.deviceType,
+          _device: node.device,
+          _confId: node.confId,
+          _rawEvent: event
+        };
+        node.status({
+          text: JSON.stringify(msg.payload),
+          shape: 'dot',
+          fill: 'green'
+        });
+        clearTimeout(node.timeout);
+        node.timeout = setTimeout(function() {
+          node.status({});
+        }, 10 * 1000);
+        node.send(msg);
+      } else if (event.status === true) {
+        node.status({
+          text: 'connected',
+          shape: 'dot',
+          fill: 'green'
+        });
+      } else {
+        node.status({
+          text: 'disconnected: ' + event.status,
+          shape: 'ring',
+          fill: 'red'
+        });
+      }
     };
     // };
 
     node.conf.register(node, function() {
       debug("hbEvent.register", node.fullName);
-      this.hbDevice = hbDevices.findDevice(node.device);
+      this.hbDevice = hbDevices.findDevice(node.device, {
+        perms: 'pr'
+      });
       if (this.hbDevice) {
-        _status(node.device, node, '', function(err, message) {
+        node.hbDevice = this.hbDevice;
+        node.deviceType = this.hbDevice.deviceType;
+
+        _status(node.device, node, {
+          perms: 'ev'
+        }, function(err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
             debug("hbEvent received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
+            if (node.sendInitialState) {
+              var msg = {
+                name: node.name,
+                payload: node.state,
+                Homebridge: node.hbDevice.homebridge,
+                Manufacturer: node.hbDevice.manufacturer,
+                Service: node.hbDevice.deviceType,
+                _device: node.device,
+                _confId: node.confId,
+                _rawMessage: message,
+              };
+              node.status({
+                text: JSON.stringify(msg.payload),
+                shape: 'dot',
+                fill: 'green'
+              });
+              clearTimeout(node.timeout);
+              node.timeout = setTimeout(function() {
+                node.status({});
+              }, 10 * 1000);
+              node.send(msg);
+            }
           } else {
             node.error("hbEvent _status: error", node.fullName, err);
           }
         });
-        node.hbDevice = this.hbDevice;
         // Register for events
         node.listener = node.command;
         node.eventName = [];
         // node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
         // debug("DEVICE", this.hbDevice);
         this.hbDevice.eventRegisters.forEach(function(event) {
-          homebridge.on(node.hbDevice.host + node.hbDevice.port + event.aid + event.iid, node.command);
-          node.eventName.push(node.hbDevice.host + node.hbDevice.port + event.aid + event.iid);
+          homebridge.on(node.hbDevice.id + event.aid + event.iid, node.command);
+          node.eventName.push(node.hbDevice.id + event.aid + event.iid);
         });
         // homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid, node.command);
         node.status({
@@ -279,58 +329,67 @@ module.exports = function(RED) {
       debug("hbResume.input: %s input", node.fullName, JSON.stringify(msg));
       if (typeof msg.payload === "object") {
         // Using this to validate input message contains valid Accessory Characteristics
-        var message = _createControlMessage.call(this, msg.payload, node, node.hbDevice);
+        if (node.hbDevice) { // not populated until initialization is complete
+          var message = _createControlMessage.call(this, msg.payload, node, node.hbDevice);
 
-        if (message.characteristics.length > 0) {
-          var newMsg;
-          if (!msg.payload.On) {
-            // false / Turn Off
-            // debug("hbResume-Node lastPayload %s", JSON.stringify(node.lastPayload));
-            if (node.lastPayload.On) {
-              // last msg was on, restore previous state
-              newMsg = {
-                name: node.name,
-                _device: node.device,
-                _confId: node.confId
-              };
-              if (node.hbDevice) {
-                newMsg.Homebridge = node.hbDevice.homebridge;
-                newMsg.Manufacturer = node.hbDevice.manufacturer;
-                newMsg.Type = node.hbDevice.deviceType;
+          if (message.characteristics.length > 0) {
+            var newMsg;
+            if (!msg.payload.On) {
+              // false / Turn Off
+              // debug("hbResume-Node lastPayload %s", JSON.stringify(node.lastPayload));
+              if (node.lastPayload.On) {
+                // last msg was on, restore previous state
+                newMsg = {
+                  name: node.name,
+                  _device: node.device,
+                  _confId: node.confId
+                };
+                if (node.hbDevice) {
+                  newMsg.Homebridge = node.hbDevice.homebridge;
+                  newMsg.Manufacturer = node.hbDevice.manufacturer;
+                  newMsg.Type = node.hbDevice.deviceType;
+                }
+                newMsg.payload = node.state;
+              } else {
+                // last msg was off, pass thru
+                node.state = JSON.parse(JSON.stringify(msg.payload));
+                newMsg = msg;
               }
-              newMsg.payload = node.state;
             } else {
-              // last msg was off, pass thru
-              node.state = JSON.parse(JSON.stringify(msg.payload));
+              // True / Turn on
               newMsg = msg;
             }
-          } else {
-            // True / Turn on
-            newMsg = msg;
+            // Off messages should not include brightness
+            node.send((newMsg.payload.On ? newMsg : newMsg.payload = {
+              On: false
+            }, newMsg));
+            debug("hbResume.input: %s output", node.fullName, JSON.stringify(newMsg));
+            node.status({
+              text: JSON.stringify(newMsg.payload),
+              shape: 'dot',
+              fill: 'green'
+            });
+            clearTimeout(node.timeout);
+            node.timeout = setTimeout(function() {
+              node.status({});
+            }, 10 * 1000);
+            node.lastMessageValue = newMsg.payload;
+            node.lastMessageTime = Date.now();
+            // debug("hbResume.input: %s updating lastPayload %s", node.fullName, JSON.stringify(msg.payload));
+            node.lastPayload = JSON.parse(JSON.stringify(msg.payload)); // store value not reference
           }
-          // Off messages should not include brightness
-          node.send((newMsg.payload.On ? newMsg : newMsg.payload = {
-            On: false
-          }, newMsg));
-          debug("hbResume.input: %s output", node.fullName, JSON.stringify(newMsg));
+        } else {
+          node.error("Homebridge not initialized");
           node.status({
-            text: JSON.stringify(newMsg.payload),
-            shape: 'dot',
-            fill: 'green'
+            text: 'Homebridge not initialized',
+            shape: 'ring',
+            fill: 'red'
           });
-          clearTimeout(node.timeout);
-          node.timeout = setTimeout(function() {
-            node.status({});
-          }, 10 * 1000);
-          node.lastMessageValue = newMsg.payload;
-          node.lastMessageTime = Date.now();
-          // debug("hbResume.input: %s updating lastPayload %s", node.fullName, JSON.stringify(msg.payload));
-          node.lastPayload = JSON.parse(JSON.stringify(msg.payload)); // store value not reference
         }
       } else {
         node.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + node.hbDevice.descriptions);
         node.status({
-          text: 'error - Invalid payload',
+          text: 'Invalid payload',
           shape: 'ring',
           fill: 'red'
         });
@@ -354,20 +413,38 @@ module.exports = function(RED) {
 
       debug("hbResume.event: %s %s -> %s", node.fullName, JSON.stringify(node.state), JSON.stringify(payload));
 
-      if ((Date.now() - node.lastMessageTime) > 5000) {
-        debug("hbResume.update: %s - updating stored event >5", node.fullName, payload);
-        node.state = JSON.parse(JSON.stringify(payload));
-      } else if (_getObjectDiff(payload, node.lastMessageValue).length > 0) {
-        // debug("hbResume - updating stored event !=", payload, node.lastMessageValue);
-        // node.state = payload;
+      if (event.status === true && event.value !== undefined) {
+        if ((Date.now() - node.lastMessageTime) > 5000) {
+          debug("hbResume.update: %s - updating stored event >5", node.fullName, payload);
+          node.state = JSON.parse(JSON.stringify(payload));
+        } else if (_getObjectDiff(payload, node.lastMessageValue).length > 0) {
+          // debug("hbResume - updating stored event !=", payload, node.lastMessageValue);
+          // node.state = payload;
+        }
+      } else if (event.status === true) {
+        node.status({
+          text: 'connected',
+          shape: 'dot',
+          fill: 'green'
+        });
+      } else {
+        node.status({
+          text: 'disconnected: ' + event.status,
+          shape: 'ring',
+          fill: 'red'
+        });
       }
     };
 
     node.conf.register(node, function() {
       debug("hbResume.register:", node.fullName);
-      this.hbDevice = hbDevices.findDevice(node.device);
+      this.hbDevice = hbDevices.findDevice(node.device, {
+        perms: 'pw'
+      });
       if (this.hbDevice) {
-        _status(node.device, node, '', function(err, message) {
+        _status(node.device, node, {
+          perms: 'pw'
+        }, function(err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
             debug("hbResume received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
@@ -383,11 +460,11 @@ module.exports = function(RED) {
         // node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
         // homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid, node.command);
         this.hbDevice.eventRegisters.forEach(function(event) {
-          homebridge.on(node.hbDevice.host + node.hbDevice.port + event.aid + event.iid, node.command);
-          node.eventName.push(node.hbDevice.host + node.hbDevice.port + event.aid + event.iid);
+          homebridge.on(node.hbDevice.id + event.aid + event.iid, node.command);
+          node.eventName.push(node.hbDevice.id + event.aid + event.iid);
         });
         node.status({
-          text: 'sent',
+          text: 'connected',
           shape: 'dot',
           fill: 'green'
         });
@@ -430,11 +507,28 @@ module.exports = function(RED) {
       Object.keys(msg.payload).sort().forEach(function(key) {
         payload[key] = msg.payload[key];
       });
-      _control.call(this, node, msg.payload, function() {});
+      _control.call(this, node, msg.payload, function(err, data) {
+        if (!err && data) {
+          // debug('hbControl', err, data); // Images produce alot of noise
+          const msg = {};
+          msg.payload = data;
+          node.send(msg);
+        }
+      });
     });
 
     node.on('close', function(callback) {
       callback();
+    });
+
+    node.conf.register(node, function() {
+      // debug("hbControl.register:", node.fullName, node);
+      switch (node.service) {
+        case "Camera Control": // Camera Control
+          // debug("hbControl camera");
+          break;
+        default:
+      }
     });
   }
 
@@ -474,7 +568,9 @@ module.exports = function(RED) {
     });
 
     node.on('input', function(msg) {
-      _status(this.device, node, msg.payload, function(err, message) {
+      _status(this.device, node, {
+        perms: 'pr'
+      }, function(err, message) {
         if (!err) {
           debug("hbStatus received: %s = %s", JSON.stringify(node.fullName), JSON.stringify(message));
           var msg = {
@@ -489,6 +585,11 @@ module.exports = function(RED) {
             msg._device = node.device;
             msg._confId = node.confId;
           }
+          node.status({
+            text: JSON.stringify(msg.payload),
+            shape: 'dot',
+            fill: 'green'
+          });
           node.send(msg);
         } else {
           node.error(err);
@@ -648,7 +749,7 @@ module.exports = function(RED) {
    */
 
   function _createControlMessage(payload, node, device) {
-    // debug("_createControlMessage", msg, device);
+    // debug("_createControlMessage", payload, device);
     // debug("Device", device, device.characteristics[event.aid + '.' + event.iid]);
     var response = [];
 
@@ -684,11 +785,11 @@ module.exports = function(RED) {
    * @return {type}          description
    */
 
-  function _status(nrDevice, node, value, callback) {
+  function _status(nrDevice, node, perms, callback) {
     // debug("_status", new Error(), hbDevices);
     var error;
-    if (hbDevices) {
-      var device = hbDevices.findDevice(node.device);
+    try {
+      var device = hbDevices.findDevice(node.device, perms);
       if (device) {
         // debug("device.type", device.type);
         switch (device.type) {
@@ -732,8 +833,8 @@ module.exports = function(RED) {
             break;
           default:
             var message = '?id=' + device.getCharacteristics;
-            debug("_status request: %s -> %s:%s ->", node.fullName, device.host, device.port, message);
-            homebridge.HAPstatus(device.host, device.port, message, function(err, status) {
+            debug("_status request: %s -> %s:%s ->", node.fullName, device.id, message);
+            homebridge.HAPstatusByDeviceID(device.id, message, function(err, status) {
               if (!err) {
                 // debug("Status %s:%s ->", device.host, device.port, status);
                 node.status({
@@ -747,7 +848,7 @@ module.exports = function(RED) {
                 }, 30 * 1000);
                 callback(null, status);
               } else {
-                error = device.host + ":" + device.port + " -> " + err + " -> " + status;
+                error = device.id + " -> " + err + " -> " + status;
                 node.status({
                   text: 'error',
                   shape: 'ring',
@@ -760,16 +861,16 @@ module.exports = function(RED) {
       } else {
         error = "Device not found: " + nrDevice;
         node.status({
-          text: 'error',
+          text: 'Device not found',
           shape: 'ring',
           fill: 'red'
         });
         callback(error);
       } // end of device if
-    } else {
-      error = "Homebridge not initialized: " + nrDevice;
+    } catch (err) {
+      error = "Homebridge not initialized";
       node.status({
-        text: 'error',
+        text: error,
         shape: 'ring',
         fill: 'red'
       });
@@ -789,115 +890,129 @@ module.exports = function(RED) {
 
   function _control(node, payload, callback) {
     // debug("_control", node.device);
-    var device = hbDevices.findDevice(node.device);
-    if (device) {
-      var message;
-      switch (device.type) {
-        case "00000110": // Camera RTPStream Management
-        case "00000111": // Camera Control
-          message = {
-            "resource-type": "image",
-            "image-width": 1920,
-            "image-height": 1080
-          };
-          debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
-          homebridge.HAPresource(device.host, device.port, JSON.stringify(message), function(err, status) {
-            if (!err) {
-              debug("Controlled %s:%s ->", device.host, device.port);
-              node.status({
-                text: JSON.stringify(payload),
-                shape: 'dot',
-                fill: 'green'
-              });
-              clearTimeout(node.timeout);
-              node.timeout = setTimeout(function() {
-                node.status({});
-              }, 30 * 1000);
-              callback(null);
-            } else {
-              node.error(device.host + ":" + device.port + " -> " + err);
-              node.status({
-                text: 'error',
-                shape: 'ring',
-                fill: 'red'
-              });
-              callback(err);
-            }
-          });
-          break;
-        default:
-          // debug("Object type", typeof payload);
-          if (typeof payload === "object") {
-            message = _createControlMessage.call(this, payload, node, device);
-            debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
-            if (message.characteristics.length > 0) {
-              homebridge.HAPcontrol(device.host, device.port, JSON.stringify(message), function(err, status) {
-                if (!err && status && status.characteristics[0].status === 0) {
-                  debug("Controlled %s:%s ->", device.host, device.port, JSON.stringify(status));
-                  node.status({
-                    text: JSON.stringify(payload),
-                    shape: 'dot',
-                    fill: 'green'
-                  });
-                  clearTimeout(node.timeout);
-                  node.timeout = setTimeout(function() {
-                    node.status({});
-                  }, 10 * 1000);
-                  callback(null);
-                } else if (!err) {
-                  debug("Controlled %s:%s ->", device.host, device.port);
-                  node.status({
-                    text: "Ok",
-                    shape: 'dot',
-                    fill: 'green'
-                  });
-                  clearTimeout(node.timeout);
-                  node.timeout = setTimeout(function() {
-                    node.status({});
-                  }, 10 * 1000);
-                  callback(null);
-                } else {
-                  node.error(device.host + ":" + device.port + " -> " + err + " -> " + status);
-                  node.status({
-                    text: 'error',
-                    shape: 'ring',
-                    fill: 'red'
-                  });
-                  callback(err);
-                }
-              });
-            } else {
-              // Bad message
-              /* - This is handled in createcontrolmessage
-              this.warn("Invalid payload-");
-              node.status({
-                text: 'error - Invalid payload',
-                shape: 'ring',
-                fill: 'red'
-              });
-              */
-              var err = 'Invalid payload';
-              callback(err);
-            }
-          } else {
-            node.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + device.descriptions);
-            node.status({
-              text: 'error - Invalid payload',
-              shape: 'ring',
-              fill: 'red'
+    try {
+      var device = hbDevices.findDevice(node.device, {
+        perms: 'pw'
+      });
+      if (device) {
+        var message;
+        switch (device.type) {
+          case "00000110": // Camera RTPStream Management
+          case "00000111": // Camera Control
+            message = {
+              "resource-type": "image",
+              "image-width": 1920,
+              "image-height": 1080
+            };
+            debug("Control %s ->", device.id, JSON.stringify(message));
+            homebridge.HAPresourceByDeviceID(device.id, JSON.stringify(message), function(err, status) {
+              if (!err) {
+                debug("Controlled %s ->", device.id, JSON.stringify(payload));
+                node.status({
+                  text: JSON.stringify(payload),
+                  shape: 'dot',
+                  fill: 'green'
+                });
+                clearTimeout(node.timeout);
+                node.timeout = setTimeout(function() {
+                  node.status({});
+                }, 30 * 1000);
+                callback(null, status);
+              } else {
+                node.error(device.id + " -> " + err);
+                node.status({
+                  text: 'error',
+                  shape: 'ring',
+                  fill: 'red'
+                });
+                callback(err);
+              }
             });
-            var err = 'Invalid payload';
-            callback(err);
-          }
-      } // End of switch
-    } else {
-      node.error("Device not found");
+            break;
+          default:
+            // debug("Object type", typeof payload);
+            if (typeof payload === "object") {
+              message = _createControlMessage.call(this, payload, node, device);
+              debug("Control %s ->", device.id, JSON.stringify(message));
+              if (message.characteristics.length > 0) {
+                homebridge.HAPcontrolByDeviceID(device.id, JSON.stringify(message), function(err, status) {
+                  if (!err && status && status.characteristics[0].status === 0) {
+                    debug("Controlled %s ->", device.id, JSON.stringify(status));
+                    node.status({
+                      text: JSON.stringify(payload),
+                      shape: 'dot',
+                      fill: 'green'
+                    });
+                    clearTimeout(node.timeout);
+                    node.timeout = setTimeout(function() {
+                      node.status({});
+                    }, 10 * 1000);
+                    callback(null);
+                  } else if (!err) {
+                    debug("Controlled %s ->", device.id, payload);
+                    node.status({
+                      text: JSON.stringify(payload),
+                      shape: 'dot',
+                      fill: 'green'
+                    });
+                    clearTimeout(node.timeout);
+                    node.timeout = setTimeout(function() {
+                      node.status({});
+                    }, 10 * 1000);
+                    callback(null);
+                  } else {
+                    node.error(device.id + " -> " + err + " -> " + status);
+                    node.status({
+                      text: 'error',
+                      shape: 'ring',
+                      fill: 'red'
+                    });
+                    callback(err);
+                  }
+                });
+              } else {
+                // Bad message
+                /* - This is handled in createcontrolmessage
+                this.warn("Invalid payload-");
+                node.status({
+                  text: 'error - Invalid payload',
+                  shape: 'ring',
+                  fill: 'red'
+                });
+                */
+                var err = 'Invalid payload';
+                callback(err);
+              }
+            } else {
+              node.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + device.descriptions);
+              var err = 'Invalid payload';
+              node.status({
+                text: err,
+                shape: 'ring',
+                fill: 'red'
+              });
+              callback(err);
+            }
+        } // End of switch
+      } else {
+        var err = 'Device not available';
+        node.error(err);
+        node.status({
+          text: err,
+          shape: 'ring',
+          fill: 'red'
+        });
+        callback(err);
+      }
+    } catch (err) {
+      var error = "Homebridge not initialized";
+      node.error(error);
       node.status({
-        text: 'error',
+        text: error,
         shape: 'ring',
         fill: 'red'
       });
-      callback();
+      callback(error);
     }
   }
 
@@ -910,16 +1025,21 @@ module.exports = function(RED) {
    */
 
   function _register(node, callback) {
-    // debug("_register", node.device);
-    var device = hbDevices.findDevice(node.device);
+    debug("_register", node.device);
+    var device = hbDevices.findDevice(node.device, {
+      perms: 'ev'
+    });
     if (node.type === 'hb-event' || node.type === 'hb-resume') {
       var message = {
         "characteristics": device.eventRegisters
       };
-      // debug("Message", message);
-      homebridge.HAPevent(device.host, device.port, JSON.stringify(message), function(err, status) {
-        if (!err) {
-          debug("%s registered: %s -> %s:%s", node.type, node.fullName, device.host, device.port, JSON.stringify(status));
+      debug("_register", node.fullName, device.id, message);
+      homebridge.HAPeventByDeviceID(device.id, JSON.stringify(message), function(err, status) {
+        if (!err && status === null) {
+          debug("%s registered: %s -> %s", node.type, node.fullName, device.id);
+          callback(null);
+        } else if (!err) {
+          debug("%s registered: %s -> %s", node.type, node.fullName, device.id, JSON.stringify(status));
           callback(null);
         } else {
           // Fix for # 47

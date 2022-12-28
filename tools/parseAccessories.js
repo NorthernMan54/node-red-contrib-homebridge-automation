@@ -3,7 +3,8 @@ var normalizeUUID = require('../node_modules/hap-node-client/lib/util.js').norma
 var fs = require('fs');
 var response = fs.readFileSync(process.argv[2]).toString();
 var accessories = normalizeUUID(JSON.parse(response.replace(/\uFFFD/g, '')));
-accessories = JSON.parse(response.replace(/\uFFFD/g, ''));
+
+// accessories = JSON.parse(response.replace(/\uFFFD/g, ''));
 
 var endPoints = [{
   ipAddress: "127.0.0.1",
