@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-homebridge-automation",
-  "version": "0.0.86-beta.2",
+  "version": "0.1.0-beta.3",
   "description": "NodeRED Automation for HomeBridge",
   "main": "HAP-NodeRed.js",
   "scripts": {
@@ -22,12 +22,12 @@
     "url": "git+https://github.com/NorthernMan54/node-red-contrib-homebridge-automation.git"
   },
   "devDependencies": {
-    "documentation": "^13.2.5"
+    "documentation": "^14.0.1"
   },
   "dependencies": {
     "better-queue": ">=3.8.10",
     "debug": ">2.6.9",
-    "hap-node-client": ">=0.1.22-beta.2"
+    "hap-node-client": ">=0.1.30-beta.0"
   },
   "author": "NorthernMan54",
   "license": "ISC",
