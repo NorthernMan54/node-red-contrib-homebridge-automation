@@ -25,9 +25,9 @@
     "documentation": "^14.0.1"
   },
   "dependencies": {
-    "better-queue": ">=3.8.10",
-    "debug": ">2.6.9",
-    "hap-node-client": ">=0.1.30-beta.0"
+    "better-queue": ">=3.8.12",
+    "debug": "^4.3.4",
+    "hap-node-client": ">=0.2.0"
   },
   "author": "NorthernMan54",
   "license": "ISC",

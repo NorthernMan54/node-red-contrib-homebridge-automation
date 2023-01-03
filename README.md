@@ -162,7 +162,7 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 - Support for homebridge instances with different PINS.  Tks @dxdc
 
-### April 23, 2022 - Version 0.0.86
+### Dec 31, 2022 - Version 0.1.0
 
 - Removal of request dependency from hap-node-client
 
