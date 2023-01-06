@@ -56,7 +56,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
    * [To start Node-RED in DEBUG mode, and output Homebridge-Automation debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-homebridge-automation-debug-logs-start-node-red-like-this)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: sgracey, at: Tue  3 Jan 2023 10:23:17 EST -->
+<!-- Added by: sgracey, at: Fri  6 Jan 2023 09:40:24 EST -->
 
 <!--te-->
 
@@ -194,7 +194,7 @@ This is covered in alot of other places, so I won't cover it here.
 
 ## 2 - Prepare Homebridge for integration with Homebridge-Automation
 
-Place your homebridge instances into "INSECURE MODE".  This is same as my [Homebridge Alexa](https://github.com/NorthernMan54/homebridge-alexa) plugin, and you just need to follow the [Prepare homebridge for plugin](https://github.com/NorthernMan54/homebridge-alexa#prepare-homebridge-for-plugin-installation) instructions there.
+Place your homebridge instances into "INSECURE MODE".  This is same as my [Homebridge Alexa](https://github.com/NorthernMan54/homebridge-alexa) plugin, and you just need to follow the [Prepare homebridge for plugin](https://github.com/NorthernMan54/homebridge-alexa/blob/master/Installation.md#prepare-homebridge-for-plugin-installation) instructions there.
 
 ## 3 - Install Homebridge-Automation into Node-Red
 
