@@ -31,6 +31,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [Mar 9, 2021 - Version 0.0.80](#mar-9-2021---version-0080)
       * [April 23, 2021 - Version 0.0.82](#april-23-2021---version-0082)
       * [Dec 31, 2022 - Version 0.1.3](#dec-31-2022---version-013)
+      * [Jan 6, 2023 - Version 0.1.5](#jan-6-2023---version-015)
 * [Backlog / Roadmap](#backlog--roadmap)
    * [Dropped items](#dropped-items)
 * [Installation Steps](#installation-steps)
@@ -56,7 +57,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
    * [To start Node-RED in DEBUG mode, and output Homebridge-Automation debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-homebridge-automation-debug-logs-start-node-red-like-this)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: sgracey, at: Fri  6 Jan 2023 09:40:24 EST -->
+<!-- Added by: sgracey, at: Fri  6 Jan 2023 09:41:08 EST -->
 
 <!--te-->
 
@@ -166,6 +167,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 ### Dec 31, 2022 - Version 0.1.3
 
 - Removal of request dependency from hap-node-client
+
+### Jan 6, 2023 - Version 0.1.5
+
+- Remove support for ipv6
 
 # Backlog / Roadmap
 
