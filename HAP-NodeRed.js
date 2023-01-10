@@ -510,12 +510,8 @@ module.exports = function (RED) {
         payload[key] = msg.payload[key];
       });
       _control.call(this, node, msg.payload, function (err, data) {
-        if (!err && data) {
-          // debug('hbControl', err, data); // Images produce alot of noise
-          const msg = {};
-          msg.payload = data;
-          node.send(msg);
-        } else {
+        // debug('hbControl [%s] - [%s]', err, data); // Images produce alot of noise
+        if (err) {
           node.error(err, this.msg);
         }
       }.bind(this));
@@ -728,7 +724,7 @@ module.exports = function (RED) {
 
       // characteristics = Object.assign(characteristics, characteristic.characteristic);
       if (device) {
-        hbMessage.forEach(function(characteristic) {
+        hbMessage.forEach(function (characteristic) {
           // debug("Exists", (device.characteristics[characteristic.aid + '.' + characteristic.iid]));
           if (device.characteristics[characteristic.aid + '.' + characteristic.iid]) {
             payload = Object.assign(payload, {
@@ -806,7 +802,7 @@ module.exports = function (RED) {
               "image-height": 1080
             };
             debug("Control %s:%s ->", device.host, device.port, JSON.stringify(message));
-            homebridge.HAPresource(device.host, device.port, JSON.stringify(message), function(err, status) {
+            homebridge.HAPresource(device.host, device.port, JSON.stringify(message), function (err, status) {
               // debug("status", btoa(status));
               if (!err) {
                 debug("Controlled %s:%s ->", device.host, device.port);
@@ -816,7 +812,7 @@ module.exports = function (RED) {
                   fill: 'green'
                 });
                 clearTimeout(node.timeout);
-                node.timeout = setTimeout(function() {
+                node.timeout = setTimeout(function () {
                   node.status({});
                 }, 30 * 1000);
                 // {"characteristics":[{"aid":19,"iid":10,"value":false},{"aid":19,"iid":11,"value":0}]}
