@@ -124,7 +124,7 @@ Returns **type** description
 
 *   `nrDevice` **type** description
 *   `node` **type** description
-*   `perms`  
+*   `perms` &#x20;
 *   `callback` **type** description
 *   `value` **type** description
 
