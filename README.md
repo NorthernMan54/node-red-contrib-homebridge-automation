@@ -55,11 +55,12 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
    * [hb control](#hb-control)
       * [Input](#input-2)
 * [Flows Shared from Community](#flows-shared-from-community)
+* [Donations](#donations)
 * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
    * [To start Node-RED in DEBUG mode, and output Homebridge-Automation debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-homebridge-automation-debug-logs-start-node-red-like-this)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: sgracey, at: Tue  7 Mar 2023 19:53:52 EST -->
+<!-- Added by: sgracey, at: Tue  7 Mar 2023 20:10:44 EST -->
 
 <!--te-->
 
@@ -357,6 +358,10 @@ To find supported characteristics for a device, please send an invalid message p
 I have started collecting flows for useful functions on the wiki.
 
 https://github.com/NorthernMan54/node-red-contrib-homebridge-automation/wiki
+
+# Donations
+
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6V3MNYYR446EG)
 
 # Troubleshooting / DEBUG MODE
 
