@@ -574,24 +574,23 @@ module.exports = function (RED) {
       }, function (err, message) {
         if (!err) {
           debug("hbStatus received: %s = %s", JSON.stringify(node.fullName), JSON.stringify(message));
-          var msg = {
-            name: node.name,
-            _rawMessage: message,
-            payload: _convertHBcharactericToNode(message.characteristics, node)
-          };
+          this.msg.name = node.name;
+          this.msg._rawMessage = message;
+          this.msg.payload = _convertHBcharactericToNode(message.characteristics, node);
+
           if (node.hbDevice) {
-            msg.Homebridge = node.hbDevice.homebridge;
-            msg.Manufacturer = node.hbDevice.manufacturer;
-            msg.Service = node.hbDevice.deviceType;
-            msg._device = node.device;
-            msg._confId = node.confId;
+            this.msg.Homebridge = node.hbDevice.homebridge;
+            this.msg.Manufacturer = node.hbDevice.manufacturer;
+            this.msg.Service = node.hbDevice.deviceType;
+            this.msg._device = node.device;
+            this.msg._confId = node.confId;
           }
           node.status({
-            text: JSON.stringify(msg.payload),
+            text: JSON.stringify(this.msg.payload),
             shape: 'dot',
             fill: 'green'
           });
-          node.send(msg);
+          node.send(this.msg);
         } else {
           node.error(err, this.msg);
         }
