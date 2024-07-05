@@ -233,7 +233,7 @@ module.exports = function (RED) {
         }, function (err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
-            debug("hbEvent received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
+            debug("hbEvent received: %s = %s", node.fullName, JSON.stringify(message.characteristics).slice(0, 80)+'...');
             if (node.sendInitialState) {
               var msg = {
                 name: node.name,

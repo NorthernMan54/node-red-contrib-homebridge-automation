@@ -17,14 +17,21 @@ function Accessory(devices, context) {
   this.homebridge = context.homebridge;
   this.id = context.id;
   this.services = [];
-  devices.services.forEach(function(element) {
+  devices.services.forEach(function (element) {
     // debug("Service", element);
     switch (element.type.substring(0, 8)) {
       case "0000003E": // Accessory Information
         this.info = information(element.characteristics);
         break;
- //     case "00000110": // Camera RTPStream Management generates duplicates
- //       break;
+      case "00000110": // Camera RTPStream Management generates duplicates
+        var service = new Service(element, this);
+        console.log('services', this.services);
+        if (this.services.some(e => e.type === '00000110')) {
+
+        } else {
+          this.services.push(service);
+        }
+        break;
       case "000000D9": // Input Source from webosTV has a dummy input source
         var service = new Service(element, this);
         if (service.name !== "dummy") {
@@ -39,7 +46,7 @@ function Accessory(devices, context) {
   // debug("Info", this.info);
 }
 
-Accessory.prototype.toList = function(context) {
+Accessory.prototype.toList = function (context) {
   var list = [];
   // debug("toList", context);
   context.aid = this.aid;
@@ -109,7 +116,7 @@ Accessory.prototype.toList = function(context) {
 
 function information(characteristics) {
   var result = {};
-  characteristics.forEach(function(characteristic) {
+  characteristics.forEach(function (characteristic) {
     if (characteristic.description) {
       var key = characteristic.description.replace(/ /g, '').replace(/\./g, '_');
       result[key] = characteristic.value;

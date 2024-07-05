@@ -6,7 +6,11 @@
   "scripts": {
     "api": "documentation build HAP-NodeRed.js -f md --config docs/documentation.yml > docs/API.md",
     "document": "./gh-md-toc --insert README.md; rm README.md.orig.* README.md.toc.*",
-    "watch": "nodemon"
+    "watch": "nodemon",
+    "coverage": "nyc npm t",
+    "format": "prettier --write {.,test}/*.js *.html *.md",
+    "lint": "eslint {.,test}/*.js",
+    "test": "mocha \"test/**/*_spec.js\""
   },
   "keywords": [
     "node-red",
@@ -23,9 +27,14 @@
   },
   "devDependencies": {
     "@types/node-red": "^0.20.7",
+    "@types/jest": "^29.5.12",
     "documentation": "14.0.3",
-    "eslint": "^9.6.0",
-    "eslint-plugin-mocha": "^10.4.3",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-import-newlines": "^1.4.0",
+    "eslint-plugin-jest": "^28.6.0",
+    "eslint-plugin-sort-exports": "^0.9.1",
     "mocha": "^10.6.0",
     "node-red": "^4.0.2",
     "node-red-node-test-helper": "^0.3.4",

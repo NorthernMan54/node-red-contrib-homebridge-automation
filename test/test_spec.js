@@ -5,7 +5,7 @@ var helper = require('node-red-node-test-helper');
 helper.init(require.resolve('node-red'), { userDir: os.tmpdir() });
 
 var flows = require('./flows');
-var hapNode = require('../HAP-NodeRed.js');
+var hapNode = require('../src/HAP-NodeRed.js');
 
 describe('HAP node', function () {
   before(function (done) {
