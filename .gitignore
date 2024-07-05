@@ -1,9 +1,21 @@
-npm-debug.log
 *.zip
-node_modules
-
 password*
 README.md.toc*
 README.md.orig*
 Troubleshooting.md.toc*
 Troubleshooting.md.orig*
+
+.DS_Store
+node_modules/
+coverage/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# nyc test coverage
+.nyc_output
