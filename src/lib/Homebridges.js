@@ -56,3 +56,13 @@ Homebridges.prototype.findDevice = function(node, opt) {
   }
   return (list.find(x => x.uniqueId === node));
 };
+
+Homebridges.prototype.findDeviceByName = function(name, opt) {
+  var list = [];
+  for (var index in this.homebridges) {
+    var homebridge = this.homebridges[index];
+    // list.push(homebridge.toList());
+    list = list.concat(homebridge.toList(opt));
+  }
+  return (list.find(x => x.name === name));
+};
