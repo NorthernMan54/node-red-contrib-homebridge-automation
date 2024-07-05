@@ -380,9 +380,9 @@ module.exports = function (RED) {
             node.lastPayload = JSON.parse(JSON.stringify(msg.payload)); // store value not reference
           }
         } else {
-          node.error("Homebridge not initialized 1", this.msg);
+          node.error("Homebridge not initialized", this.msg);
           node.status({
-            text: 'Homebridge not initialized 2',
+            text: 'Homebridge not initialized',
             shape: 'ring',
             fill: 'red'
           });
@@ -518,7 +518,7 @@ module.exports = function (RED) {
           });
         }
       } catch (err) {
-        var error = "Homebridge not initialized 3";
+        var error = "Homebridge not initialized";
         node.status({
           text: error,
           shape: 'ring',
@@ -895,7 +895,7 @@ module.exports = function (RED) {
       } // end of device if
     } catch (err) {
       debug('_status', err);
-      error = "Homebridge not initialized 4";
+      error = "Homebridge not initialized";
       node.status({
         text: error,
         shape: 'ring',
@@ -1028,7 +1028,7 @@ module.exports = function (RED) {
         callback(error);
       }
     } catch (err) {
-      var error = "Homebridge not initialized 5";
+      var error = "Homebridge not initialized";
       node.status({
         text: error,
         shape: 'ring',
