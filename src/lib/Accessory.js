@@ -23,8 +23,8 @@ function Accessory(devices, context) {
       case "0000003E": // Accessory Information
         this.info = information(element.characteristics);
         break;
-      case "00000110": // Camera RTPStream Management generates duplicates
-        break;
+ //     case "00000110": // Camera RTPStream Management generates duplicates
+ //       break;
       case "000000D9": // Input Source from webosTV has a dummy input source
         var service = new Service(element, this);
         if (service.name !== "dummy") {
