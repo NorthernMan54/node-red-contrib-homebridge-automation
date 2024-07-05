@@ -1,5 +1,4 @@
 *.zip
-package-lock.json
 password*
 README.md.toc*
 README.md.orig*
