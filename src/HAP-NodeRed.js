@@ -194,7 +194,7 @@ module.exports = function (RED) {
           _rawEvent: event
         };
         node.status({
-          text: JSON.stringify(msg.payload),
+          text: JSON.stringify(msg.payload).slice(0, 40)+'...',
           shape: 'dot',
           fill: 'green'
         });
@@ -246,7 +246,7 @@ module.exports = function (RED) {
                 _rawMessage: message,
               };
               node.status({
-                text: JSON.stringify(msg.payload),
+                text: JSON.stringify(msg.payload).slice(0, 40)+'...',
                 shape: 'dot',
                 fill: 'green'
               });
@@ -366,7 +366,7 @@ module.exports = function (RED) {
             }, newMsg));
             debug("hbResume.input: %s output", node.fullName, JSON.stringify(newMsg));
             node.status({
-              text: JSON.stringify(newMsg.payload),
+              text: JSON.stringify(newMsg.payload).slice(0, 40)+'...',
               shape: 'dot',
               fill: 'green'
             });
@@ -448,7 +448,7 @@ module.exports = function (RED) {
         }, function (err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
-            debug("hbResume received: %s = %s", node.fullName, JSON.stringify(message.characteristics), node.state);
+            debug("hbResume received: %s = %s", node.fullName, JSON.stringify(message.characteristics).slice(0, 80)+'...');
           } else {
             node.error(err);
           }
@@ -599,7 +599,7 @@ module.exports = function (RED) {
         perms: 'pr'
       }, function (err, message) {
         if (!err) {
-          debug("hbStatus received: %s = %s", JSON.stringify(node.fullName), JSON.stringify(message), JSON.stringify(node.hbDevice));
+          debug("hbStatus received: %s = %s", JSON.stringify(node.fullName), JSON.stringify(message).slice(0, 80)+'...', JSON.stringify(node.hbDevice));
           this.msg.name = node.name;
           this.msg._rawMessage = message;
           this.msg.payload = _convertHBcharactericToNode(message.characteristics, node);
@@ -612,7 +612,7 @@ module.exports = function (RED) {
             this.msg._confId = node.confId;
           }
           node.status({
-            text: JSON.stringify(this.msg.payload),
+            text: JSON.stringify(this.msg.payload).slice(0, 40)+'...',
             shape: 'dot',
             fill: 'green'
           });
@@ -919,6 +919,7 @@ module.exports = function (RED) {
     try {
       if (device) {
         var message;
+        console.log('device.type',device.type)
         switch (device.type) {
           case "00000110": // Camera RTPStream Management
           case "00000111": // Camera Control
@@ -930,10 +931,10 @@ module.exports = function (RED) {
             debug("Control %s ->", device.id, JSON.stringify(message));
             homebridge.HAPresourceByDeviceID(device.id, JSON.stringify(message), function (err, status) {
               if (!err) {
-                debug("Controlled %s ->", device.id, JSON.stringify(payload));
-                debug("Payload %s ->", device.id, status);
+              //  debug("Controlled %s ->", device.id, JSON.stringify(payload));
+              //  debug("Payload %s ->", device.id, status);
                 node.status({
-                  text: JSON.stringify(payload),
+                  text: JSON.stringify(payload).slice(0, 40)+'...',
                   shape: 'dot',
                   fill: 'green'
                 });
@@ -963,7 +964,7 @@ module.exports = function (RED) {
                   if (!err && status && status.characteristics[0].status === 0) {
                     debug("Controlled %s ->", device.id, JSON.stringify(status));
                     node.status({
-                      text: JSON.stringify(payload),
+                      text: JSON.stringify(payload).slice(0, 40)+'...',
                       shape: 'dot',
                       fill: 'green'
                     });
@@ -975,7 +976,7 @@ module.exports = function (RED) {
                   } else if (!err) {
                     debug("Controlled %s ->", device.id, payload);
                     node.status({
-                      text: JSON.stringify(payload),
+                      text: JSON.stringify(payload).slice(0, 40)+'...',
                       shape: 'dot',
                       fill: 'green'
                     });
