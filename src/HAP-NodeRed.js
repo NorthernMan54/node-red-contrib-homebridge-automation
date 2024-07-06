@@ -380,9 +380,9 @@ module.exports = function (RED) {
             node.lastPayload = JSON.parse(JSON.stringify(msg.payload)); // store value not reference
           }
         } else {
-          node.error("Homebridge not initialized", this.msg);
+          node.error("Homebridge not initialized - 1", this.msg);
           node.status({
-            text: 'Homebridge not initialized',
+            text: 'Homebridge not initialized -1',
             shape: 'ring',
             fill: 'red'
           });
@@ -505,39 +505,12 @@ module.exports = function (RED) {
 
     node.on('input', function (msg) {
       this.msg = msg;
-      var device;
-
-      try {
-        if (msg.name) {
-          device = hbDevices.findDeviceByName(msg.name, {
-            perms: 'pw'
-          });
-        } else {
-          device = hbDevices.findDevice(node.device, {
-            perms: 'pw'
-          });
-        }
-      } catch (err) {
-        var error = "Homebridge not initialized";
-        node.status({
-          text: error,
-          shape: 'ring',
-          fill: 'red'
-        });
-        node.error(error, this.msg);
-        return;
-      }
-      device
-      //      name: 'Cottage Porch',
-      //      service: 'Camera Control',
-      //      fullName: 'Cottage Porch - Camera Control',
-      //      sortName: 'Cottage Porch:Camera Control',
-
-
-      _control.call(this, node, device, msg.payload, function (err, data) {
-        // debug('hbControl [%s] - [%s]', err, data); // Images produce alot of noise
-        if (!err && data && (device.type == '00000110' || device.type == '00000111')) {
-          // console.log('device', device, node);
+      Object.keys(msg.payload).sort().forEach(function (key) {
+        payload[key] = msg.payload[key];
+      });
+      _control.call(this, node, msg.payload, function (err, data) {
+        // debug('hbControl complete [%s] - [%s]', node, node.hbDevice); // Images produce alot of noise
+        if (!err && data && (node.deviceType == '00000110' || node.deviceType == '00000111')) {
           const msg = {
             name: node.name,
             payload: node.state,
@@ -551,7 +524,7 @@ module.exports = function (RED) {
           }
           msg.payload = data;
           node.send(msg);
-        } else {
+        } else if (err) {
           node.error(err, this.msg);
         }
       }.bind(this));
@@ -563,7 +536,19 @@ module.exports = function (RED) {
     });
 
     node.conf.register(node, function () {
-      // debug("hbControl.register:", node.fullName, node);
+      debug("hbControl.register:", node.fullName);
+      this.hbDevice = hbDevices.findDevice(node.device);
+      console.log('hbControl Register', this.hbDevice)
+      if (this.hbDevice) {
+        node.hbDevice = this.hbDevice;
+        node.deviceType = this.hbDevice.type;
+        // Register for events
+        node.listener = node.command;
+        // node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
+      } else {
+        node.error("437:Can't find device " + node.device, null);
+        // this.error("Missing device " + node.device);
+      }
       switch (node.service) {
         case "Camera Control": // Camera Control
           debug("hbControl camera");
@@ -831,6 +816,9 @@ module.exports = function (RED) {
     // debug("_status", new Error(), hbDevices);
     var error;
     try {
+      if (!hbDevices) {
+        throw new Error('hbDevices not initialized');
+      }
       var device = hbDevices.findDevice(node.device, perms);
       if (device) {
         // debug("device.type", device.type);
@@ -910,8 +898,8 @@ module.exports = function (RED) {
         callback(error);
       } // end of device if
     } catch (err) {
-      debug('_status', err);
-      error = "Homebridge not initialized";
+      // debug('_status', err);
+      error = "Homebridge not initialized -2";
       node.status({
         text: error,
         shape: 'ring',
@@ -931,8 +919,14 @@ module.exports = function (RED) {
    * @return {type}          description
    */
 
-  function _control(node, device, payload, callback) {
+  function _control(node, payload, callback) {
     try {
+      if (!hbDevices) {
+        throw new Error('hbDevices not initialized');
+      }
+      var device = hbDevices.findDevice(node.device, {
+        perms: 'pw'
+      });
       if (device) {
         var message;
         // console.log('device.type', device.type)
@@ -1045,7 +1039,7 @@ module.exports = function (RED) {
         callback(error);
       }
     } catch (err) {
-      var error = "Homebridge not initialized";
+      var error = "Homebridge not initialized - 3 "+ err;
       node.status({
         text: error,
         shape: 'ring',
