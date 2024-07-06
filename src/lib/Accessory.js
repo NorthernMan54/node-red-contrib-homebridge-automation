@@ -25,7 +25,7 @@ function Accessory(devices, context) {
         break;
       case "00000110": // Camera RTPStream Management generates duplicates
         var service = new Service(element, this);
-        console.log('services', this.services);
+        // console.log('services', this.services);
         if (this.services.some(e => e.type === '00000110')) {
 
         } else {
