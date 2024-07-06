@@ -194,7 +194,7 @@ module.exports = function (RED) {
           _rawEvent: event
         };
         node.status({
-          text: JSON.stringify(msg.payload).slice(0, 40)+'...',
+          text: JSON.stringify(msg.payload).slice(0, 30) + '...',
           shape: 'dot',
           fill: 'green'
         });
@@ -233,7 +233,7 @@ module.exports = function (RED) {
         }, function (err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
-            debug("hbEvent received: %s = %s", node.fullName, JSON.stringify(message.characteristics).slice(0, 80)+'...');
+            debug("hbEvent received: %s = %s", node.fullName, JSON.stringify(message.characteristics).slice(0, 80) + '...');
             if (node.sendInitialState) {
               var msg = {
                 name: node.name,
@@ -246,7 +246,7 @@ module.exports = function (RED) {
                 _rawMessage: message,
               };
               node.status({
-                text: JSON.stringify(msg.payload).slice(0, 40)+'...',
+                text: JSON.stringify(msg.payload).slice(0, 30) + '...',
                 shape: 'dot',
                 fill: 'green'
               });
@@ -366,7 +366,7 @@ module.exports = function (RED) {
             }, newMsg));
             debug("hbResume.input: %s output", node.fullName, JSON.stringify(newMsg));
             node.status({
-              text: JSON.stringify(newMsg.payload).slice(0, 40)+'...',
+              text: JSON.stringify(newMsg.payload).slice(0, 30) + '...',
               shape: 'dot',
               fill: 'green'
             });
@@ -448,7 +448,7 @@ module.exports = function (RED) {
         }, function (err, message) {
           if (!err) {
             node.state = _convertHBcharactericToNode(message.characteristics, node);
-            debug("hbResume received: %s = %s", node.fullName, JSON.stringify(message.characteristics).slice(0, 80)+'...');
+            debug("hbResume received: %s = %s", node.fullName, JSON.stringify(message.characteristics).slice(0, 80) + '...');
           } else {
             node.error(err);
           }
@@ -527,12 +527,28 @@ module.exports = function (RED) {
         node.error(error, this.msg);
         return;
       }
+      device
+      //      name: 'Cottage Porch',
+      //      service: 'Camera Control',
+      //      fullName: 'Cottage Porch - Camera Control',
+      //      sortName: 'Cottage Porch:Camera Control',
+
 
       _control.call(this, node, device, msg.payload, function (err, data) {
         // debug('hbControl [%s] - [%s]', err, data); // Images produce alot of noise
         if (!err && data && (device.type == '00000110' || device.type == '00000111')) {
-          // debug('hbControl', err, data); // Images produce alot of noise
-          const msg = {};
+          // console.log('device', device, node);
+          const msg = {
+            name: node.name,
+            payload: node.state,
+            _device: node.device,
+            _confId: node.confId
+          };
+          if (node.hbDevice) {
+            msg.Homebridge = node.hbDevice.homebridge;
+            msg.Manufacturer = node.hbDevice.manufacturer;
+            msg.Service = node.hbDevice.deviceType;
+          }
           msg.payload = data;
           node.send(msg);
         } else {
@@ -599,7 +615,7 @@ module.exports = function (RED) {
         perms: 'pr'
       }, function (err, message) {
         if (!err) {
-          debug("hbStatus received: %s = %s", JSON.stringify(node.fullName), JSON.stringify(message).slice(0, 80)+'...', JSON.stringify(node.hbDevice));
+          debug("hbStatus received: %s = %s", JSON.stringify(node.fullName), JSON.stringify(message).slice(0, 80) + '...', JSON.stringify(node.hbDevice));
           this.msg.name = node.name;
           this.msg._rawMessage = message;
           this.msg.payload = _convertHBcharactericToNode(message.characteristics, node);
@@ -612,7 +628,7 @@ module.exports = function (RED) {
             this.msg._confId = node.confId;
           }
           node.status({
-            text: JSON.stringify(this.msg.payload).slice(0, 40)+'...',
+            text: JSON.stringify(this.msg.payload).slice(0, 30) + '...',
             shape: 'dot',
             fill: 'green'
           });
@@ -828,7 +844,7 @@ module.exports = function (RED) {
             };
             debug("_status Control %s -> %s", device.id, JSON.stringify(message));
             homebridge.HAPresourceByDeviceID(device.id, JSON.stringify(message), function (err, status) {
-              debug("status", err);
+              // debug("status", err);
               if (!err) {
                 debug("_status Controlled %s:%s ->", device.host, device.port);
                 node.status({
@@ -919,7 +935,7 @@ module.exports = function (RED) {
     try {
       if (device) {
         var message;
-        console.log('device.type',device.type)
+        // console.log('device.type', device.type)
         switch (device.type) {
           case "00000110": // Camera RTPStream Management
           case "00000111": // Camera Control
@@ -931,10 +947,10 @@ module.exports = function (RED) {
             debug("Control %s ->", device.id, JSON.stringify(message));
             homebridge.HAPresourceByDeviceID(device.id, JSON.stringify(message), function (err, status) {
               if (!err) {
-              //  debug("Controlled %s ->", device.id, JSON.stringify(payload));
-              //  debug("Payload %s ->", device.id, status);
+                //  debug("Controlled %s ->", device.id, JSON.stringify(payload));
+                //  debug("Payload %s ->", device.id, status);
                 node.status({
-                  text: JSON.stringify(payload).slice(0, 40)+'...',
+                  text: JSON.stringify(payload).slice(0, 30) + '...',
                   shape: 'dot',
                   fill: 'green'
                 });
@@ -964,7 +980,7 @@ module.exports = function (RED) {
                   if (!err && status && status.characteristics[0].status === 0) {
                     debug("Controlled %s ->", device.id, JSON.stringify(status));
                     node.status({
-                      text: JSON.stringify(payload).slice(0, 40)+'...',
+                      text: JSON.stringify(payload).slice(0, 30) + '...',
                       shape: 'dot',
                       fill: 'green'
                     });
@@ -976,7 +992,7 @@ module.exports = function (RED) {
                   } else if (!err) {
                     debug("Controlled %s ->", device.id, payload);
                     node.status({
-                      text: JSON.stringify(payload).slice(0, 40)+'...',
+                      text: JSON.stringify(payload).slice(0, 30) + '...',
                       shape: 'dot',
                       fill: 'green'
                     });
