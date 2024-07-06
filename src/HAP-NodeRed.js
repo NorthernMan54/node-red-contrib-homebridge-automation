@@ -180,7 +180,7 @@ module.exports = function (RED) {
     node.command = function (event) {
       // False messages can be received from accessories with multiple services
       // if (Object.keys(_convertHBcharactericToNode(event, node)).length > 0) {
-      debug("hbEvent", node.name, event);
+      // debug("hbEvent", node.name, event);
       if (event.status === true && event.value !== undefined) {
         node.state = Object.assign(node.state, _convertHBcharactericToNode([event], node));
         var msg = {
@@ -538,7 +538,7 @@ module.exports = function (RED) {
     node.conf.register(node, function () {
       debug("hbControl.register:", node.fullName);
       this.hbDevice = hbDevices.findDevice(node.device);
-      console.log('hbControl Register', this.hbDevice)
+    //  console.log('hbControl Register', this.hbDevice)
       if (this.hbDevice) {
         node.hbDevice = this.hbDevice;
         node.deviceType = this.hbDevice.type;
@@ -548,13 +548,6 @@ module.exports = function (RED) {
       } else {
         node.error("437:Can't find device " + node.device, null);
         // this.error("Missing device " + node.device);
-      }
-      switch (node.service) {
-        case "Camera Control": // Camera Control
-          debug("hbControl camera");
-          break;
-        default:
-          debug("node.conf.register", node.service);
       }
     });
   }
@@ -938,7 +931,7 @@ module.exports = function (RED) {
               "image-width": 1920,
               "image-height": 1080
             };
-            debug("Control %s ->", device.id, JSON.stringify(message));
+            debug("Control %s ->", device.id, node.fullName, JSON.stringify(message));
             homebridge.HAPresourceByDeviceID(device.id, JSON.stringify(message), function (err, status) {
               if (!err) {
                 //  debug("Controlled %s ->", device.id, JSON.stringify(payload));
