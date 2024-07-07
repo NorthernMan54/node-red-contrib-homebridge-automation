@@ -505,9 +505,6 @@ module.exports = function (RED) {
 
     node.on('input', function (msg) {
       this.msg = msg;
-      Object.keys(msg.payload).sort().forEach(function (key) {
-        payload[key] = msg.payload[key];
-      });
       _control.call(this, node, msg.payload, function (err, data) {
         // debug('hbControl complete [%s] - [%s]', node, node.hbDevice); // Images produce alot of noise
         if (!err && data && (node.deviceType == '00000110' || node.deviceType == '00000111')) {
