@@ -647,7 +647,7 @@ module.exports = function (RED) {
   });
 
   RED.httpAdmin.get('/hap-device/evDevices/:id', RED.auth.needsPermission('hb-event.read'), function (req, res) {
-    if (evDevices) {
+    if (evDevices && hbDevices) {
       debug("evDevices", hbDevices.toList({
         perms: 'ev'
       }).length);
