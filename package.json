@@ -5,7 +5,7 @@
   "main": "src/HAP-NodeRed.js",
   "scripts": {
     "api": "documentation build HAP-NodeRed.js -f md --config docs/documentation.yml > docs/API.md",
-    "document": "./gh-md-toc --insert --no-backup --hide-footer README.md; rm README.md.orig.* README.md.toc.*",
+    "document": "./gh-md-toc --insert --no-backup --hide-footer README.md",
     "watch": "nodemon",
     "coverage": "nyc npm t",
     "format": "prettier --write {.,test}/*.js *.html *.md",
