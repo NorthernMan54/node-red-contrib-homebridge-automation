@@ -926,7 +926,8 @@ module.exports = function (RED) {
             message = {
               "resource-type": "image",
               "image-width": 1920,
-              "image-height": 1080
+              "image-height": 1080,
+              "aid": node.hbDevice.aid
             };
             debug("Control %s ->", device.id, node.fullName, JSON.stringify(message));
             homebridge.HAPresourceByDeviceID(device.id, JSON.stringify(message), function (err, status) {
