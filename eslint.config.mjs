@@ -1,19 +1,21 @@
+/** @type {import('eslint').FlatConfig[]} */
 import pluginJs from "@eslint/js";
 import pluginJest from "eslint-plugin-jest";
 import globals from "globals";
 
-/** @type {import('eslint').Linter.Config[]} */
+
 export default [
   {
     files: ["**/*.js"],
     languageOptions: {
-      sourceType: "commonjs", // Change to "module" for ES6
+      sourceType: "commonjs", // This is necessary to parse imports/exports
       globals: {
         ...globals.browser,
         ...globals.es2021,
         ...globals.jest, // Add Jest globals
       },
     },
+    // Add any other specific rules here
   },
   pluginJs.configs.recommended,
   {
@@ -26,6 +28,7 @@ export default [
     },
   },
   {
-    ignores: ["test/**/*", "tools/*js", "src/lib/*"], // Modify the ignores property to exclude the specified files
+    // Exclude test, tools, and lib directories from linting
+    ignores: ["test/**/*", "tools/*js", "src/lib/*"], // Exclude these files from linting
   }
 ];
