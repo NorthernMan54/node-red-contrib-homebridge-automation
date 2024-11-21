@@ -1,41 +1,22 @@
+const HbBaseNode = require('./hbBaseNode'); // Path to HbBaseNode file
 const debug = require('debug')('hapNodeRed:hbStatusNode');
 
-class HbStatusNode {
-  constructor(nodeConfig, RED) {
+class HbStatusNode extends HbBaseNode {
+  constructor(nodeConfig) {
+    super(nodeConfig);
 
-    this.conf = RED.nodes.getNode(nodeConfig.conf); // The configuration node
-    this.confId = nodeConfig.conf;
-    this.device = nodeConfig.device;
-    this.service = nodeConfig.Service;
-    this.name = nodeConfig.name;
-    this.fullName = `${nodeConfig.name} - ${nodeConfig.Service}`;
-
-    this.hbDevice = null;
-
-    // Register the node with the configuration
-    this.conf.register(this, this.registerNode.bind(this));
-
-    // Set up event listeners
+    // Set up the input event listener
     this.on('input', this.handleInput.bind(this));
-    this.on('close', this.handleClose.bind(this));
   }
 
-  registerNode() {
-    debug("hbStatus Registered:", this.fullName);
-
-    this.hbDevice = hbDevices.findDevice(this.device);
-
-    if (this.hbDevice) {
-      this.deviceType = this.hbDevice.deviceType;
-    } else {
-      this.error(`437: Can't find device ${this.device}`, null);
-    }
-  }
-
+  /**
+   * Handle input events specific to HbStatusNode
+   * @param {Object} msg - Input message
+   */
   handleInput(msg) {
     this.msg = msg;
 
-    _status(this.device, this, { perms: 'pr' }, (err, message) => {
+    this._status(this.device, this, { perms: 'pr' }, (err, message) => {
       if (!err) {
         debug(
           "hbStatus received: %s = %s",
@@ -46,7 +27,7 @@ class HbStatusNode {
 
         this.msg.name = this.name;
         this.msg._rawMessage = message;
-        this.msg.payload = _convertHBcharactericToNode(message.characteristics, this);
+        this.msg.payload = this._convertHBcharactericToNode(message.characteristics, this);
 
         if (this.hbDevice) {
           this.msg.Homebridge = this.hbDevice.homebridge;
@@ -67,10 +48,6 @@ class HbStatusNode {
         this.error(err, this.msg);
       }
     });
-  }
-
-  handleClose(callback) {
-    callback();
   }
 }
 

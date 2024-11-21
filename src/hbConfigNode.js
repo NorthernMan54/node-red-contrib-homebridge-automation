@@ -1,19 +1,33 @@
+const hbBaseNode = require('./hbBaseNode');
 const HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
 const debug = require('debug')('hapNodeRed:hbConfigNode');
 const { Homebridges } = require('./lib/Homebridges.js');
+var Queue = require('better-queue');
 
-class HBConfNode {
+class HBConfNode extends hbBaseNode {
   constructor(nodeConfig, RED) {
-    this.RED = RED;
+    super(nodeConfig, RED); // Initialize base class
+
     this.username = nodeConfig.username;
     this.macAddress = nodeConfig.macAddress || '';
     this.password = nodeConfig.credentials.password;
     this.users = {};
     this.homebridge = null;
 
+    this.reqisterQueue = new Queue(function (node, cb) {
+      this._register.call(node.that, node, cb);
+    }, {
+      concurrent: 1,
+      autoResume: false,
+      maxRetries: 1000,
+      retryDelay: 30000
+    });
+    this.reqisterQueue.pause();
+
     this.initHomebridge(nodeConfig);
   }
 
+  // Initialize the Homebridge client
   initHomebridge(nodeConfig) {
     if (this.homebridge) {
       if (this.macAddress) {
@@ -28,10 +42,13 @@ class HBConfNode {
         timeout: 20,
         reqTimeout: 7000,
       });
+
+      // Handle 'Ready' event
       this.homebridge.on('Ready', this.handleReady.bind(this));
     }
   }
 
+  // Handle Homebridge 'Ready' event
   handleReady(accessories) {
     const hbDevices = new Homebridges(accessories);
     debug('Discovered %s new evDevices', hbDevices.toList({ perms: 'ev' }).length);
@@ -40,33 +57,35 @@ class HBConfNode {
     this.handleDuplicates(list);
   }
 
+  // Handle duplicate devices
   handleDuplicates(list) {
-    const deleteSeen = new Set();
+    const seenFullNames = new Set();
+    const seenUniqueIds = new Set();
 
     for (const endpoint of list) {
-      if (deleteSeen.has(endpoint.fullName)) {
+      if (seenFullNames.has(endpoint.fullName)) {
         console.warn('WARNING: Duplicate device name', endpoint.fullName);
       } else {
-        deleteSeen.add(endpoint.fullName);
+        seenFullNames.add(endpoint.fullName);
       }
     }
 
-    deleteSeen.clear();
-
     for (const endpoint of list) {
-      if (deleteSeen.has(endpoint.uniqueId)) {
+      if (seenUniqueIds.has(endpoint.uniqueId)) {
         console.error('ERROR: Parsing failed, duplicate uniqueID.', endpoint.fullName);
       } else {
-        deleteSeen.add(endpoint.uniqueId);
+        seenUniqueIds.add(endpoint.uniqueId);
       }
     }
   }
 
+  // Register a device node
   register(deviceNode, callback) {
     debug('hbConf.register', deviceNode.fullName);
     this.users[deviceNode.id] = deviceNode;
     debug('Register %s -> %s', deviceNode.type, deviceNode.fullName);
-    reqisterQueue.push(
+
+    this.reqisterQueue.push(
       {
         that: this,
         device: deviceNode.device,
@@ -79,6 +98,7 @@ class HBConfNode {
     );
   }
 
+  // Deregister a device node
   deregister(deviceNode, callback) {
     deviceNode.status({
       text: 'disconnected',
@@ -93,6 +113,7 @@ class HBConfNode {
     callback();
   }
 
+  // Clean up resources
   close() {
     if (this.client && this.client.connected) {
       this.client.end();

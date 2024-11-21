@@ -1,6 +1,6 @@
-import globals from "globals";
 import pluginJs from "@eslint/js";
 import pluginJest from "eslint-plugin-jest";
+import globals from "globals";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -25,4 +25,7 @@ export default [
       "no-unused-vars": "warn", // Change no-unused-vars to a warning
     },
   },
+  {
+    ignores: ["test/**/*", "tools/*js", "src/lib/*"], // Modify the ignores property to exclude the specified files
+  }
 ];

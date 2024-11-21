@@ -1,26 +1,24 @@
+const HbBaseNode = require('./hbBaseNode'); // Path to the HbBaseNode file
 const debug = require('debug')('hapNodeRed:hbResumeNode');
 
-class HbResumeNode {
-  constructor(nodeConfig, RED) {
-    RED.nodes.createNode(this, nodeConfig);
-    this.conf = RED.nodes.getNode(nodeConfig.conf);
-    this.confId = nodeConfig.conf;
-    this.device = nodeConfig.device;
-    this.service = nodeConfig.Service;
-    this.name = nodeConfig.name;
-    this.fullName = `${nodeConfig.name} - ${nodeConfig.Service}`;
+class HbResumeNode extends HbBaseNode {
+  constructor(nodeConfig) {
+    super(nodeConfig);
+
     this.state = null;
     this.lastMessageTime = null;
     this.lastMessageValue = null;
     this.lastPayload = { On: false };
     this.timeout = null;
 
+    // Set up input and command handlers
     this.on('input', this.handleInput.bind(this));
-
     this.command = this.handleCommand.bind(this);
 
+    // Handle device registration
     this.conf.register(this, this.handleDeviceRegistration.bind(this));
 
+    // Deregister on close
     this.on('close', (callback) => {
       this.conf.deregister(this, callback);
     });
@@ -32,7 +30,7 @@ class HbResumeNode {
 
     if (typeof msg.payload === "object") {
       if (this.hbDevice) {
-        const message = _createControlMessage.call(this, msg.payload, this, this.hbDevice);
+        const message = this._createControlMessage.call(this, msg.payload, this, this.hbDevice);
 
         if (message.characteristics.length > 0) {
           let newMsg;
@@ -73,7 +71,7 @@ class HbResumeNode {
   }
 
   handleCommand(event) {
-    const payload = { ...this.state, ..._convertHBcharactericToNode([event], this) };
+    const payload = { ...this.state, ...this._convertHBcharactericToNode([event], this) };
     debug("hbResume.event: %s %s -> %s", this.fullName, JSON.stringify(this.state), JSON.stringify(payload));
 
     if (event.status === true && event.value !== undefined) {
@@ -93,9 +91,9 @@ class HbResumeNode {
     this.hbDevice = hbDevices.findDevice(this.device, { perms: 'pw' });
 
     if (this.hbDevice) {
-      _status(this.device, this, { perms: 'pw' }, (err, message) => {
+      this._status(this.device, this, { perms: 'pw' }, (err, message) => {
         if (!err) {
-          this.state = _convertHBcharactericToNode(message.characteristics, this);
+          this.state = this._convertHBcharactericToNode(message.characteristics, this);
           debug("hbResume received: %s = %s", this.fullName, JSON.stringify(message.characteristics).slice(0, 80) + '...');
         } else {
           this.error(err);
