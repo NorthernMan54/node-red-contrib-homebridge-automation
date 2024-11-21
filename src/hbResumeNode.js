@@ -1,176 +1,137 @@
 const debug = require('debug')('hapNodeRed:hbResumeNode');
 
-function hbResumeNode(n) {
-  RED.nodes.createNode(this, n);
-  this.conf = RED.nodes.getNode(n.conf);
-  this.confId = n.conf;
-  this.device = n.device;
-  this.service = n.Service;
-  this.name = n.name;
-  this.fullName = n.name + ' - ' + n.Service;
-  var node = this;
+class HbResumeNode {
+  constructor(nodeConfig, RED) {
+    RED.nodes.createNode(this, nodeConfig);
+    this.conf = RED.nodes.getNode(nodeConfig.conf);
+    this.confId = nodeConfig.conf;
+    this.device = nodeConfig.device;
+    this.service = nodeConfig.Service;
+    this.name = nodeConfig.name;
+    this.fullName = `${nodeConfig.name} - ${nodeConfig.Service}`;
+    this.state = null;
+    this.lastMessageTime = null;
+    this.lastMessageValue = null;
+    this.lastPayload = { On: false };
+    this.timeout = null;
 
-  node.state = null;
-  node.lastMessageTime = null;
-  node.lastMessageValue = null;
-  node.lastPayload = {
-    On: false
-  };
+    this.on('input', this.handleInput.bind(this));
 
-  node.on('input', function (msg) {
+    this.command = this.handleCommand.bind(this);
+
+    this.conf.register(this, this.handleDeviceRegistration.bind(this));
+
+    this.on('close', (callback) => {
+      this.conf.deregister(this, callback);
+    });
+  }
+
+  handleInput(msg) {
     this.msg = msg;
-    debug("hbResume.input: %s input", node.fullName, JSON.stringify(msg));
+    debug("hbResume.input: %s input", this.fullName, JSON.stringify(msg));
+
     if (typeof msg.payload === "object") {
-      // Using this to validate input message contains valid Accessory Characteristics
-      if (node.hbDevice) { // not populated until initialization is complete
-        var message = _createControlMessage.call(this, msg.payload, node, node.hbDevice);
+      if (this.hbDevice) {
+        const message = _createControlMessage.call(this, msg.payload, this, this.hbDevice);
 
         if (message.characteristics.length > 0) {
-          var newMsg;
+          let newMsg;
           if (!msg.payload.On) {
-            // false / Turn Off
-            // debug("hbResume-Node lastPayload %s", JSON.stringify(node.lastPayload));
-            if (node.lastPayload.On) {
-              // last msg was on, restore previous state
+            if (this.lastPayload.On) {
               newMsg = {
-                name: node.name,
-                _device: node.device,
-                _confId: node.confId
+                name: this.name,
+                _device: this.device,
+                _confId: this.confId,
+                payload: this.state,
+                Homebridge: this.hbDevice?.homebridge,
+                Manufacturer: this.hbDevice?.manufacturer,
+                Type: this.hbDevice?.deviceType,
               };
-              if (node.hbDevice) {
-                newMsg.Homebridge = node.hbDevice.homebridge;
-                newMsg.Manufacturer = node.hbDevice.manufacturer;
-                newMsg.Type = node.hbDevice.deviceType;
-              }
-              newMsg.payload = node.state;
             } else {
-              // last msg was off, pass thru
-              node.state = JSON.parse(JSON.stringify(msg.payload));
+              this.state = JSON.parse(JSON.stringify(msg.payload));
               newMsg = msg;
             }
           } else {
-            // True / Turn on
             newMsg = msg;
           }
-          // Off messages should not include brightness
-          node.send((newMsg.payload.On ? newMsg : newMsg.payload = {
-            On: false
-          }, newMsg));
-          debug("hbResume.input: %s output", node.fullName, JSON.stringify(newMsg));
-          node.status({
-            text: JSON.stringify(newMsg.payload).slice(0, 30) + '...',
-            shape: 'dot',
-            fill: 'green'
-          });
-          clearTimeout(node.timeout);
-          node.timeout = setTimeout(function () {
-            node.status({});
-          }, 10 * 1000);
-          node.lastMessageValue = newMsg.payload;
-          node.lastMessageTime = Date.now();
-          // debug("hbResume.input: %s updating lastPayload %s", node.fullName, JSON.stringify(msg.payload));
-          node.lastPayload = JSON.parse(JSON.stringify(msg.payload)); // store value not reference
+
+          this.send(newMsg.payload.On ? newMsg : { ...newMsg, payload: { On: false } });
+          debug("hbResume.input: %s output", this.fullName, JSON.stringify(newMsg));
+          this.updateStatus(newMsg.payload);
+          this.lastMessageValue = newMsg.payload;
+          this.lastMessageTime = Date.now();
+          this.lastPayload = JSON.parse(JSON.stringify(msg.payload));
         }
       } else {
-        node.error("Homebridge not initialized - 1", this.msg);
-        node.status({
-          text: 'Homebridge not initialized -1',
-          shape: 'ring',
-          fill: 'red'
-        });
+        this.handleError("Homebridge not initialized - 1");
       }
     } else {
-      node.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + node.hbDevice.descriptions, this.msg);
-      node.status({
-        text: 'Invalid payload',
-        shape: 'ring',
-        fill: 'red'
-      });
+      this.handleError(
+        "Payload should be a JSON object containing device characteristics and values, e.g., {\"On\":false, \"Brightness\":0 }"
+      );
     }
-  });
+  }
 
-  node.command = function (event) {
-    // debug("hbResume received event: %s ->", node.fullName, event);
-    // debug("hbResume - internals %s millis, old %s, event %s, previous %s", Date.now() - node.lastMessageTime, node.lastMessageValue, event.status, node.state);
-    // Don't update for events originating from here
-    // if Elapsed is greater than 5 seconds, update stored state
-    // if Elapsed is less then 5, and lastMessage doesn't match event update stored state
-
-    var payload = Object.assign({}, node.state);
-
-    // debug("should be true", _getObjectDiff(payload, node.state).length);
-
-    payload = Object.assign(payload, _convertHBcharactericToNode([event], node));
-
-    // debug("should be false", _getObjectDiff(payload, node.state).length);
-
-    debug("hbResume.event: %s %s -> %s", node.fullName, JSON.stringify(node.state), JSON.stringify(payload));
+  handleCommand(event) {
+    const payload = { ...this.state, ..._convertHBcharactericToNode([event], this) };
+    debug("hbResume.event: %s %s -> %s", this.fullName, JSON.stringify(this.state), JSON.stringify(payload));
 
     if (event.status === true && event.value !== undefined) {
-      if ((Date.now() - node.lastMessageTime) > 5000) {
-        debug("hbResume.update: %s - updating stored event >5", node.fullName, payload);
-        node.state = JSON.parse(JSON.stringify(payload));
-      } else if (_getObjectDiff(payload, node.lastMessageValue).length > 0) {
-        // debug("hbResume - updating stored event !=", payload, node.lastMessageValue);
-        // node.state = payload;
+      if (Date.now() - this.lastMessageTime > 5000) {
+        debug("hbResume.update: %s - updating stored event >5", this.fullName, payload);
+        this.state = JSON.parse(JSON.stringify(payload));
       }
     } else if (event.status === true) {
-      node.status({
-        text: 'connected',
-        shape: 'dot',
-        fill: 'green'
-      });
+      this.updateStatus({ text: 'connected', shape: 'dot', fill: 'green' });
     } else {
-      node.status({
-        text: 'disconnected: ' + event.status,
-        shape: 'ring',
-        fill: 'red'
-      });
+      this.updateStatus({ text: `disconnected: ${event.status}`, shape: 'ring', fill: 'red' });
     }
-  };
+  }
 
-  node.conf.register(node, function () {
-    debug("hbResume.register:", node.fullName);
-    this.hbDevice = hbDevices.findDevice(node.device, {
-      perms: 'pw'
-    });
+  handleDeviceRegistration() {
+    debug("hbResume.register:", this.fullName);
+    this.hbDevice = hbDevices.findDevice(this.device, { perms: 'pw' });
+
     if (this.hbDevice) {
-      _status(node.device, node, {
-        perms: 'pw'
-      }, function (err, message) {
+      _status(this.device, this, { perms: 'pw' }, (err, message) => {
         if (!err) {
-          node.state = _convertHBcharactericToNode(message.characteristics, node);
-          debug("hbResume received: %s = %s", node.fullName, JSON.stringify(message.characteristics).slice(0, 80) + '...');
+          this.state = _convertHBcharactericToNode(message.characteristics, this);
+          debug("hbResume received: %s = %s", this.fullName, JSON.stringify(message.characteristics).slice(0, 80) + '...');
         } else {
-          node.error(err);
+          this.error(err);
         }
       });
-      node.hbDevice = this.hbDevice;
-      node.deviceType = this.hbDevice.deviceType;
-      // Register for events
-      node.listener = node.command;
-      node.eventName = [];
-      // node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
-      // homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid, node.command);
-      this.hbDevice.eventRegisters.forEach(function (event) {
-        homebridge.on(node.hbDevice.id + event.aid + event.iid, node.command);
-        node.eventName.push(node.hbDevice.id + event.aid + event.iid);
-      });
-      node.status({
-        text: 'connected',
-        shape: 'dot',
-        fill: 'green'
-      });
-      clearTimeout(node.timeout);
-      node.timeout = setTimeout(function () {
-        node.status({});
-      }, 30 * 1000);
-    } else {
-      node.error("365:Can't find device " + node.device, null);
-    }
-  }.bind(this));
 
-  node.on('close', function (callback) {
-    node.conf.deregister(node, callback);
-  });
+      this.deviceType = this.hbDevice.deviceType;
+      this.listener = this.command;
+      this.eventName = [];
+
+      this.hbDevice.eventRegisters.forEach((event) => {
+        homebridge.on(this.hbDevice.id + event.aid + event.iid, this.command);
+        this.eventName.push(this.hbDevice.id + event.aid + event.iid);
+      });
+
+      this.updateStatus({ text: 'connected', shape: 'dot', fill: 'green' });
+      this.resetTimeout(30000);
+    } else {
+      this.error(`Can't find device ${this.device}`);
+    }
+  }
+
+  updateStatus(status) {
+    this.status(status);
+    this.resetTimeout(10000);
+  }
+
+  resetTimeout(duration) {
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => this.status({}), duration);
+  }
+
+  handleError(message) {
+    this.error(message, this.msg);
+    this.updateStatus({ text: message, shape: 'ring', fill: 'red' });
+  }
 }
+
+module.exports = HbResumeNode;
