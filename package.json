@@ -9,8 +9,10 @@
     "watch": "nodemon",
     "coverage": "nyc npm t",
     "format": "prettier --write {.,test}/*.js *.html *.md",
-    "lint": "eslint {.,test}/*.js",
-    "test": "mocha \"test/**/*_spec.js\""
+    "lint": "eslint --max-warnings=0 .",
+    "lint:fix": "eslint --fix --max-warnings=0 .",
+    "test": "jest --detectOpenHandles",
+    "test-coverage": "jest --coverage"
   },
   "keywords": [
     "node-red",
@@ -29,13 +31,12 @@
     "@types/node-red": "^0.20.7",
     "@types/jest": "^29.5.12",
     "documentation": "14.0.3",
-    "eslint": "^8.57.0",
-    "eslint-config-airbnb-typescript": "^18.0.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-import-newlines": "^1.4.0",
-    "eslint-plugin-jest": "^28.6.0",
-    "eslint-plugin-sort-exports": "^0.9.1",
-    "mocha": "^10.6.0",
+    "@eslint/js": "^9.14.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-format": "^0.1.2",
+    "eslint-plugin-jest": "^28.8.3",
+    "globals": "^15.12.0",
+    "jest": "^29.7.0",
     "node-red": "^4.0.2",
     "node-red-node-test-helper": "^0.3.4",
     "nodemon": "^3.1.4",
@@ -61,10 +62,24 @@
     ],
     "ext": "js,html",
     "ignore": [],
-    "exec": "DEBUG=hapNodeRed,hapNodeJSClient ~/npm/bin/node-red",
+    "exec": "DEBUG=hapNodeRed ~/npm/bin/node-red -u test/node-red",
     "signal": "SIGTERM",
     "env": {
       "NODE_OPTIONS": "--trace-warnings"
     }
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "modulePathIgnorePatterns": [],
+    "coverageReporters": [
+      "lcov"
+    ],
+    "collectCoverageFrom": [
+      "src/**",
+      "!src/accessories/**",
+      "!src/lib/definitions/generate-definitions.ts",
+      "!src/lib/definitions/generator-configuration.ts",
+      "!src/test-utils"
+    ]
   }
 }

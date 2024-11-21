@@ -1,0 +1,116 @@
+[
+    {
+        "id": "caef1e7b5b399e80",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "4a85df77a9b16ff2",
+        "type": "hb-conf",
+        "username": "031-45-154",
+        "macAddress": ""
+    },
+    {
+        "id": "b38c5b6a73cf96c6",
+        "type": "hb-status",
+        "z": "caef1e7b5b399e80",
+        "name": "West Bedroom",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Lightbulb",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
+        "conf": "4a85df77a9b16ff2",
+        "x": 540,
+        "y": 140,
+        "wires": [
+            [
+                "902c5887b6877df6"
+            ]
+        ]
+    },
+    {
+        "id": "d5fd37ccfdba3410",
+        "type": "hb-event",
+        "z": "caef1e7b5b399e80",
+        "name": "West Bedroom",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Lightbulb",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
+        "conf": "4a85df77a9b16ff2",
+        "sendInitialState": true,
+        "x": 460,
+        "y": 260,
+        "wires": [
+            [
+                "a866ae0bb24ce682"
+            ]
+        ]
+    },
+    {
+        "id": "902c5887b6877df6",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 800,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "a866ae0bb24ce682",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 800,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "f2b5f7e909917c8b",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 240,
+        "y": 140,
+        "wires": [
+            [
+                "b38c5b6a73cf96c6"
+            ]
+        ]
+    }
+]
