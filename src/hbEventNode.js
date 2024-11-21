@@ -1,130 +1,135 @@
-/**
-   * hbEventNode - Node that listens to HomeKit Events, and sends message into NodeRED
-   *
-   * @param  {type} n description
-   * @return {type}   description
-   */
+const debug = require('debug')('hapNodeRed:hbEventNode');
 
-function hbEventNode(n) {
-  // debug("hbEvent", n);
-  RED.nodes.createNode(this, n);
-  this.conf = RED.nodes.getNode(n.conf);
-  this.confId = n.conf;
-  this.device = n.device;
-  this.service = n.Service;
-  this.name = n.name;
-  this.fullName = n.name + ' - ' + n.Service;
-  this.sendInitialState = n.sendInitialState === true;
-  this.state = {};
+class HbEventNode {
+  constructor(nodeConfig, RED) {
+    this.RED = RED;
+    this.node = nodeConfig;
+    this.conf = RED.nodes.getNode(nodeConfig.conf);
+    this.confId = nodeConfig.conf;
+    this.device = nodeConfig.device;
+    this.service = nodeConfig.Service;
+    this.name = nodeConfig.name;
+    this.fullName = `${nodeConfig.name} - ${nodeConfig.Service}`;
+    this.sendInitialState = nodeConfig.sendInitialState === true;
+    this.state = {};
 
-  var node = this;
+    this.init();
+  }
 
-  node.command = function (event) {
-    // False messages can be received from accessories with multiple services
-    // if (Object.keys(_convertHBcharactericToNode(event, node)).length > 0) {
-    // debug("hbEvent", node.name, event);
+  // Initialize the event handling logic
+  init() {
+    this.node.command = this.command.bind(this);
+
+    // Register the node with the HbConf class
+    this.conf.register(this.node, this.handleDeviceRegistration.bind(this));
+
+    // Clean up when the node is closed
+    this.node.on('close', (callback) => {
+      this.conf.deregister(this.node, callback);
+    });
+  }
+
+  // Handle event command processing
+  command(event) {
     if (event.status === true && event.value !== undefined) {
-      node.state = Object.assign(node.state, _convertHBcharactericToNode([event], node));
-      var msg = {
-        name: node.name,
-        payload: node.state,
-        Homebridge: node.hbDevice.homebridge,
-        Manufacturer: node.hbDevice.manufacturer,
-        Service: node.hbDevice.deviceType,
-        _device: node.device,
-        _confId: node.confId,
-        _rawEvent: event
+      this.state = Object.assign(this.state, _convertHBcharactericToNode([event], this.node));
+      const msg = {
+        name: this.node.name,
+        payload: this.state,
+        Homebridge: this.node.hbDevice.homebridge,
+        Manufacturer: this.node.hbDevice.manufacturer,
+        Service: this.node.hbDevice.deviceType,
+        _device: this.node.device,
+        _confId: this.node.confId,
+        _rawEvent: event,
       };
-      node.status({
-        text: JSON.stringify(msg.payload).slice(0, 30) + '...',
+      this.node.status({
+        text: `${JSON.stringify(msg.payload).slice(0, 30)}...`,
         shape: 'dot',
-        fill: 'green'
+        fill: 'green',
       });
-      clearTimeout(node.timeout);
-      node.timeout = setTimeout(function () {
-        node.status({});
+      clearTimeout(this.node.timeout);
+      this.node.timeout = setTimeout(() => {
+        this.node.status({});
       }, 10 * 1000);
-      node.send(msg);
+      this.node.send(msg);
     } else if (event.status === true) {
-      node.status({
+      this.node.status({
         text: 'connected',
         shape: 'dot',
-        fill: 'green'
+        fill: 'green',
       });
     } else {
-      node.status({
-        text: 'disconnected: ' + event.status,
+      this.node.status({
+        text: `disconnected: ${event.status}`,
         shape: 'ring',
-        fill: 'red'
+        fill: 'red',
       });
     }
-  };
-  // };
+  }
 
-  node.conf.register(node, function () {
-    debug("hbEvent.register", node.fullName);
-    this.hbDevice = hbDevices.findDevice(node.device, {
-      perms: 'pr'
-    });
-    if (this.hbDevice) {
-      node.hbDevice = this.hbDevice;
-      node.deviceType = this.hbDevice.deviceType;
+  // Handle device registration logic
+  handleDeviceRegistration() {
+    debug('hbEvent.register', this.node.fullName);
+    this.node.hbDevice = hbDevices.findDevice(this.node.device, { perms: 'pr' });
 
-      _status(node.device, node, {
-        perms: 'ev'
-      }, function (err, message) {
+    if (this.node.hbDevice) {
+      this.node.deviceType = this.node.hbDevice.deviceType;
+
+      _status(this.node.device, this.node, { perms: 'ev' }, (err, message) => {
         if (!err) {
-          node.state = _convertHBcharactericToNode(message.characteristics, node);
-          debug("hbEvent received: %s = %s", node.fullName, JSON.stringify(message.characteristics).slice(0, 80) + '...');
-          if (node.sendInitialState) {
-            var msg = {
-              name: node.name,
-              payload: node.state,
-              Homebridge: node.hbDevice.homebridge,
-              Manufacturer: node.hbDevice.manufacturer,
-              Service: node.hbDevice.deviceType,
-              _device: node.device,
-              _confId: node.confId,
+          this.state = _convertHBcharactericToNode(message.characteristics, this.node);
+          debug(
+            'hbEvent received: %s = %s',
+            this.node.fullName,
+            `${JSON.stringify(message.characteristics).slice(0, 80)}...`
+          );
+
+          if (this.sendInitialState) {
+            const msg = {
+              name: this.node.name,
+              payload: this.state,
+              Homebridge: this.node.hbDevice.homebridge,
+              Manufacturer: this.node.hbDevice.manufacturer,
+              Service: this.node.hbDevice.deviceType,
+              _device: this.node.device,
+              _confId: this.node.confId,
               _rawMessage: message,
             };
-            node.status({
-              text: JSON.stringify(msg.payload).slice(0, 30) + '...',
+            this.node.status({
+              text: `${JSON.stringify(msg.payload).slice(0, 30)}...`,
               shape: 'dot',
-              fill: 'green'
+              fill: 'green',
             });
-            clearTimeout(node.timeout);
-            node.timeout = setTimeout(function () {
-              node.status({});
+            clearTimeout(this.node.timeout);
+            this.node.timeout = setTimeout(() => {
+              this.node.status({});
             }, 10 * 1000);
-            node.send(msg);
+            this.node.send(msg);
           }
         } else {
-          node.error("hbEvent _status: error", node.fullName, err);
+          this.node.error('hbEvent _status: error', this.node.fullName, err);
         }
       });
+
       // Register for events
-      node.listener = node.command;
-      node.eventName = [];
-      // node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
-      // debug("DEVICE", this.hbDevice);
-      this.hbDevice.eventRegisters.forEach(function (event) {
-        homebridge.on(node.hbDevice.id + event.aid + event.iid, node.command);
-        node.eventName.push(node.hbDevice.id + event.aid + event.iid);
+      this.node.listener = this.node.command;
+      this.node.eventName = [];
+
+      this.node.hbDevice.eventRegisters.forEach((event) => {
+        homebridge.on(this.node.hbDevice.id + event.aid + event.iid, this.node.command);
+        this.node.eventName.push(this.node.hbDevice.id + event.aid + event.iid);
       });
-      // homebridge.on(this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid, node.command);
-      node.status({
+
+      this.node.status({
         text: 'connected',
         shape: 'dot',
-        fill: 'green'
+        fill: 'green',
       });
     } else {
-      node.error("197:Can't find device " + node.device, null);
+      this.node.error(`197:Can't find device ${this.node.device}`, null);
     }
-  }.bind(this));
-
-  node.on('close', function (callback) {
-    node.conf.deregister(node, callback);
-  });
+  }
 }
 
-RED.nodes.registerType("hb-event", hbEventNode);
+module.exports = HbEventNode;

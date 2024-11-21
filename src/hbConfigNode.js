@@ -1,32 +1,32 @@
 const HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
 const debug = require('debug')('hapNodeRed:hbConfigNode');
-var Homebridges = require('./lib/Homebridges.js').Homebridges;
+const { Homebridges } = require('./lib/Homebridges.js');
 
 class HBConfNode {
-  constructor(n, RED) {
+  constructor(nodeConfig, RED) {
     this.RED = RED;
-    this.username = n.username;
-    this.macAddress = n.macAddress || '';
-    this.password = n.credentials.password;
+    this.username = nodeConfig.username;
+    this.macAddress = nodeConfig.macAddress || '';
+    this.password = nodeConfig.credentials.password;
     this.users = {};
     this.homebridge = null;
 
-    this.initHomebridge(n);
+    this.initHomebridge(nodeConfig);
   }
 
-  initHomebridge(n) {
+  initHomebridge(nodeConfig) {
     if (this.homebridge) {
       if (this.macAddress) {
         // Register additional PIN on existing instance
-        this.homebridge.RegisterPin(this.macAddress, n.username);
+        this.homebridge.RegisterPin(this.macAddress, nodeConfig.username);
       }
     } else {
       this.homebridge = new HAPNodeJSClient({
-        pin: n.username,
+        pin: nodeConfig.username,
         refresh: 900,
         debug: false,
         timeout: 20,
-        reqTimeout: 7000
+        reqTimeout: 7000,
       });
       this.homebridge.on('Ready', this.handleReady.bind(this));
     }
@@ -36,58 +36,59 @@ class HBConfNode {
     const hbDevices = new Homebridges(accessories);
     debug('Discovered %s new evDevices', hbDevices.toList({ perms: 'ev' }).length);
 
-    let list = hbDevices.toList({ perms: 'ev' });
+    const list = hbDevices.toList({ perms: 'ev' });
     this.handleDuplicates(list);
   }
 
   handleDuplicates(list) {
-    let deleteSeen = [];
+    const deleteSeen = new Set();
 
-    for (let i = 0; i < list.length; i++) {
-      const endpoint = list[i];
-      if (deleteSeen[endpoint.fullName]) {
-        console.log("WARNING: Duplicate device name", endpoint.fullName);
+    for (const endpoint of list) {
+      if (deleteSeen.has(endpoint.fullName)) {
+        console.warn('WARNING: Duplicate device name', endpoint.fullName);
       } else {
-        deleteSeen[endpoint.fullName] = true;
+        deleteSeen.add(endpoint.fullName);
       }
     }
 
-    deleteSeen = [];
+    deleteSeen.clear();
 
-    for (let i = 0; i < list.length; i++) {
-      const endpoint = list[i];
-      if (deleteSeen[endpoint.uniqueId]) {
-        console.log("ERROR: Parsing failed, duplicate uniqueID.", endpoint.fullName);
+    for (const endpoint of list) {
+      if (deleteSeen.has(endpoint.uniqueId)) {
+        console.error('ERROR: Parsing failed, duplicate uniqueID.', endpoint.fullName);
       } else {
-        deleteSeen[endpoint.uniqueId] = true;
+        deleteSeen.add(endpoint.uniqueId);
       }
     }
   }
 
   register(deviceNode, callback) {
-    debug("hbConf.register", deviceNode.fullName);
+    debug('hbConf.register', deviceNode.fullName);
     this.users[deviceNode.id] = deviceNode;
-    debug("Register %s -> %s", deviceNode.type, deviceNode.fullName);
-    reqisterQueue.push({
-      that: this,
-      device: deviceNode.device,
-      type: deviceNode.type,
-      name: deviceNode.name,
-      fullName: deviceNode.fullName,
-      node: this
-    }, callback);
+    debug('Register %s -> %s', deviceNode.type, deviceNode.fullName);
+    reqisterQueue.push(
+      {
+        that: this,
+        device: deviceNode.device,
+        type: deviceNode.type,
+        name: deviceNode.name,
+        fullName: deviceNode.fullName,
+        node: this,
+      },
+      callback
+    );
   }
 
   deregister(deviceNode, callback) {
     deviceNode.status({
       text: 'disconnected',
       shape: 'ring',
-      fill: 'red'
+      fill: 'red',
     });
 
-    deviceNode.eventName.forEach((event) => {
+    for (const event of deviceNode.eventName) {
       this.homebridge.removeListener(event, deviceNode.listener);
-    });
+    }
 
     callback();
   }

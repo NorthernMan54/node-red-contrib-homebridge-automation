@@ -62,7 +62,7 @@
     ],
     "ext": "js,html",
     "ignore": [],
-    "exec": "DEBUG=hapNodeRed ~/npm/bin/node-red -u test/node-red",
+    "exec": "npm run lint && DEBUG=hapNodeRed ~/npm/bin/node-red -u test/node-red",
     "signal": "SIGTERM",
     "env": {
       "NODE_OPTIONS": "--trace-warnings"
