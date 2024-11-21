@@ -1,8 +1,8 @@
 var debug = require('debug')('hapNodeRed');
 var Queue = require('better-queue');
 // var register = require('./lib/register.js');
-var Homebridges = require('./lib/Homebridges.js').Homebridges;
-var HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
+
+const HBConfNode = require('./hbConfigNode');
 
 module.exports = function (RED) {
   var evDevices = [];
@@ -26,129 +26,20 @@ module.exports = function (RED) {
    * @return {type}   description
    */
 
-  function hbConf(n) {
+  function hbConfNode(n) {
     RED.nodes.createNode(this, n);
     this.username = n.username;
     this.macAddress = n.macAddress || '';
     this.password = this.credentials.password;
 
-    this.users = {};
-
-    if (homebridge) {
-      if (this.macAddress) {
-        // register additional PIN on existing instance
-        homebridge.RegisterPin(this.macAddress, n.username);
-      }
-    } else {
-      homebridge = new HAPNodeJSClient({
-        "pin": n.username,
-        "refresh": 900,
-        "debug": false,
-        "timeout": 20,
-        "reqTimeout": 7000
-      });
-      reqisterQueue.pause();
-      homebridge.on('Ready', function (accessories) {
-        // evDevices = register.registerEv(homebridge, accessories);
-        // ctDevices = register.registerCt(homebridge, accessories);
-        hbDevices = new Homebridges(accessories);
-        // debug("output", JSON.stringify(hbDevices.toList({ perms: 'ev'}), null, 4));
-        // debug("evDevices", evDevices);
-        // debug('Discovered %s evDevices', evDevices.length);
-        debug('Discovered %s new evDevices', hbDevices.toList({
-          perms: 'ev'
-        }).length);
-        // debug(hbDevices.toList({perms: 'pw'}));
-
-        var list = hbDevices.toList({
-          perms: 'ev'
-        });
-
-        var deleteSeen = [];
-
-        for (var i = 0; i < list.length; i++) {
-          var endpoint = list[i];
-          // console.log("Checking", endpoint.fullName);
-          if (deleteSeen[endpoint.fullName]) {
-            console.log("WARNING: Duplicate device name", endpoint.fullName);
-            // debug('Duplicate', endpoint);
-            // response.event.payload.endpoints.splice(i, 1);
-          } else {
-            deleteSeen[endpoint.fullName] = true;
-          }
-        }
-
-        deleteSeen = [];
-
-        for (i = 0; i < list.length; i++) {
-          endpoint = list[i];
-          // console.log("Checking uniqueId", endpoint.uniqueId);
-          if (deleteSeen[endpoint.uniqueId]) {
-            console.log("ERROR: Parsing failed, duplicate uniqueID.", endpoint.fullName);
-            // response.event.payload.endpoints.splice(i, 1);
-          } else {
-            deleteSeen[endpoint.uniqueId] = true;
-          }
-        }
-        // evDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
-        // ctDevices.sort((a, b) => (a.sortName > b.sortName) ? 1 : ((b.sortName > a.sortName) ? -1 : 0));
-
-        // debug('Discovered %s ctDevices', ctDevices.length);
-        debug('Discovered %s new ctDevices', hbDevices.toList({
-          perms: 'pw'
-        }).length);
-        // debug('Discovered %s new ctDevices', hbDevices.toList({ perms: 'pw'}).length);
-        // debug("Register Queue", reqisterQueue.getStats());
-        reqisterQueue.resume();
-      });
-    }
-
-    var node = this;
-
-    this.connect = function (callback) {
-      callback();
-    };
-
-    this.register = function (deviceNode, callback) {
-      debug("hbConf.register", deviceNode.fullName);
-      node.users[deviceNode.id] = deviceNode;
-      debug("Register %s -> %s", deviceNode.type, deviceNode.fullName);
-      reqisterQueue.push({
-        that: this,
-        device: deviceNode.device,
-        type: deviceNode.type,
-        name: deviceNode.name,
-        fullName: deviceNode.fullName,
-        node: node
-      }, callback);
-      // debug("Register Queue - push", reqisterQueue.getStats());
-    };
-
-    this.deregister = function (deviceNode, callback) {
-      deviceNode.status({
-        text: 'disconnected',
-        shape: 'ring',
-        fill: 'red'
-      });
-      // Should this also remove the homebridge registered event?
-      //
-      // debug("hbEvent deregistered:", deviceNode.name);
-      // if (homebridge.listenerCount(deviceNode.eventName)) {
-      deviceNode.eventName.forEach(function (event) {
-        homebridge.removeListener(event, deviceNode.listener);
-      });
-      // }
-      callback();
-    };
+    this.hbConf = new HBConfNode(n, RED); // Initialize the class instance
 
     this.on('close', function () {
-      if (node.client && node.client.connected) {
-        node.client.end();
-      }
+      this.hbConf.close(); // Close any open connections
     });
   }
 
-  RED.nodes.registerType("hb-conf", hbConf, {
+  RED.nodes.registerType("hb-conf", hbConfNode, {
     credentials: {
       password: {
         type: "password"

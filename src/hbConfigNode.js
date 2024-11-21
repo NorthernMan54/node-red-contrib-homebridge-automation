@@ -1,7 +1,8 @@
 const HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
 const debug = require('debug')('hapNodeRed:hbConfigNode');
+var Homebridges = require('./lib/Homebridges.js').Homebridges;
 
-class HbConf {
+class HBConfNode {
   constructor(n, RED) {
     this.RED = RED;
     this.username = n.username;
@@ -63,10 +64,6 @@ class HbConf {
     }
   }
 
-  connect(callback) {
-    callback();
-  }
-
   register(deviceNode, callback) {
     debug("hbConf.register", deviceNode.fullName);
     this.users[deviceNode.id] = deviceNode;
@@ -102,4 +99,4 @@ class HbConf {
   }
 }
 
-module.exports = HbConf;
+module.exports = HBConfNode;
