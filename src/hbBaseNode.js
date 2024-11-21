@@ -2,9 +2,10 @@ const debug = require('debug')('hapNodeRed:hbBaseNode');
 
 class HbBaseNode {
   constructor(nodeConfig, RED) {
-    RED.nodes.createNode(this, nodeConfig);
+    // console.log("HbBaseNode", nodeConfig, RED);
+    // RED.nodes.createNode(this, nodeConfig);
 
-    this.conf = RED.nodes.getNode(nodeConfig.conf); // The configuration node
+    // this.conf = RED.nodes.getNode(nodeConfig.conf); // The configuration node
     this.confId = nodeConfig.conf;
     this.device = nodeConfig.device;
     this.service = nodeConfig.Service;
@@ -14,10 +15,10 @@ class HbBaseNode {
     this.hbDevice = null;
 
     // Register the node with the configuration
-    this.conf.register(this, this.registerNode.bind(this));
+    // this.conf.register(this, this.registerNode.bind(this));
 
     // Set up the close event
-    this.on('close', this.handleClose.bind(this));
+    // this.on('close', this.handleClose.bind(this));
   }
 
   /**
@@ -306,16 +307,16 @@ class HbBaseNode {
     try {
       debug("_register", node.device);
       const device = hbDevices.findDevice(node.device, { perms: 'ev' });
-  
+
       if (node.type === 'hb-event' || node.type === 'hb-resume') {
         const message = {
           "characteristics": device.eventRegisters
         };
         debug("_register", node.fullName, device.id, message);
-  
+
         // Use the shared async function here
         const status = await hapEventByDeviceIDAsync(device.id, JSON.stringify(message));
-  
+
         // Check the result of the operation
         if (status === null) {
           debug("%s registered: %s -> %s", node.type, node.fullName, device.id);
@@ -334,7 +335,7 @@ class HbBaseNode {
       });
     }
   }
-  
+
   _getObjectDiff(obj1, obj2) {
     const diff = Object.keys(obj1).reduce((result, key) => {
       if (!obj2.hasOwnProperty(key)) {

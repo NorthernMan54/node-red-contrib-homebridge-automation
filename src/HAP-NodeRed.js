@@ -24,13 +24,12 @@ module.exports = function (RED) {
    */
 
   function hbConfNode(config) {
+    console.log('hbConfNode', config, this);
     RED.nodes.createNode(this, config);
     this.username = config.username;
     this.macAddress = config.macAddress || '';
-    this.password = this.credentials.password;
-
-    this.hbConfNode = new HBConfNode(config, RED); // Initialize the class instance
-
+    this.password = this.password;
+    this.hbConfNode = new HBConfNode(config, RED);
     this.on('close', function () {
       this.hbConf.close(); // Close any open connections
     });
@@ -43,6 +42,7 @@ module.exports = function (RED) {
       }
     }
   });
+
 
   /**
    *  hbEventNode - description

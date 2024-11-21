@@ -10,7 +10,7 @@ class HBConfNode extends hbBaseNode {
 
     this.username = nodeConfig.username;
     this.macAddress = nodeConfig.macAddress || '';
-    this.password = nodeConfig.credentials.password;
+    // this.password = nodeConfig.credentials.password;
     this.users = {};
     this.homebridge = null;
 

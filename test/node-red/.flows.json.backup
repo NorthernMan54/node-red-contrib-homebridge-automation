@@ -98,14 +98,14 @@
                 "vt": "str"
             }
         ],
-        "repeat": "",
+        "repeat": "60",
         "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
+        "once": true,
+        "onceDelay": "60",
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 240,
+        "x": 250,
         "y": 140,
         "wires": [
             [
