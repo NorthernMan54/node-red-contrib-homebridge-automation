@@ -1,58 +1,67 @@
-var debug = require('debug')('hapNodeRed:hbControlNode');
+const debug = require('debug')('hapNodeRed:hbControlNode');
 
-function hbControl(n) {
-  RED.nodes.createNode(this, n);
-  this.conf = RED.nodes.getNode(n.conf); // The configuration node
-  this.confId = n.conf;
-  this.device = n.device;
-  this.service = n.Service;
-  this.name = n.name;
-  this.fullName = n.name + ' - ' + n.Service;
+class HbControlNode {
+  constructor(nodeConfig, RED) {
 
-  var node = this;
+    this.conf = RED.nodes.getNode(nodeConfig.conf); // The configuration node
+    this.confId = nodeConfig.conf;
+    this.device = nodeConfig.device;
+    this.service = nodeConfig.Service;
+    this.name = nodeConfig.name;
+    this.fullName = `${nodeConfig.name} - ${nodeConfig.Service}`;
 
-  node.on('input', function (msg) {
+    this.state = null;
+    this.hbDevice = null;
+    this.deviceType = null;
+
+    this.on('input', this.handleInput.bind(this));
+    this.on('close', this.handleClose.bind(this));
+
+    // Register the node with the configuration
+    this.conf.register(this, this.registerNode.bind(this));
+  }
+
+  handleInput(msg) {
     this.msg = msg;
-    _control.call(this, node, msg.payload, function (err, data) {
-      // debug('hbControl complete [%s] - [%s]', node, node.hbDevice); // Images produce alot of noise
-      if (!err && data && (node.deviceType == '00000110' || node.deviceType == '00000111')) {
-        const msg = {
-          name: node.name,
-          payload: node.state,
-          _device: node.device,
-          _confId: node.confId
+
+    _control.call(this, this, msg.payload, (err, data) => {
+      if (!err && data && (this.deviceType === '00000110' || this.deviceType === '00000111')) {
+        const outputMsg = {
+          name: this.name,
+          payload: this.state,
+          _device: this.device,
+          _confId: this.confId,
         };
-        if (node.hbDevice) {
-          msg.Homebridge = node.hbDevice.homebridge;
-          msg.Manufacturer = node.hbDevice.manufacturer;
-          msg.Service = node.hbDevice.deviceType;
+
+        if (this.hbDevice) {
+          outputMsg.Homebridge = this.hbDevice.homebridge;
+          outputMsg.Manufacturer = this.hbDevice.manufacturer;
+          outputMsg.Service = this.hbDevice.deviceType;
         }
-        msg.payload = data;
-        node.send(msg);
+
+        outputMsg.payload = data;
+        this.send(outputMsg);
       } else if (err) {
-        node.error(err, this.msg);
+        this.error(err, this.msg);
       }
-    }.bind(this));
+    });
+  }
 
-  });
-
-  node.on('close', function (callback) {
+  handleClose(callback) {
     callback();
-  });
+  }
 
-  node.conf.register(node, function () {
-    debug("hbControl.register:", node.fullName);
-    this.hbDevice = hbDevices.findDevice(node.device);
-  //  console.log('hbControl Register', this.hbDevice)
+  registerNode() {
+    debug("hbControl.register:", this.fullName);
+
+    this.hbDevice = hbDevices.findDevice(this.device);
+
     if (this.hbDevice) {
-      node.hbDevice = this.hbDevice;
-      node.deviceType = this.hbDevice.type;
-      // Register for events
-      node.listener = node.command;
-      // node.eventName = this.hbDevice.host + this.hbDevice.port + this.hbDevice.aid;
+      this.deviceType = this.hbDevice.type;
     } else {
-      node.error("437:Can't find device " + node.device, null);
-      // this.error("Missing device " + node.device);
+      this.error(`437: Can't find device ${this.device}`, null);
     }
-  });
+  }
 }
+
+module.exports = HbControlNode;
