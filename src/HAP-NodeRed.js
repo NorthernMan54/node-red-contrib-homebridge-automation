@@ -23,19 +23,19 @@ module.exports = function (RED) {
    * @return {type}   description
    */
 
-  function hbConfNode(n) {
-    RED.nodes.createNode(this, n);
-    this.username = n.username;
-    this.macAddress = n.macAddress || '';
+  function hbConfNode(config) {
+    RED.nodes.createNode(this, config);
+    this.username = config.username;
+    this.macAddress = config.macAddress || '';
     this.password = this.credentials.password;
 
-    this.hbConf = new HBConfNode(n, RED); // Initialize the class instance
+    this.hbConfNode = new HBConfNode(config, RED); // Initialize the class instance
 
     this.on('close', function () {
       this.hbConf.close(); // Close any open connections
     });
   }
-
+  console.log('Registering node types', "hb-conf", hbConfNode);
   RED.nodes.registerType("hb-conf", hbConfNode, {
     credentials: {
       password: {
