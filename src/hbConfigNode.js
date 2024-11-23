@@ -1,7 +1,9 @@
 const hbBaseNode = require('./hbBaseNode');
-const HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
+// const HAPNodeJSClient = require('hap-node-client').HAPNodeJSClient;
+const { HapClient } = require('@homebridge/hap-client');
 const debug = require('debug')('hapNodeRed:hbConfigNode');
 const { Homebridges } = require('./lib/Homebridges.js');
+const { Log } = require('./lib/logger.js');
 var Queue = require('better-queue');
 
 class HBConfigNode {
@@ -24,6 +26,8 @@ class HBConfigNode {
     this.ctDevices = [];
     this.hbDevices = [];
 
+    this.log = new Log(console, true);
+
     this.reqisterQueue = new Queue(function (node, cb) {
       this._register.call(node.that, node, cb);
     }, {
@@ -39,24 +43,42 @@ class HBConfigNode {
 
   // Initialize the Homebridge client
   initHomebridge(config) {
-    if (this.homebridge) {
-      if (this.macAddress) {
-        // Register additional PIN on existing instance
-        this.homebridge.RegisterPin(this.macAddress, config.username);
-      }
-    } else {
-      this.homebridge = new HAPNodeJSClient({
-        pin: config.username,
-        refresh: 900,
-        debug: false,
-        timeout: 5,
-        reqTimeout: 7000,
-      });
 
-      // Handle 'Ready' event
-      this.homebridge.on('Ready', this.handleReady.bind(this));
-    }
+    //this.homebridge = new HAPNodeJSClient({
+    //  pin: config.username,
+    //  refresh: 900,
+    //  debug: false,
+    //  timeout: 5,
+    //  reqTimeout: 7000,
+    // });
+    debug('initHomebridge - hapClient', config);
+    this.hapClient = new HapClient({
+      config: { debug: false },
+      pin: config.username,
+      logger: this.log,
+    });
+
+    this.waitForNoMoreDiscoveries();
+    this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
+    // Handle 'Ready' event
+    this.homebridge.on('Ready', this.handleReady.bind(this));
   }
+
+  waitForNoMoreDiscoveries = () => {
+    // Clear any existing timeout
+    if (this.discoveryTimeout) {
+      clearTimeout(this.discoveryTimeout);
+    }
+
+    // Set up the timeout
+    this.discoveryTimeout = setTimeout(() => {
+      this.log.debug('No more instances discovered, publishing services');
+      this.hapClient.removeListener('instance-discovered', this.waitForNoMoreDiscoveries);
+      this.start();
+      this.requestSync();
+      this.hapClient.on('instance-discovered', this.requestSync.bind(this));  // Request sync on new instance discovery
+    }, 5000);
+  };
 
   // Handle Homebridge 'Ready' event
   handleReady(accessories) {
@@ -66,6 +88,23 @@ class HBConfigNode {
     this.evDevices = this.hbDevices.toList({ perms: 'ev' });
     this.ctDevices = this.hbDevices.toList({ perms: 'pw' });
     this.handleDuplicates(this.evDevices);
+  }
+
+  /**
+  * Start processing
+  */
+  async start() {
+    this.services = await this.loadAccessories();
+    this.log.info(`Discovered ${this.services.length} accessories`);
+    this.ready = true;
+    await this.buildSyncResponse();
+    const evServices = this.services.filter(x => this.evTypes.some(uuid => x.serviceCharacteristics.find(c => c.uuid === uuid)));
+    this.log.debug(`Monitoring ${evServices.length} services for changes`);
+
+    const monitor = await this.hapClient.monitorCharacteristics(evServices);
+    monitor.on('service-update', (services) => {
+      this.reportStateSubject.next(services[0].uniqueId);
+    });
   }
 
   // Handle duplicate devices
