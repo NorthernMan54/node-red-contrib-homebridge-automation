@@ -2,7 +2,7 @@ var debug = require('debug')('hapNodeRed');
 
 // var register = require('./lib/register.js');
 
-const HBConfNode = require('./hbConfigNode');
+const HBConfigNode = require('./hbConfigNode');
 const HbEventNode = require('./hbEventNode'); // Import the class
 const HbResumeNode = require('./hbResumeNode'); // Import the class
 const HbControlNode = require('./hbControlNode');
@@ -23,19 +23,15 @@ module.exports = function (RED) {
    * @return {type}   description
    */
 
-  function hbConfNode(config) {
-    console.log('hbConfNode', config, this);
-    RED.nodes.createNode(this, config);
-    this.username = config.username;
-    this.macAddress = config.macAddress || '';
-    this.password = this.password;
-    this.hbConfNode = new HBConfNode(config, RED);
-    this.on('close', function () {
-      this.hbConf.close(); // Close any open connections
-    });
+  class hbConfigNode extends HBConfigNode {
+    constructor(config) {
+      debug('hbConfigNode', config);
+      super(config, RED);
+    }
   }
-  console.log('Registering node types', "hb-conf", hbConfNode);
-  RED.nodes.registerType("hb-conf", hbConfNode, {
+
+  // console.log('Registering node types', "hb-conf", hbConfigNode);
+  RED.nodes.registerType("hb-conf", hbConfigNode, {
     credentials: {
       password: {
         type: "password"
@@ -48,11 +44,11 @@ module.exports = function (RED) {
    *  hbEventNode - description
    * @param {*} n 
    */
-  function hbEventNode(n) {
-    RED.nodes.createNode(this, n);
-
-    // Create instance of HbEventNode class to handle events
-    new HbEventNode(this, n); // Pass current node and config object
+  class hbEventNode extends HbEventNode {
+    constructor(config) {
+      debug('hbEventNode', config);
+      super(config, RED);
+    }
   }
 
   RED.nodes.registerType("hb-event", hbEventNode);
@@ -60,20 +56,20 @@ module.exports = function (RED) {
   /**
    * hbResumeNode - description
    */
-  function hbResumeNode(n) {
-    RED.nodes.createNode(this, n);
-
-    // Create instance of HbEventNode class to handle events
-    new HbResumeNode(this, n); // Pass current node and config object
+  class hbResumeNode extends HbResumeNode {
+    constructor(config) {
+      debug('hbResumeNode', config);
+      super(config, RED);
+    }
   }
 
   RED.nodes.registerType("hb-resume", hbResumeNode);
 
-  function hbControlNode(n) {
-    RED.nodes.createNode(this, n);
-
-    // Create instance of HbEventNode class to handle events
-    new HbControlNode(this, n); // Pass current node and config object
+  class hbControlNode extends HbControlNode {
+    constructor(config) {
+      debug('hbControlNode', config);
+      super(config, RED);
+    }
   }
 
   RED.nodes.registerType("hb-control", hbControlNode);
@@ -84,18 +80,16 @@ module.exports = function (RED) {
    * @param  {type} n description
    * @return {type}   description
    */
-
-
-  function hbStatusNode(n) {
-    RED.nodes.createNode(this, n);
-
-    // Create instance of HbEventNode class to handle events
-    new HbStatusNode(this, n); // Pass current node and config object
+  class hbStatusNode extends HbStatusNode {
+    constructor(config) {
+      debug('hbStatusNode', config);
+      super(config, RED);
+    }
   }
 
   RED.nodes.registerType("hb-status", hbStatusNode);
 
-  const hapDeviceRoutes = new HapDeviceRoutes(RED, hbDevices, debug);
+  const hapDeviceRoutes = new HapDeviceRoutes(RED, hbDevices);
   hapDeviceRoutes.registerRoutes();
 
 };

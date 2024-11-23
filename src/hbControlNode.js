@@ -2,21 +2,20 @@ const hbBaseNode = require('./hbBaseNode');
 const debug = require('debug')('hapNodeRed:hbControlNode');
 
 class HbControlNode extends hbBaseNode {
-  constructor(nodeConfig, RED) {
-    super(nodeConfig, RED); // Initialize with hbBaseNode constructor
+  constructor(config, RED) {
+    super(config, RED);
 
     // Register the node-specific input and close handlers
     this.on('input', this.handleInput.bind(this));
-    this.on('close', this.handleClose.bind(this));
 
     // Register the node with the configuration
-    this.conf.register(this.node, this.registerNode.bind(this));
+    this.hbConfigNode.register(this.config, this.registerNode.bind(this));
   }
 
   // Handle input messages
   handleInput(msg) {
     this.msg = msg;
-
+    debug('handleInput', msg);
     this._control.call(this, this.node, msg.payload, (err, data) => {
       if (!err && data && (this.deviceType === '00000110' || this.deviceType === '00000111')) {
         const outputMsg = this.createOutputMessage(data);

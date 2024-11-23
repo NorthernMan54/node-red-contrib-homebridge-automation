@@ -2,8 +2,9 @@ const HbBaseNode = require('./hbBaseNode'); // Path to the HbBaseNode file
 const debug = require('debug')('hapNodeRed:hbResumeNode');
 
 class HbResumeNode extends HbBaseNode {
-  constructor(nodeConfig) {
-    super(nodeConfig);
+  constructor(config, RED) {
+    super(config, RED);
+
 
     this.state = null;
     this.lastMessageTime = null;
@@ -12,16 +13,13 @@ class HbResumeNode extends HbBaseNode {
     this.timeout = null;
 
     // Set up input and command handlers
-    this.on('input', this.handleInput.bind(this));
+    // this.on('input', this.handleInput.bind(this));
     this.command = this.handleCommand.bind(this);
 
     // Handle device registration
-    this.conf.register(this, this.handleDeviceRegistration.bind(this));
-
-    // Deregister on close
-    this.on('close', (callback) => {
-      this.conf.deregister(this, callback);
-    });
+    debug('hbResume - hbConfigNode', this.hbConfigNode);
+    // debug('hbResume - hbConfigNode', this.configNode.hbConfigNode);
+    this.hbConfigNode.register(this.config, this.registerNode.bind(this));
   }
 
   handleInput(msg) {

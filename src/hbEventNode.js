@@ -2,23 +2,11 @@ const hbBaseNode = require('./hbBaseNode');
 const debug = require('debug')('hapNodeRed:hbEventNode');
 
 class HbEventNode extends hbBaseNode {
-  constructor(nodeConfig, RED) {
-    super(nodeConfig, RED); // Call the base node constructor
-    this.sendInitialState = nodeConfig.sendInitialState === true;
-    this.init(); // Initialize additional functionality
-  }
-
-  // Initialize the event handling logic
-  init() {
-    this.node.command = this.command.bind(this);
-
-    // Register the node with the HbConf class
-    this.conf.register(this.node, this.handleDeviceRegistration.bind(this));
-
-    // Clean up when the node is closed
-    this.node.on('close', (callback) => {
-      this.conf.deregister(this.node, callback);
-    });
+  constructor(config, RED) {
+    // console.log('HbEventNode', config);
+    super(config, RED);
+    this.sendInitialState = config.sendInitialState === true;
+    this.hbConfigNode.register(this.config, this.registerNode.bind(this));
   }
 
   // Handle event command processing
@@ -37,7 +25,7 @@ class HbEventNode extends hbBaseNode {
 
   // Handle device registration logic
   handleDeviceRegistration() {
-    debug('hbEvent.register', this.node.fullName);
+    debug('hbEvent.register', this);
     this.node.hbDevice = this.findDevice(this.node.device, { perms: 'pr' });
 
     if (this.node.hbDevice) {

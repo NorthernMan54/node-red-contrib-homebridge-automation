@@ -2,21 +2,19 @@ const HbBaseNode = require('./hbBaseNode'); // Path to HbBaseNode file
 const debug = require('debug')('hapNodeRed:hbStatusNode');
 
 class HbStatusNode extends HbBaseNode {
-  constructor(nodeConfig) {
-    super(nodeConfig);
-
-    // Set up the input event listener
-    this.on('input', this.handleInput.bind(this));
+  constructor(config, RED) {
+    // console.log('hbStatusNode - contructor', config);
+    super(config, RED);
   }
 
   /**
    * Handle input events specific to HbStatusNode
    * @param {Object} msg - Input message
    */
-  handleInput(msg) {
+  handleInput(msg, send, done) {
     this.msg = msg;
-
-    this._status(this.device, this, { perms: 'pr' }, (err, message) => {
+    debug('handleInput', this);
+    this.node._status(this.device, this, { perms: 'pr' }, (err, message) => {
       if (!err) {
         debug(
           "hbStatus received: %s = %s",

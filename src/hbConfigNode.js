@@ -4,15 +4,25 @@ const debug = require('debug')('hapNodeRed:hbConfigNode');
 const { Homebridges } = require('./lib/Homebridges.js');
 var Queue = require('better-queue');
 
-class HBConfNode extends hbBaseNode {
-  constructor(nodeConfig, RED) {
-    super(nodeConfig, RED); // Initialize base class
+class HBConfigNode {
+  constructor(config, RED) {
+    RED.nodes.createNode(this, config);
+    this.username = config.username;
+    this.macAddress = config.macAddress || '';
+    this.password = this.password;
+    this.on('close', function () {
+      this.hbConf.close(); // Close any open connections
+    });
 
-    this.username = nodeConfig.username;
-    this.macAddress = nodeConfig.macAddress || '';
-    // this.password = nodeConfig.credentials.password;
+    // console.log('HBConfNode', config);
+    this.username = config.username;
+    this.macAddress = config.macAddress || '';
+    // this.password = config.credentials.password;
     this.users = {};
     this.homebridge = null;
+    this.evDevices = [];
+    this.ctDevices = [];
+    this.hbDevices = [];
 
     this.reqisterQueue = new Queue(function (node, cb) {
       this._register.call(node.that, node, cb);
@@ -24,22 +34,22 @@ class HBConfNode extends hbBaseNode {
     });
     this.reqisterQueue.pause();
 
-    this.initHomebridge(nodeConfig);
+    this.initHomebridge(config);
   }
 
   // Initialize the Homebridge client
-  initHomebridge(nodeConfig) {
+  initHomebridge(config) {
     if (this.homebridge) {
       if (this.macAddress) {
         // Register additional PIN on existing instance
-        this.homebridge.RegisterPin(this.macAddress, nodeConfig.username);
+        this.homebridge.RegisterPin(this.macAddress, config.username);
       }
     } else {
       this.homebridge = new HAPNodeJSClient({
-        pin: nodeConfig.username,
+        pin: config.username,
         refresh: 900,
         debug: false,
-        timeout: 20,
+        timeout: 5,
         reqTimeout: 7000,
       });
 
@@ -50,11 +60,12 @@ class HBConfNode extends hbBaseNode {
 
   // Handle Homebridge 'Ready' event
   handleReady(accessories) {
-    const hbDevices = new Homebridges(accessories);
-    debug('Discovered %s new evDevices', hbDevices.toList({ perms: 'ev' }).length);
+    this.hbDevices = new Homebridges(accessories);
+    debug('Discovered %s new evDevices', this.hbDevices.toList({ perms: 'ev' }).length);
 
-    const list = hbDevices.toList({ perms: 'ev' });
-    this.handleDuplicates(list);
+    this.evDevices = this.hbDevices.toList({ perms: 'ev' });
+    this.ctDevices = this.hbDevices.toList({ perms: 'pw' });
+    this.handleDuplicates(this.evDevices);
   }
 
   // Handle duplicate devices
@@ -81,9 +92,9 @@ class HBConfNode extends hbBaseNode {
 
   // Register a device node
   register(deviceNode, callback) {
-    debug('hbConf.register', deviceNode.fullName);
+    debug('hbConf.register', deviceNode);
     this.users[deviceNode.id] = deviceNode;
-    debug('Register %s -> %s', deviceNode.type, deviceNode.fullName);
+    debug('Register %s -> %s', deviceNode.type, deviceNode.name);
 
     this.reqisterQueue.push(
       {
@@ -121,4 +132,4 @@ class HBConfNode extends hbBaseNode {
   }
 }
 
-module.exports = HBConfNode;
+module.exports = HBConfigNode;

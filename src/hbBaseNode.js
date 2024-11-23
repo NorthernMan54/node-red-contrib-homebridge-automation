@@ -1,24 +1,23 @@
 const debug = require('debug')('hapNodeRed:hbBaseNode');
 
 class HbBaseNode {
-  constructor(nodeConfig, RED) {
-    // console.log("HbBaseNode", nodeConfig, RED);
-    // RED.nodes.createNode(this, nodeConfig);
+  constructor(config, RED) {
+    debug("HbBaseNode - constructor", config);
+    // RED.nodes.createNode(this, config);
+    RED.nodes.createNode(this, config);
+    this.hbConfigNode = RED.nodes.getNode(config.conf); // The configuration node
+    // console.log("HbBaseNode - conf", this.conf);
+    this.config = config;
+    this.confId = config.conf;
+    this.device = config.device;
+    this.service = config.Service;
+    this.name = config.name;
+    this.fullName = `${config.name} - ${config.Service}`;
 
-    // this.conf = RED.nodes.getNode(nodeConfig.conf); // The configuration node
-    this.confId = nodeConfig.conf;
-    this.device = nodeConfig.device;
-    this.service = nodeConfig.Service;
-    this.name = nodeConfig.name;
-    this.fullName = `${nodeConfig.name} - ${nodeConfig.Service}`;
+    this.node = this;
 
-    this.hbDevice = null;
-
-    // Register the node with the configuration
-    // this.conf.register(this, this.registerNode.bind(this));
-
-    // Set up the close event
-    // this.on('close', this.handleClose.bind(this));
+    this.on('input', this.handleInput.bind(this));
+    this.on('close', this.handleClose.bind(this));
   }
 
   /**
@@ -118,10 +117,11 @@ class HbBaseNode {
    * @returns 
    */
   async _status(nrDevice, node, perms) {
+    debug("_status", nrDevice);
     let error;
     try {
-      if (!hbDevices) {
-        throw new Error('hbDevices not initialized');
+      if (!this.hbDevices) {
+        throw new Error('_status hbDevices not initialized');
       }
 
       const device = hbDevices.findDevice(node.device, perms);
@@ -188,13 +188,14 @@ class HbBaseNode {
         throw new Error(error);
       }
     } catch (err) {
+      debug("Error in _status:", err);
       error = "Homebridge not initialized -2";
       node.status({
         text: error,
         shape: 'ring',
         fill: 'red'
       });
-      throw new Error(error);
+      // throw new Error(error);
     }
   }
 
@@ -205,8 +206,9 @@ class HbBaseNode {
    * @returns 
    */
   async _control(node, payload) {
+    debug("_control", node, payload);
     try {
-      if (!hbDevices) {
+      if (!this.hbDevices) {
         throw new Error('hbDevices not initialized');
       }
 
@@ -293,17 +295,19 @@ class HbBaseNode {
         throw new Error('Device not available');
       }
     } catch (err) {
+      debug("Error in _control:", err);
       let error = err.message || "Homebridge not initialized - 3";
       node.status({
         text: error,
         shape: 'ring',
         fill: 'red'
       });
-      throw new Error(error);
+      // throw new Error(error);
     }
   }
 
   async _register(node) {
+    debug("_register", node.device);
     try {
       debug("_register", node.device);
       const device = hbDevices.findDevice(node.device, { perms: 'ev' });
