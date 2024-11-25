@@ -20,7 +20,7 @@ class HbControlNode extends hbBaseNode {
         .filter(key => key !== 'ConfiguredName')
         .join(', ');
       this.error(`Payload should be a JSON object containing device characteristics and values, e.g. {"On":false, "Brightness":0}. Valid values: ${validNames}`);
-      this.status({ text: 'Invalid payload', shape: 'ring', fill: 'red' });
+      this.status({ text: 'Invalid payload', shape: 'dot', fill: 'red' });
       return;
     }
 
