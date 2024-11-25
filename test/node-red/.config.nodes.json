@@ -429,7 +429,7 @@
     },
     "node-red-contrib-homebridge-automation": {
         "name": "node-red-contrib-homebridge-automation",
-        "version": "0.1.12",
+        "version": "0.1.11",
         "local": true,
         "user": false,
         "nodes": {
@@ -446,7 +446,7 @@
                 "local": true,
                 "user": false,
                 "module": "node-red-contrib-homebridge-automation",
-                "file": "/Users/sgracey/Code/node-red-contrib-homebridge-automation/test/node-red/node_modules/node-red-contrib-homebridge-automation/src/HAP-NodeRed.js"
+                "file": "/Users/sgracey/Code/node-red-contrib-homebridge-automation/test/node-red/node_modules/node-red-contrib-homebridge-automation/HAP-NodeRed.js"
             }
         }
     }

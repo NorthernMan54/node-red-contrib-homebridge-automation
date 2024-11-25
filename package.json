@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "api": "documentation build HAP-NodeRed.js -f md --config docs/documentation.yml > docs/API.md",
-    "document": "./gh-md-toc --insert README.md; rm README.md.orig.* README.md.toc.*"
+    "document": "./gh-md-toc --insert README.md; rm README.md.orig.* README.md.toc.*",
+    "watch": "nodemon"
   },
   "keywords": [
     "node-red",
@@ -22,7 +23,8 @@
     "url": "git+https://github.com/NorthernMan54/node-red-contrib-homebridge-automation.git"
   },
   "devDependencies": {
-    "documentation": "^14.0.1"
+    "documentation": "^14.0.1",
+    "nodemon": "^3.1.4"
   },
   "dependencies": {
     "better-queue": ">=3.8.12",
@@ -34,5 +36,31 @@
   "bugs": {
     "url": "https://github.com/NorthernMan54/node-red-contrib-homebridge-automation/issues"
   },
-  "homepage": "https://github.com/NorthernMan54/node-red-contrib-homebridge-automation#readme"
+  "homepage": "https://github.com/NorthernMan54/node-red-contrib-homebridge-automation#readme",
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "js,html",
+    "ignore": [],
+    "exec": "DEBUG=hapNodeRed* ~/npm/bin/node-red -u test/node-red",
+    "signal": "SIGTERM",
+    "env": {
+      "NODE_OPTIONS": "--trace-warnings"
+    }
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "modulePathIgnorePatterns": [],
+    "coverageReporters": [
+      "lcov"
+    ],
+    "collectCoverageFrom": [
+      "src/**",
+      "!src/accessories/**",
+      "!src/lib/definitions/generate-definitions.ts",
+      "!src/lib/definitions/generator-configuration.ts",
+      "!src/test-utils"
+    ]
+  }
 }

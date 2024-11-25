@@ -440,8 +440,7 @@
                     "hb-event",
                     "hb-resume",
                     "hb-status",
-                    "hb-control",
-                    "hb-configNode"
+                    "hb-control"
                 ],
                 "enabled": true,
                 "local": true,
