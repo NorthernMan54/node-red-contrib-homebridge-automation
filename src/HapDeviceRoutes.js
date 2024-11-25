@@ -88,7 +88,7 @@ class HapDeviceRoutes {
   getCtDeviceById(req, res) {
     debug('getCtDeviceById', req.params.id);
     const ctDevices = this.RED.nodes.getNode(req.params.id).ctDevices;
-    debug('ctDevices', ctDevices);
+    // debug('ctDevices', ctDevices);
     debug("ctDevices", ctDevices.length);
     if (ctDevices) {
       res.send(ctDevices);

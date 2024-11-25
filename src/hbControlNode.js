@@ -6,16 +6,61 @@ class HbControlNode extends hbBaseNode {
     super(config, RED);
 
     // Register the node-specific input and close handlers
-    this.on('input', this.handleInput.bind(this));
-
+    // this.on('input', this.handleInput.bind(this));
     // Register the node with the configuration
-    this.hbConfigNode.register(this.config, this.registerNode.bind(this));
   }
 
   // Handle input messages
-  handleInput(msg) {
-    this.msg = msg;
-    debug('handleInput', msg);
+  async handleInput(message) {
+    debug('handleInput', message, this.hbDevice);
+    if (this.hbDevice) {
+      var results = [];
+      if (typeof message.payload === "object") {
+        var fill = 'green';
+        for (const key of Object.keys(message.payload)) {
+          const characteristic = this.hbDevice.serviceCharacteristics.find(
+            c => c.type === key
+          );
+
+          if (characteristic) {
+            const result = await characteristic.setValue(message.payload[key]);
+            results.push({ [result.type]: result.value })
+          } else {
+            console.log('Not Found', key);
+            this.error('Invalid Characteristic \'' + key + '\' found in the message ' + JSON.stringify(message));
+            results.push({ 'Invalid Key': key });
+            fill = 'red';
+          };
+        }
+        this.status({
+          text: JSON.stringify(Object.assign({}, ...results)),
+          shape: 'dot',
+          fill: fill
+        });
+
+      } else {
+        // Improper object
+        const validNames = Object.keys(this.hbDevice.values)
+          .filter(key => key !== 'ConfiguredName')
+          .join(', ');
+        this.error("Payload should be an JSON object containing device characteristics and values, ie {\"On\":false, \"Brightness\":0 }\nValid values include: " + validNames);
+        this.status({
+          text: 'Invalid payload',
+          shape: 'ring',
+          fill: 'red'
+        });
+
+      }
+    } else {
+      this.error("HB not initialized");
+      this.status({
+        text: 'HB not initialized',
+        shape: 'ring',
+        fill: 'red',
+      });
+
+    }
+    /*
     this._control.call(this, this.node, msg.payload, (err, data) => {
       if (!err && data && (this.deviceType === '00000110' || this.deviceType === '00000111')) {
         const outputMsg = this.createOutputMessage(data);
@@ -24,43 +69,12 @@ class HbControlNode extends hbBaseNode {
         this.error(err, this.msg);
       }
     });
+    */
   }
 
   // Handle node closure
   handleClose(callback) {
     callback();
-  }
-
-  // Register the node with the configuration and find the device
-  registerNode() {
-    debug('hbControl.register:', this.node.fullName);
-
-    this.node.hbDevice = this.findDevice(this.node.device);
-
-    if (this.node.hbDevice) {
-      this.node.deviceType = this.node.hbDevice.type;
-    } else {
-      this.error(`437: Can't find device ${this.node.device}`);
-    }
-  }
-
-  // Create an output message based on the received data
-  createOutputMessage(data) {
-    const outputMsg = {
-      name: this.node.name,
-      payload: this.node.state,
-      _device: this.node.device,
-      _confId: this.node.confId,
-    };
-
-    if (this.node.hbDevice) {
-      outputMsg.Homebridge = this.node.hbDevice.homebridge;
-      outputMsg.Manufacturer = this.node.hbDevice.manufacturer;
-      outputMsg.Service = this.node.hbDevice.deviceType;
-    }
-
-    outputMsg.payload = data;
-    return outputMsg;
   }
 }
 

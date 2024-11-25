@@ -82,13 +82,13 @@
         "type": "hb-status",
         "z": "caef1e7b5b399e80",
         "d": true,
-        "name": "",
+        "name": "West Bedroom",
         "Homebridge": "homebridge",
         "Manufacturer": "Tasmota",
         "Service": "Lightbulb",
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
         "conf": "557aec8e8c47e61e",
-        "x": 520,
+        "x": 480,
         "y": 140,
         "wires": [
             [
@@ -138,13 +138,13 @@
         "type": "hb-resume",
         "z": "caef1e7b5b399e80",
         "d": true,
-        "name": "",
+        "name": "West Bedroom",
         "Homebridge": "homebridge",
         "Manufacturer": "Tasmota",
         "Service": "Lightbulb",
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
         "conf": "557aec8e8c47e61e",
-        "x": 520,
+        "x": 480,
         "y": 460,
         "wires": [
             [
@@ -173,46 +173,16 @@
         "id": "0ed3cd7e0d60beda",
         "type": "hb-control",
         "z": "caef1e7b5b399e80",
-        "d": true,
-        "name": "",
+        "name": "West Bedroom Fan",
         "Homebridge": "homebridge",
         "Manufacturer": "Tasmota",
-        "Service": "Lightbulb",
-        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
+        "Service": "Fan",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom Fan00000040",
         "conf": "557aec8e8c47e61e",
         "outputs": 0,
-        "x": 540,
+        "x": 510,
         "y": 600,
         "wires": []
-    },
-    {
-        "id": "24660f9d2862cee9",
-        "type": "inject",
-        "z": "caef1e7b5b399e80",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 200,
-        "y": 600,
-        "wires": [
-            [
-                "0ed3cd7e0d60beda"
-            ]
-        ]
     },
     {
         "id": "d9f8181e9e6b3cfd",
@@ -240,6 +210,196 @@
         "wires": [
             [
                 "452e3e6171aa7a25"
+            ]
+        ]
+    },
+    {
+        "id": "6703815a8874b156",
+        "type": "hb-control",
+        "z": "caef1e7b5b399e80",
+        "name": "West Bedroom",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Lightbulb",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
+        "conf": "557aec8e8c47e61e",
+        "outputs": 0,
+        "x": 740,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "24660f9d2862cee9",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": true, \"RotationSpeed\": 33}",
+        "payloadType": "json",
+        "x": 190,
+        "y": 580,
+        "wires": [
+            [
+                "0ed3cd7e0d60beda"
+            ]
+        ]
+    },
+    {
+        "id": "8c0ecac45b01df73",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": false}",
+        "payloadType": "json",
+        "x": 210,
+        "y": 640,
+        "wires": [
+            [
+                "0ed3cd7e0d60beda"
+            ]
+        ]
+    },
+    {
+        "id": "b14ebf264be0c60d",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": true}",
+        "payloadType": "json",
+        "x": 350,
+        "y": 800,
+        "wires": [
+            [
+                "6703815a8874b156"
+            ]
+        ]
+    },
+    {
+        "id": "f872545e74246764",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": false}",
+        "payloadType": "json",
+        "x": 350,
+        "y": 860,
+        "wires": [
+            [
+                "6703815a8874b156"
+            ]
+        ]
+    },
+    {
+        "id": "7eae7b87f319966e",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 520,
+        "y": 540,
+        "wires": [
+            [
+                "6703815a8874b156",
+                "0ed3cd7e0d60beda"
+            ]
+        ]
+    },
+    {
+        "id": "6a7b40f6149f2d36",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"Off\": false}",
+        "payloadType": "json",
+        "x": 490,
+        "y": 920,
+        "wires": [
+            [
+                "6703815a8874b156"
             ]
         ]
     }

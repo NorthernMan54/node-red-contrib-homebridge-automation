@@ -2,7 +2,7 @@ var debug = require('debug')('hapNodeRed');
 
 // var register = require('./lib/register.js');
 
-const HBConfigNode = require('./hbConfigNode');
+const HBConfigNode = require('./hbConfigNode.js');
 const HbEventNode = require('./hbEventNode'); // Import the class
 const HbResumeNode = require('./hbResumeNode'); // Import the class
 const HbControlNode = require('./hbControlNode');

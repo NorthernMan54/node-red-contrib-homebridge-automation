@@ -5,6 +5,9 @@ class HbBaseNode {
     debug("HbBaseNode - constructor", config);
     // RED.nodes.createNode(this, config);
     RED.nodes.createNode(this, config);
+    if (!config.conf) {
+      debug('Warning: %s @ %s.%s not connected to a HB Configuration Node', config.type, config.x, config.y);
+    }
     this.hbConfigNode = RED.nodes.getNode(config.conf); // The configuration node
     // console.log("HbBaseNode - conf", this.conf);
     this.config = config;
@@ -14,9 +17,11 @@ class HbBaseNode {
     this.name = config.name;
     this.fullName = `${config.name} - ${config.Service}`;
 
-    this.node = this;
-
-    this.on('input', this.handleInput.bind(this));
+    this.hbDevice = null;
+    this.hbConfigNode.register(this);
+    if (this.handleInput) {
+      this.on('input', this.handleInput.bind(this));
+    }
     this.on('close', this.handleClose.bind(this));
   }
 
