@@ -402,22 +402,5 @@
                 "6703815a8874b156"
             ]
         ]
-    },
-    {
-        "id": "ab3d4add7178f1f1",
-        "type": "hb-event",
-        "z": "caef1e7b5b399e80",
-        "name": "",
-        "Homebridge": "",
-        "Manufacturer": "",
-        "Service": "",
-        "device": "",
-        "conf": "",
-        "sendInitialState": false,
-        "x": 890,
-        "y": 800,
-        "wires": [
-            []
-        ]
     }
 ]
