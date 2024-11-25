@@ -39,7 +39,7 @@
   "homepage": "https://github.com/NorthernMan54/node-red-contrib-homebridge-automation#readme",
   "nodemonConfig": {
     "watch": [
-      "src"
+      "."
     ],
     "ext": "js,html",
     "ignore": [],
