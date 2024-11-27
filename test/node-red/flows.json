@@ -96,47 +96,9 @@
         ]
     },
     {
-        "id": "696e04753d952daf",
-        "type": "hb-status",
-        "z": "caef1e7b5b399e80",
-        "d": true,
-        "name": "West Bedroom",
-        "Homebridge": "homebridge",
-        "Manufacturer": "Tasmota",
-        "Service": "Lightbulb",
-        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
-        "conf": "557aec8e8c47e61e",
-        "x": 480,
-        "y": 300,
-        "wires": [
-            [
-                "a866ae0bb24ce682"
-            ]
-        ]
-    },
-    {
-        "id": "bb88544904b343a1",
-        "type": "hb-event",
-        "z": "caef1e7b5b399e80",
-        "d": true,
-        "name": "",
-        "Homebridge": "homebridge",
-        "Manufacturer": "Tasmota",
-        "Service": "Lightbulb",
-        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
-        "conf": "557aec8e8c47e61e",
-        "sendInitialState": false,
-        "x": 250,
-        "y": 380,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "452e3e6171aa7a25",
         "type": "hb-resume",
         "z": "caef1e7b5b399e80",
-        "d": true,
         "name": "West Bedroom",
         "Homebridge": "homebridge",
         "Manufacturer": "Tasmota",
@@ -179,7 +141,7 @@
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom Fan00000040",
         "conf": "557aec8e8c47e61e",
         "outputs": 0,
-        "x": 510,
+        "x": 810,
         "y": 600,
         "wires": []
     },
@@ -223,8 +185,8 @@
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
         "conf": "557aec8e8c47e61e",
         "outputs": 0,
-        "x": 740,
-        "y": 660,
+        "x": 800,
+        "y": 680,
         "wires": []
     },
     {
@@ -399,6 +361,83 @@
         "wires": [
             [
                 "6703815a8874b156"
+            ]
+        ]
+    },
+    {
+        "id": "80ffdbb93cd24b48",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": true}",
+        "payloadType": "json",
+        "x": 150,
+        "y": 340,
+        "wires": [
+            [
+                "452e3e6171aa7a25"
+            ]
+        ]
+    },
+    {
+        "id": "d0e413b3c28f757a",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": false}",
+        "payloadType": "json",
+        "x": 150,
+        "y": 400,
+        "wires": [
+            [
+                "452e3e6171aa7a25"
+            ]
+        ]
+    },
+    {
+        "id": "82638dac6ac32bb1",
+        "type": "hb-event",
+        "z": "caef1e7b5b399e80",
+        "name": "West Bedroom",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Lightbulb",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
+        "conf": "557aec8e8c47e61e",
+        "sendInitialState": true,
+        "x": 500,
+        "y": 260,
+        "wires": [
+            [
+                "a866ae0bb24ce682"
             ]
         ]
     }

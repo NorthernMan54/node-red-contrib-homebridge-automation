@@ -11,10 +11,7 @@ const HbStatusNode = require('./hbStatusNode');
 const HapDeviceRoutes = require('./HapDeviceRoutes');
 
 module.exports = function (RED) {
-  var evDevices = [];
-  var ctDevices = [];
   var hbDevices;
-  var homebridge;
 
   /**
    * hbConf - Configuration

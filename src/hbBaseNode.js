@@ -24,11 +24,11 @@ class HbBaseNode {
       this.on('input', this.handleInput.bind(this));
     }
     this.on('close', this.handleClose.bind(this));
-    this.on('event', this.handleHBEventMessage.bind(this));
+    this.on('hbEvent', this.handleHBEventMessage.bind(this));
   }
 
   handleHBEventMessage(service) {
-    debug('topic for', this.id, service.serviceName, service.values);
+    debug('hbEvent for', this.id, service.serviceName, service.values);
 
     this.status({
       text: JSON.stringify(service.values),
@@ -38,6 +38,18 @@ class HbBaseNode {
     this.send({ payload: service.values });
   }
 
+  createMessage(event, isInitialState = false) {
+    return {
+      name: this.node.name,
+      payload: this.state,
+      Homebridge: this.node.hbDevice.homebridge,
+      Manufacturer: this.node.hbDevice.manufacturer,
+      Service: this.node.hbDevice.deviceType,
+      _device: this.node.device,
+      _confId: this.node.confId,
+      _rawEvent: isInitialState ? event : undefined,
+    };
+  }
 
   registerNode() {
     debug("Registering node:", this.fullName);

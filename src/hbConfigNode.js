@@ -117,7 +117,10 @@ class HBConfigNode {
       debug('_Register %s -> %s', clientNode.type, clientNode.name);
       clientNode.hbDevice = this.hbDevices.find(service => {
         const deviceUnique = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`;
-        clientNode.status({ fill: 'green', shape: 'dot', text: 'connected' });
+        if (clientNode.device === deviceUnique) {
+          clientNode.status({ fill: 'green', shape: 'dot', text: 'connected' });
+          clientNode.emit('hbReady', service);
+        }
         return clientNode.device === deviceUnique;
       });
 
@@ -141,7 +144,7 @@ class HBConfigNode {
 
           eventNodes.forEach((eventNode) => {
             if (eventNode._events && typeof eventNode.emit === 'function') {
-              eventNode.emit('event', service);
+              eventNode.emit('hbEvent', service);
             }
           });
         }

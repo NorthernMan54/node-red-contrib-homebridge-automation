@@ -19,10 +19,21 @@ class HbResumeNode extends HbBaseNode {
     // Handle device registration
     debug('hbResume - hbConfigNode', this.hbConfigNode);
     // debug('hbResume - hbConfigNode', this.configNode.hbConfigNode);
-    this.hbConfigNode.register(this.config, this.registerNode.bind(this));
+
   }
 
-  handleInput(msg) {
+  handleHBEventMessage(service) {
+    debug('topic for', this.id, service.serviceName, service.values);
+
+    this.status({
+      text: JSON.stringify(service.values),
+      shape: 'dot',
+      fill: 'green',
+    });
+    this.send({ payload: service.values });
+  }
+
+  handleInput(msg, send) {
     this.msg = msg;
     debug("hbResume.input: %s input", this.fullName, JSON.stringify(msg));
 
@@ -51,7 +62,7 @@ class HbResumeNode extends HbBaseNode {
             newMsg = msg;
           }
 
-          this.send(newMsg.payload.On ? newMsg : { ...newMsg, payload: { On: false } });
+          send(newMsg.payload.On ? newMsg : { ...newMsg, payload: { On: false } });
           debug("hbResume.input: %s output", this.fullName, JSON.stringify(newMsg));
           this.updateStatus(newMsg.payload);
           this.lastMessageValue = newMsg.payload;
