@@ -24,16 +24,18 @@ class HbBaseNode {
       this.on('input', this.handleInput.bind(this));
     }
     this.on('close', this.handleClose.bind(this));
-    this.hbConfigNode.on('event', this.handleHBEventMessage.bind(this));
-    this.on('topic', this.handleHBTopicMessage.bind(this));
+    this.on('event', this.handleHBEventMessage.bind(this));
   }
 
   handleHBEventMessage(service) {
-    debug('event for', this.id, service.serviceName, service.values);
-  }
-
-  handleHBTopicMessage(service) {
     debug('topic for', this.id, service.serviceName, service.values);
+
+    this.status({
+      text: JSON.stringify(service.values),
+      shape: 'dot',
+      fill: 'green',
+    });
+    this.send({ payload: service.values });
   }
 
 

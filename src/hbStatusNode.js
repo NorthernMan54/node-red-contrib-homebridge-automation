@@ -6,7 +6,7 @@ class HbStatusNode extends HbBaseNode {
     super(config, RED);
   }
 
-  async handleInput(message) {
+  async handleInput(message, send) {
     debug('handleInput', message.payload, this.name);
 
     if (!this.hbDevice) {
@@ -23,7 +23,7 @@ class HbStatusNode extends HbBaseNode {
     });
 
     message.payload = result.values;
-    this.send(message);
+    send(message);
   }
 }
 

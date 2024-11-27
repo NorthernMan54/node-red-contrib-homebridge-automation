@@ -1,13 +1,10 @@
-// const EventEmitter = require('events'); // Import EventEmitter
 const { HapClient } = require('@homebridge/hap-client');
 const debug = require('debug')('hapNodeRed:hbConfigNode');
 const { Log } = require('./lib/logger.js');
 const Queue = require('better-queue');
 
-class HBConfigNode { // Extend EventEmitter
+class HBConfigNode {
   constructor(config, RED) {
-    // super(); // Call EventEmitter's constructor
-
     if (!config.jest) {
       RED.nodes.createNode(this, config);
 
@@ -41,10 +38,7 @@ class HBConfigNode { // Extend EventEmitter
       this.waitForNoMoreDiscoveries();
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
 
-      this.on('close', () => {
-        debug('close');
-        this.close();
-      });
+      this.on('close', this.close.bind(this));
     }
   }
 
@@ -70,19 +64,16 @@ class HBConfigNode { // Extend EventEmitter
   }
 
   toList(perms) {
-    const supportedServiceType = (service) => {
-      const supportedTypes = [
-        'Battery', 'Carbon Dioxide Sensor', 'Carbon Monoxide Sensor', 'Doorbell',
-        'Fan', 'Fanv2', 'Garage Door Opener', 'Humidity Sensor', 'Input Source',
-        'Leak Sensor', 'Lightbulb', 'Lock Mechanism', 'Motion Sensor', 'Occupancy Sensor',
-        'Outlet', 'Smoke Sensor', 'Speaker', 'Stateless Programmable Switch', 'Switch',
-        'Television', 'Temperature Sensor', 'Thermostat', 'Contact Sensor',
-      ];
-      return supportedTypes.includes(service.humanType);
-    };
+    const supportedTypes = [
+      'Battery', 'Carbon Dioxide Sensor', 'Carbon Monoxide Sensor', 'Doorbell',
+      'Fan', 'Fanv2', 'Garage Door Opener', 'Humidity Sensor', 'Input Source',
+      'Leak Sensor', 'Lightbulb', 'Lock Mechanism', 'Motion Sensor', 'Occupancy Sensor',
+      'Outlet', 'Smoke Sensor', 'Speaker', 'Stateless Programmable Switch', 'Switch',
+      'Television', 'Temperature Sensor', 'Thermostat', 'Contact Sensor',
+    ];
 
     return this.hbDevices
-      .filter(service => supportedServiceType(service))
+      .filter(service => supportedTypes.includes(service.humanType))
       .map(service => ({
         name: service.serviceName,
         fullName: `${service.serviceName} - ${service.type}`,
@@ -130,49 +121,27 @@ class HBConfigNode { // Extend EventEmitter
         return clientNode.device === deviceUnique;
       });
 
-      debug(clientNode.type);
       if (clientNode.config.type === 'hb-status') {
-        debug('Adding', clientNode.name, clientNode.device)
         this.monitorNodes[clientNode.device] = clientNode.hbDevice;
       }
-      console.log(this.monitorNodes);
+
       if (!clientNode.hbDevice) {
         console.error('ERROR: _register - HB Device Missing', clientNode.name);
       }
     }
-    debug(`Registering ${Object.keys(this.monitorNodes).length} nodes for events`);
-    // console.log(Object.keys(this.monitorNodes));
+
     if (Object.keys(this.monitorNodes).length) {
-      debug(`Registering ${Object.keys(this.monitorNodes).length} nodes for events`);
       this.monitor = await this.hapClient.monitorCharacteristics(Object.values(this.monitorNodes));
       this.monitor.on('service-update', (services) => {
-        // Emit events for updated services
         for (const service of services) {
-          debug(`${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`,
-            service.values)
-          this.emit(
-            `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`,
-            service.values
-          );
-          debug('event',
-            service.serviceName, service.values)
-          this.emit(
-            'event',
-            service
-          );
-          // console.log(this.clientNodes);
-
           const eventNodes = Object.values(this.clientNodes).filter(
-
-            (clientNode) =>
+            clientNode =>
               clientNode.config.device === `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`
-
           );
-          console.log('eventNodes, ', eventNodes);
+
           eventNodes.forEach((eventNode) => {
-            debug('emit', eventNode.name, eventNode.type)
             if (eventNode._events && typeof eventNode.emit === 'function') {
-              eventNode.emit('topic', service);
+              eventNode.emit('event', service);
             }
           });
         }
@@ -182,11 +151,7 @@ class HBConfigNode { // Extend EventEmitter
   }
 
   deregister(clientNode) {
-    clientNode.status({
-      text: 'disconnected',
-      shape: 'ring',
-      fill: 'red',
-    });
+    clientNode.status({ text: 'disconnected', shape: 'ring', fill: 'red' });
     delete this.clientNodes[clientNode.id];
   }
 
