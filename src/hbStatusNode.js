@@ -22,8 +22,7 @@ class HbStatusNode extends HbBaseNode {
       fill: 'green'
     });
 
-    message.payload = result.values;
-    send(message);
+    send(Object.assign(message, this.createMessage(result)));
   }
 }
 

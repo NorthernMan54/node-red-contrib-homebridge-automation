@@ -22,8 +22,8 @@
         "tosidebar": true,
         "console": false,
         "tostatus": true,
-        "complete": "payload",
-        "targetType": "msg",
+        "complete": "true",
+        "targetType": "full",
         "statusVal": "payload",
         "statusType": "auto",
         "x": 800,
@@ -39,8 +39,8 @@
         "tosidebar": true,
         "console": false,
         "tostatus": true,
-        "complete": "payload",
-        "targetType": "msg",
+        "complete": "true",
+        "targetType": "full",
         "statusVal": "payload",
         "statusType": "auto",
         "x": 800,
@@ -72,8 +72,7 @@
         "y": 140,
         "wires": [
             [
-                "3d7babac3a298e60",
-                "452e3e6171aa7a25"
+                "3d7babac3a298e60"
             ]
         ]
     },
@@ -438,6 +437,35 @@
         "wires": [
             [
                 "a866ae0bb24ce682"
+            ]
+        ]
+    },
+    {
+        "id": "56633636bd2e624c",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "60",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 280,
+        "wires": [
+            [
+                "452e3e6171aa7a25"
             ]
         ]
     }

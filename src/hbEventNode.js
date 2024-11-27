@@ -9,15 +9,16 @@ class HbEventNode extends hbBaseNode {
   }
 
   handleHbReady(service) {
-    this.status({
-      text: JSON.stringify(service.values),
-      shape: 'dot',
-      fill: 'green',
-    });
-    this.send({ payload: service.values });
+    debug('handleHbReady', this.id, this.name, service.values)
+    if (this.sendInitialState) {
+      this.status({
+        text: JSON.stringify(service.values),
+        shape: 'dot',
+        fill: 'green',
+      });
+      this.send({ ...this.createMessage(service) });
+    }
   }
-  // Create a message payload for event or initial state
-
 }
 
 module.exports = HbEventNode;

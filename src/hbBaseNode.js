@@ -38,127 +38,133 @@ class HbBaseNode {
     this.send({ payload: service.values });
   }
 
-  createMessage(event, isInitialState = false) {
+  createMessage(service) {
     return {
-      name: this.node.name,
-      payload: this.state,
-      Homebridge: this.node.hbDevice.homebridge,
-      Manufacturer: this.node.hbDevice.manufacturer,
-      Service: this.node.hbDevice.deviceType,
-      _device: this.node.device,
-      _confId: this.node.confId,
-      _rawEvent: isInitialState ? event : undefined,
+      name: this.name,
+      payload: service.values,
+      Homebridge: service.instance.name,
+      Manufacturer: service.accessoryInformation.Manufacturer,
+      Service: service.type,
+      _device: this.device,
+      _confId: this.confId,
     };
   }
 
-  registerNode() {
-    debug("Registering node:", this.fullName);
-    this.hbDevice = hbDevices.findDevice(this.device);
-
-    if (!this.hbDevice) {
-      this.error(`Device not found: ${this.device}`);
-    } else {
-      this.deviceType = this.hbDevice.deviceType;
-    }
-  }
-
-  handleClose(callback) {
+  handleClose(removed, done) {
     debug('close', this.name);
-    callback();
+    done();
   }
 
-  _convertHBcharacteristicToNode(hbMessage, node) {
-    let payload = {};
-    if (!hbMessage.payload) {
-      const device = hbDevices.findDevice(node.device);
-      if (device) {
-        hbMessage.forEach(characteristic => {
-          const charKey = `${characteristic.aid}.${characteristic.iid}`;
-          if (device.characteristics[charKey]) {
-            payload[device.characteristics[charKey].characteristic] = characteristic.value;
-          }
-        });
-      }
-    } else {
-      payload = hbMessage.payload;
-    }
-    return payload;
-  }
-
-  _createControlMessage(payload, node, device) {
-    const response = [];
-    for (const key in payload) {
-      const characteristic = this._getKey(device.characteristics, key);
-      if (characteristic) {
-        response.push({
-          aid: device.aid,
-          iid: characteristic.iid,
-          value: payload[key],
-        });
+  /*
+    registerNode() {
+      debug("Registering node:", this.fullName);
+      this.hbDevice = hbDevices.findDevice(this.device);
+  
+      if (!this.hbDevice) {
+        this.error(`Device not found: ${this.device}`);
       } else {
-        this.warn(`Invalid characteristic: '${key}'. Available: ${device.descriptions}`);
-        node.status({ text: `Invalid characteristic: ${key}`, shape: 'ring', fill: 'yellow' });
+        this.deviceType = this.hbDevice.deviceType;
       }
     }
-    return { characteristics: response };
-  }
-
-  async _status(nrDevice, node, perms) {
-    try {
-      const device = hbDevices.findDevice(node.device, perms);
-      if (!device) throw new Error(`Device not found: ${nrDevice}`);
-
-      const message = device.type === "00000110" || device.type === "00000111"
-        ? { "resource-type": "image", "image-width": 1920, "image-height": 1080 }
-        : `?id=${device.getCharacteristics}`;
-
-      const status = device.type === "00000110" || device.type === "00000111"
-        ? await this.HAPresourceByDeviceIDAsync(device.id, JSON.stringify(message))
-        : await this.HAPstatusByDeviceIDAsync(device.id, message);
-
-      node.status({ text: 'Success', shape: 'dot', fill: 'green' });
-      return device.type === "00000110" || device.type === "00000111"
-        ? { characteristics: { payload: this.btoa(status) } }
-        : status;
-    } catch (err) {
-      debug("Error in _status:", err);
-      node.status({ text: 'Error retrieving status', shape: 'ring', fill: 'red' });
-      throw err;
+  
+    handleClose(callback) {
+      debug('close', this.name);
+      callback();
     }
-  }
-
-  async _register(node) {
-    try {
-      const device = hbDevices.findDevice(node.device, { perms: 'ev' });
-      if (device) {
-        const message = { characteristics: device.eventRegisters };
-        await hapEventByDeviceIDAsync(device.id, JSON.stringify(message));
+  
+    _convertHBcharacteristicToNode(hbMessage, node) {
+      let payload = {};
+      if (!hbMessage.payload) {
+        const device = hbDevices.findDevice(node.device);
+        if (device) {
+          hbMessage.forEach(characteristic => {
+            const charKey = `${characteristic.aid}.${characteristic.iid}`;
+            if (device.characteristics[charKey]) {
+              payload[device.characteristics[charKey].characteristic] = characteristic.value;
+            }
+          });
+        }
+      } else {
+        payload = hbMessage.payload;
       }
-    } catch (err) {
-      debug("Error in _register:", err);
-      node.status({ text: 'Register error', shape: 'ring', fill: 'red' });
+      return payload;
     }
-  }
-
-  _getKey(obj, value) {
-    return Object.values(obj).find(char => char.characteristic.toLowerCase() === value.toLowerCase()) || null;
-  }
-
-  btoa(str) {
-    return Buffer.from(str.toString(), 'binary').toString('base64');
-  }
-
-  async HAPresourceByDeviceIDAsync(deviceId, message) {
-    return new Promise((resolve, reject) => {
-      homebridge.HAPresourceByDeviceID(deviceId, message, (err, status) => err ? reject(err) : resolve(status));
-    });
-  }
-
-  async HAPstatusByDeviceIDAsync(deviceId, message) {
-    return new Promise((resolve, reject) => {
-      homebridge.HAPstatusByDeviceID(deviceId, message, (err, status) => err ? reject(err) : resolve(status));
-    });
-  }
+  
+    _createControlMessage(payload, node, device) {
+      const response = [];
+      for (const key in payload) {
+        const characteristic = this._getKey(device.characteristics, key);
+        if (characteristic) {
+          response.push({
+            aid: device.aid,
+            iid: characteristic.iid,
+            value: payload[key],
+          });
+        } else {
+          this.warn(`Invalid characteristic: '${key}'. Available: ${device.descriptions}`);
+          node.status({ text: `Invalid characteristic: ${key}`, shape: 'ring', fill: 'yellow' });
+        }
+      }
+      return { characteristics: response };
+    }
+  
+    async _status(nrDevice, node, perms) {
+      try {
+        const device = hbDevices.findDevice(node.device, perms);
+        if (!device) throw new Error(`Device not found: ${nrDevice}`);
+  
+        const message = device.type === "00000110" || device.type === "00000111"
+          ? { "resource-type": "image", "image-width": 1920, "image-height": 1080 }
+          : `?id=${device.getCharacteristics}`;
+  
+        const status = device.type === "00000110" || device.type === "00000111"
+          ? await this.HAPresourceByDeviceIDAsync(device.id, JSON.stringify(message))
+          : await this.HAPstatusByDeviceIDAsync(device.id, message);
+  
+        node.status({ text: 'Success', shape: 'dot', fill: 'green' });
+        return device.type === "00000110" || device.type === "00000111"
+          ? { characteristics: { payload: this.btoa(status) } }
+          : status;
+      } catch (err) {
+        debug("Error in _status:", err);
+        node.status({ text: 'Error retrieving status', shape: 'ring', fill: 'red' });
+        throw err;
+      }
+    }
+  
+    async _register(node) {
+      try {
+        const device = hbDevices.findDevice(node.device, { perms: 'ev' });
+        if (device) {
+          const message = { characteristics: device.eventRegisters };
+          await hapEventByDeviceIDAsync(device.id, JSON.stringify(message));
+        }
+      } catch (err) {
+        debug("Error in _register:", err);
+        node.status({ text: 'Register error', shape: 'ring', fill: 'red' });
+      }
+    }
+  
+    _getKey(obj, value) {
+      return Object.values(obj).find(char => char.characteristic.toLowerCase() === value.toLowerCase()) || null;
+    }
+  
+    btoa(str) {
+      return Buffer.from(str.toString(), 'binary').toString('base64');
+    }
+  
+    async HAPresourceByDeviceIDAsync(deviceId, message) {
+      return new Promise((resolve, reject) => {
+        homebridge.HAPresourceByDeviceID(deviceId, message, (err, status) => err ? reject(err) : resolve(status));
+      });
+    }
+  
+    async HAPstatusByDeviceIDAsync(deviceId, message) {
+      return new Promise((resolve, reject) => {
+        homebridge.HAPstatusByDeviceID(deviceId, message, (err, status) => err ? reject(err) : resolve(status));
+      });
+    }
+    */
 }
 
 module.exports = HbBaseNode;

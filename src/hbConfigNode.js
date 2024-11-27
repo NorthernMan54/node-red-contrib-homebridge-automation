@@ -152,17 +152,18 @@ class HBConfigNode {
     }
     cb(null);
   }
-
-  deregister(clientNode) {
-    clientNode.status({ text: 'disconnected', shape: 'ring', fill: 'red' });
-    delete this.clientNodes[clientNode.id];
-  }
-
+  /*
+    deregister(clientNode) {
+      clientNode.status({ text: 'disconnected', shape: 'ring', fill: 'red' });
+      delete this.clientNodes[clientNode.id];
+    }
+  */
   close() {
     if (this.hapClient) {
       this.hapClient.destroy();
     }
   }
+
 }
 
 module.exports = HBConfigNode;
