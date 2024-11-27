@@ -24,7 +24,18 @@ class HbBaseNode {
       this.on('input', this.handleInput.bind(this));
     }
     this.on('close', this.handleClose.bind(this));
+    this.hbConfigNode.on('event', this.handleHBEventMessage.bind(this));
+    this.on('topic', this.handleHBTopicMessage.bind(this));
   }
+
+  handleHBEventMessage(service) {
+    debug('event for', this.id, service.serviceName, service.values);
+  }
+
+  handleHBTopicMessage(service) {
+    debug('topic for', this.id, service.serviceName, service.values);
+  }
+
 
   registerNode() {
     debug("Registering node:", this.fullName);
@@ -38,6 +49,7 @@ class HbBaseNode {
   }
 
   handleClose(callback) {
+    debug('close', this.name);
     callback();
   }
 
@@ -97,29 +109,6 @@ class HbBaseNode {
     } catch (err) {
       debug("Error in _status:", err);
       node.status({ text: 'Error retrieving status', shape: 'ring', fill: 'red' });
-      throw err;
-    }
-  }
-
-  async _control(node, payload) {
-    try {
-      const device = hbDevices.findDevice(node.device, { perms: 'pw' });
-      if (!device) throw new Error('Device not available');
-
-      const message = typeof payload === "object"
-        ? this._createControlMessage(payload, node, device)
-        : null;
-
-      if (message && message.characteristics.length > 0) {
-        const status = await this.HAPcontrolByDeviceIDAsync(device.id, JSON.stringify(message));
-        node.status({ text: 'Controlled', shape: 'dot', fill: 'green' });
-        return status;
-      } else {
-        throw new Error('Invalid payload');
-      }
-    } catch (err) {
-      debug("Error in _control:", err);
-      node.status({ text: 'Control error', shape: 'ring', fill: 'red' });
       throw err;
     }
   }

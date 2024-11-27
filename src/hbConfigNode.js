@@ -1,12 +1,13 @@
-const hbBaseNode = require('./hbBaseNode.js');
+// const EventEmitter = require('events'); // Import EventEmitter
 const { HapClient } = require('@homebridge/hap-client');
 const debug = require('debug')('hapNodeRed:hbConfigNode');
-const { Homebridges } = require('./lib/Homebridges.js');
 const { Log } = require('./lib/logger.js');
 const Queue = require('better-queue');
 
-class HBConfigNode {
+class HBConfigNode { // Extend EventEmitter
   constructor(config, RED) {
+    // super(); // Call EventEmitter's constructor
+
     if (!config.jest) {
       RED.nodes.createNode(this, config);
 
@@ -18,6 +19,7 @@ class HBConfigNode {
       this.ctDevices = [];
       this.hbDevices = [];
       this.clientNodes = [];
+      this.monitorNodes = [];
       this.log = new Log(console, true);
 
       this.reqisterQueue = new Queue(this._register.bind(this), {
@@ -40,6 +42,7 @@ class HBConfigNode {
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
 
       this.on('close', () => {
+        debug('close');
         this.close();
       });
     }
@@ -122,14 +125,58 @@ class HBConfigNode {
     for (const clientNode of clientNodes) {
       debug('_Register %s -> %s', clientNode.type, clientNode.name);
       clientNode.hbDevice = this.hbDevices.find(service => {
-        const testValue = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`;
+        const deviceUnique = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`;
         clientNode.status({ fill: 'green', shape: 'dot', text: 'connected' });
-        return clientNode.device === testValue;
+        return clientNode.device === deviceUnique;
       });
 
+      debug(clientNode.type);
+      if (clientNode.config.type === 'hb-status') {
+        debug('Adding', clientNode.name, clientNode.device)
+        this.monitorNodes[clientNode.device] = clientNode.hbDevice;
+      }
+      console.log(this.monitorNodes);
       if (!clientNode.hbDevice) {
         console.error('ERROR: _register - HB Device Missing', clientNode.name);
       }
+    }
+    debug(`Registering ${Object.keys(this.monitorNodes).length} nodes for events`);
+    // console.log(Object.keys(this.monitorNodes));
+    if (Object.keys(this.monitorNodes).length) {
+      debug(`Registering ${Object.keys(this.monitorNodes).length} nodes for events`);
+      this.monitor = await this.hapClient.monitorCharacteristics(Object.values(this.monitorNodes));
+      this.monitor.on('service-update', (services) => {
+        // Emit events for updated services
+        for (const service of services) {
+          debug(`${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`,
+            service.values)
+          this.emit(
+            `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`,
+            service.values
+          );
+          debug('event',
+            service.serviceName, service.values)
+          this.emit(
+            'event',
+            service
+          );
+          // console.log(this.clientNodes);
+
+          const eventNodes = Object.values(this.clientNodes).filter(
+
+            (clientNode) =>
+              clientNode.config.device === `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`
+
+          );
+          console.log('eventNodes, ', eventNodes);
+          eventNodes.forEach((eventNode) => {
+            debug('emit', eventNode.name, eventNode.type)
+            if (eventNode._events && typeof eventNode.emit === 'function') {
+              eventNode.emit('topic', service);
+            }
+          });
+        }
+      });
     }
     cb(null);
   }
@@ -145,7 +192,7 @@ class HBConfigNode {
 
   close() {
     if (this.hapClient) {
-      this.hapClient.close();
+      this.hapClient.destroy();
     }
   }
 }

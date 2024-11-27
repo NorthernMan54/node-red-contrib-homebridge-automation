@@ -81,7 +81,6 @@
         "id": "3d7babac3a298e60",
         "type": "hb-status",
         "z": "caef1e7b5b399e80",
-        "d": true,
         "name": "West Bedroom",
         "Homebridge": "homebridge",
         "Manufacturer": "Tasmota",
@@ -108,7 +107,7 @@
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
         "conf": "557aec8e8c47e61e",
         "x": 480,
-        "y": 260,
+        "y": 300,
         "wires": [
             [
                 "a866ae0bb24ce682"

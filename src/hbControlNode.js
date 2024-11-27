@@ -8,7 +8,6 @@ class HbControlNode extends hbBaseNode {
 
   async handleInput(message) {
     debug('handleInput', message.payload, this.name);
-
     if (!this.hbDevice) {
       this.error('HB not initialized');
       this.status({ text: 'HB not initialized', shape: 'ring', fill: 'red' });
@@ -28,19 +27,13 @@ class HbControlNode extends hbBaseNode {
     let fill = 'green';
 
     for (const key of Object.keys(message.payload)) {
-      const characteristic = this.hbDevice.serviceCharacteristics.find(c => c.type === key);
 
-      if (characteristic) {
-        try {
-          const result = await characteristic.setValue(message.payload[key]);
-          results.push({ [result.type]: result.value });
-        } catch (error) {
-          this.error(`Failed to set value for ${key}: ${error.message}`);
-          fill = 'red';
-        }
-      } else {
-        this.error(`Invalid characteristic '${key}' found in the message: ${JSON.stringify(message.payload)}`);
-        results.push({ 'Invalid Key': key });
+      try {
+        const result = await this.hbDevice.setCharacteristicByType(key, message.payload[key]);
+        results.push({ [result.type]: result.value });
+      } catch (error) {
+        this.error(`Failed to set value for ${key}: ${error.message}`);
+        results.push({ key: key + ' ' + error.message })
         fill = 'red';
       }
     }
@@ -50,10 +43,6 @@ class HbControlNode extends hbBaseNode {
       shape: 'dot',
       fill,
     });
-  }
-
-  handleClose(callback) {
-    callback();
   }
 }
 
