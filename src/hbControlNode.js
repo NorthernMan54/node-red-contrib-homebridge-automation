@@ -8,22 +8,24 @@ class HbControlNode extends hbBaseNode {
 
   async handleInput(message, send) {
     debug('handleInput', message.payload, this.name);
+
     if (!this.hbDevice) {
       this.handleError('HB not initialized');
       return;
     }
-    if (this.hbDevice.type == 'CameraRTPStreamManagement') {
-      message.payload = {
-        "resource-type": "image",
-        "image-width": 1920,
-        "image-height": 1080
-      };
-    }
-    if (typeof message.payload !== 'object') {
+
+    const isCamera = this.hbDevice.type === 'CameraRTPStreamManagement';
+    const payloadType = typeof message.payload;
+
+    // Validate payload
+    if (!isCamera && payloadType !== 'object') {
       const validNames = Object.keys(this.hbDevice.values)
         .filter(key => key !== 'ConfiguredName')
         .join(', ');
-      this.error(`Payload should be a JSON object containing device characteristics and values, e.g. {"On":false, "Brightness":0}. Valid values: ${validNames}`);
+
+      this.error(
+        `Invalid payload. Expected JSON object, e.g., {"On":false, "Brightness":0}. Valid values: ${validNames}`
+      );
       this.status({ text: 'Invalid payload', shape: 'dot', fill: 'red' });
       return;
     }
@@ -31,48 +33,46 @@ class HbControlNode extends hbBaseNode {
     const results = [];
     let fill = 'green';
 
-    if (this.hbDevice.type == 'CameraRTPStreamManagement') {
-      const result = await this.hbDevice.getResource({
-        "resource-type": "image",
-        "image-width": 1920,
-        "image-height": 1080
-      });
-      message = { ...message, ...this.createMessage(this.hbDevice) };
-      message.payload = result;
-      send(message);
-      results.push({ 'Received': result.length })
-    } else {
-      for (const key of Object.keys(message.payload)) {
+    try {
+      if (isCamera) {
+        // Handle CameraRTPStreamManagement
+        const cameraPayload = {
+          "resource-type": "image",
+          "image-width": 1920,
+          "image-height": 1080
+        };
 
-        try {
-          const result = await this.hbDevice.setCharacteristicByType(key, message.payload[key]);
-          results.push({ [result.type]: result.value });
-        } catch (error) {
-          this.error(`Failed to set value for ${key}: ${error.message}`);
-          results.push({ key: key + ' ' + error.message })
-          fill = 'red';
+        const result = await this.hbDevice.getResource(cameraPayload);
+
+        message = { ...message, ...this.createMessage(this.hbDevice), payload: result };
+        send(message);
+        results.push({ Received: result.length });
+      } else {
+        // Handle other characteristics
+        for (const key of Object.keys(message.payload)) {
+          try {
+            const result = await this.hbDevice.setCharacteristicByType(key, message.payload[key]);
+            results.push({ [result.type]: result.value });
+          } catch (error) {
+            this.error(`Failed to set value for "${key}": ${error.message}`);
+            results.push({ [key]: `Error: ${error.message}` });
+            fill = 'red';
+          }
         }
       }
-    }
 
-    this.status({
-      text: this.statusText(JSON.stringify(Object.assign({}, ...results))),
-      shape: 'dot',
-      fill,
-    });
+      // Update status
+      const statusText = this.statusText(JSON.stringify(Object.assign({}, ...results)));
+      this.status({ text: statusText, shape: 'dot', fill });
+    } catch (error) {
+      this.error(`Unhandled error: ${error.message}`);
+      this.status({ text: 'Unhandled error', shape: 'dot', fill: 'red' });
+    }
   }
 }
 
 function btoa(str) {
-  var buffer;
-
-  if (str instanceof Buffer) {
-    buffer = str;
-  } else {
-    buffer = Buffer.from(str.toString(), 'binary');
-  }
-
-  return buffer.toString('base64');
+  return Buffer.isBuffer(str) ? str.toString('base64') : Buffer.from(str.toString(), 'binary').toString('base64');
 }
 
 module.exports = HbControlNode;
