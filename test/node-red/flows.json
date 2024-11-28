@@ -26,8 +26,8 @@
         "targetType": "full",
         "statusVal": "payload",
         "statusType": "auto",
-        "x": 800,
-        "y": 140,
+        "x": 820,
+        "y": 40,
         "wires": []
     },
     {
@@ -43,8 +43,8 @@
         "targetType": "full",
         "statusVal": "payload",
         "statusType": "auto",
-        "x": 800,
-        "y": 260,
+        "x": 820,
+        "y": 100,
         "wires": []
     },
     {
@@ -68,8 +68,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 250,
-        "y": 140,
+        "x": 270,
+        "y": 40,
         "wires": [
             [
                 "3d7babac3a298e60"
@@ -86,8 +86,8 @@
         "Service": "Lightbulb",
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
         "conf": "557aec8e8c47e61e",
-        "x": 480,
-        "y": 140,
+        "x": 500,
+        "y": 40,
         "wires": [
             [
                 "902c5887b6877df6"
@@ -104,8 +104,8 @@
         "Service": "Lightbulb",
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
         "conf": "557aec8e8c47e61e",
-        "x": 480,
-        "y": 460,
+        "x": 500,
+        "y": 160,
         "wires": [
             [
                 "1093ab38b01fd39f"
@@ -125,8 +125,8 @@
         "targetType": "msg",
         "statusVal": "payload",
         "statusType": "auto",
-        "x": 800,
-        "y": 460,
+        "x": 820,
+        "y": 160,
         "wires": []
     },
     {
@@ -140,36 +140,9 @@
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom Fan00000040",
         "conf": "557aec8e8c47e61e",
         "outputs": 0,
-        "x": 810,
-        "y": 600,
+        "x": 510,
+        "y": 220,
         "wires": []
-    },
-    {
-        "id": "d9f8181e9e6b3cfd",
-        "type": "inject",
-        "z": "caef1e7b5b399e80",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "60",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "60",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 210,
-        "y": 460,
-        "wires": [
-            []
-        ]
     },
     {
         "id": "6703815a8874b156",
@@ -181,10 +154,14 @@
         "Service": "Lightbulb",
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
         "conf": "557aec8e8c47e61e",
-        "outputs": 0,
-        "x": 800,
-        "y": 680,
-        "wires": []
+        "outputs": 1,
+        "x": 500,
+        "y": 300,
+        "wires": [
+            [
+                "f194fc4bcb1997a9"
+            ]
+        ]
     },
     {
         "id": "24660f9d2862cee9",
@@ -207,8 +184,8 @@
         "topic": "",
         "payload": "{\"On\": true, \"RotationSpeed\": 33}",
         "payloadType": "json",
-        "x": 190,
-        "y": 580,
+        "x": 90,
+        "y": 180,
         "wires": [
             [
                 "0ed3cd7e0d60beda"
@@ -236,8 +213,8 @@
         "topic": "",
         "payload": "{\"On\": false}",
         "payloadType": "json",
-        "x": 210,
-        "y": 640,
+        "x": 110,
+        "y": 240,
         "wires": [
             [
                 "0ed3cd7e0d60beda"
@@ -265,8 +242,8 @@
         "topic": "",
         "payload": "{\"On\": true}",
         "payloadType": "json",
-        "x": 350,
-        "y": 800,
+        "x": 110,
+        "y": 280,
         "wires": [
             [
                 "6703815a8874b156"
@@ -294,8 +271,8 @@
         "topic": "",
         "payload": "{\"On\": false}",
         "payloadType": "json",
-        "x": 350,
-        "y": 860,
+        "x": 110,
+        "y": 340,
         "wires": [
             [
                 "6703815a8874b156"
@@ -323,8 +300,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 520,
-        "y": 540,
+        "x": 320,
+        "y": 260,
         "wires": [
             [
                 "6703815a8874b156",
@@ -353,8 +330,8 @@
         "topic": "",
         "payload": "{\"Off\": false}",
         "payloadType": "json",
-        "x": 490,
-        "y": 920,
+        "x": 110,
+        "y": 380,
         "wires": [
             [
                 "6703815a8874b156"
@@ -382,8 +359,8 @@
         "topic": "",
         "payload": "{\"On\": true}",
         "payloadType": "json",
-        "x": 150,
-        "y": 340,
+        "x": 110,
+        "y": 80,
         "wires": [
             [
                 "452e3e6171aa7a25"
@@ -411,8 +388,8 @@
         "topic": "",
         "payload": "{\"On\": false}",
         "payloadType": "json",
-        "x": 150,
-        "y": 400,
+        "x": 110,
+        "y": 140,
         "wires": [
             [
                 "452e3e6171aa7a25"
@@ -431,11 +408,28 @@
         "conf": "557aec8e8c47e61e",
         "sendInitialState": true,
         "x": 500,
-        "y": 260,
+        "y": 100,
         "wires": [
             [
                 "a866ae0bb24ce682"
             ]
         ]
+    },
+    {
+        "id": "f194fc4bcb1997a9",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 800,
+        "y": 300,
+        "wires": []
     }
 ]

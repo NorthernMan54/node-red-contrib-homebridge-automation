@@ -33,7 +33,7 @@ class HapDeviceRoutes {
   getEvDeviceById(req, res) {
     debug('req', req.params.id);
     var evDevices = this.RED.nodes.getNode(req.params.id).evDevices;
-    debug('hbDevices', evDevices);
+    // debug('hbDevices', evDevices);
     debug("evDevices", evDevices.length);
     if (evDevices) {
       res.send(evDevices);
@@ -76,7 +76,7 @@ class HapDeviceRoutes {
 
   // GET /hap-device/ctDevices/
   getCtDevices(req, res) {
-    debug("ctDevices", this.hbDevices.toList({ perms: 'pw' }).length);
+    // debug("ctDevices", this.hbDevices.toList({ perms: 'pw' }).length);
     if (this.hbDevices) {
       res.send(this.hbDevices.toList({ perms: 'pw' }));
     } else {

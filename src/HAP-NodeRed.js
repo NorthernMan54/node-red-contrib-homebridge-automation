@@ -1,7 +1,5 @@
 var debug = require('debug')('hapNodeRed');
 
-// var register = require('./lib/register.js');
-
 const HBConfigNode = require('./hbConfigNode.js');
 const HbEventNode = require('./hbEventNode'); // Import the class
 const HbResumeNode = require('./hbResumeNode'); // Import the class
@@ -13,13 +11,6 @@ const HapDeviceRoutes = require('./HapDeviceRoutes');
 module.exports = function (RED) {
   var hbDevices;
 
-  /**
-   * hbConf - Configuration
-   *
-   * @param  {type} n description
-   * @return {type}   description
-   */
-
   class hbConfigNode extends HBConfigNode {
     constructor(config) {
       debug('hbConfigNode', config);
@@ -27,7 +18,6 @@ module.exports = function (RED) {
     }
   }
 
-  // console.log('Registering node types', "hb-conf", hbConfigNode);
   RED.nodes.registerType("hb-conf", hbConfigNode, {
     credentials: {
       password: {
@@ -36,11 +26,6 @@ module.exports = function (RED) {
     }
   });
 
-
-  /**
-   *  hbEventNode - description
-   * @param {*} n 
-   */
   class hbEventNode extends HbEventNode {
     constructor(config) {
       debug('hbEventNode', config);
@@ -50,9 +35,6 @@ module.exports = function (RED) {
 
   RED.nodes.registerType("hb-event", hbEventNode);
 
-  /**
-   * hbResumeNode - description
-   */
   class hbResumeNode extends HbResumeNode {
     constructor(config) {
       debug('hbResumeNode', config);
@@ -71,12 +53,6 @@ module.exports = function (RED) {
 
   RED.nodes.registerType("hb-control", hbControlNode);
 
-  /**
-   * hbStatus - description
-   *
-   * @param  {type} n description
-   * @return {type}   description
-   */
   class hbStatusNode extends HbStatusNode {
     constructor(config) {
       debug('hbStatusNode', config);

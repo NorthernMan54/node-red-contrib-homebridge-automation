@@ -6,13 +6,6 @@ class HbResumeNode extends HbBaseNode {
     super(config, RED);
 
     this.storedState = null;
-
-    // Set up input and command handlers
-    // this.on('input', this.handleInput.bind(this));
-    this.command = this.handleCommand.bind(this);
-
-    // Handle device registration
-    debug('hbResume - hbConfigNode', this.hbConfigNode);
   }
 
   handleInput(message, send) {
@@ -34,6 +27,9 @@ class HbResumeNode extends HbBaseNode {
       return;
     }
 
+    // if on, store the current values object to storedState before passing
+    // if off, if storedState, then send stored state else passthru
+
     if (message.payload.On) {
       this.storedState = JSON.parse(JSON.stringify(this.hbDevice.values));
       debug('Storing state', this.storedState);
@@ -51,7 +47,6 @@ class HbResumeNode extends HbBaseNode {
 
     send(message);
   }
-
 
 }
 
