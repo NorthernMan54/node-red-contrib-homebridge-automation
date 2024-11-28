@@ -30,7 +30,7 @@ class HapDeviceRoutes {
   getDeviceById(req, res, key) {
     const devices = this.RED.nodes.getNode(req.params.id)?.[key];
     if (devices) {
-      debug(`${key} devices`, devices.length);
+      // debug(`${key} devices`, devices.length);
       res.send(devices);
     } else {
       res.status(404).send();

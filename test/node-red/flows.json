@@ -243,7 +243,7 @@
         "payload": "{\"On\": true}",
         "payloadType": "json",
         "x": 110,
-        "y": 280,
+        "y": 300,
         "wires": [
             [
                 "6703815a8874b156"
@@ -436,14 +436,14 @@
         "id": "12ce98441601c981",
         "type": "hb-event",
         "z": "caef1e7b5b399e80",
-        "name": "Driveway 8E52",
+        "name": "Driveway",
         "Homebridge": "ECI-T24F2",
         "Manufacturer": "HikVision",
-        "Service": "CameraRTPStreamManagement",
-        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000110",
+        "Service": "MotionSensor",
+        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway00000085",
         "conf": "557aec8e8c47e61e",
         "sendInitialState": true,
-        "x": 340,
+        "x": 320,
         "y": 520,
         "wires": [
             [
@@ -603,5 +603,161 @@
         "wires": [
             []
         ]
+    },
+    {
+        "id": "4b787bfb023ccf23",
+        "type": "hb-event",
+        "z": "caef1e7b5b399e80",
+        "name": "Backyard",
+        "Homebridge": "Default Model",
+        "Manufacturer": "NRCHKB",
+        "Service": "TemperatureSensor",
+        "device": "Default Model69:62:B7:AE:38:D4NRCHKBBackyard0000008A",
+        "conf": "557aec8e8c47e61e",
+        "sendInitialState": true,
+        "x": 160,
+        "y": 660,
+        "wires": [
+            [
+                "c68bef6563c5d07e"
+            ]
+        ]
+    },
+    {
+        "id": "c68bef6563c5d07e",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 7",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 620,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "3c36252a6f45eed9",
+        "type": "hb-status",
+        "z": "caef1e7b5b399e80",
+        "name": "Backyard Tree",
+        "Homebridge": "Default Model",
+        "Manufacturer": "NRCHKB",
+        "Service": "TemperatureSensor",
+        "device": "Default Model69:62:B7:AE:38:D4NRCHKBBackyard Tree0000008A",
+        "conf": "557aec8e8c47e61e",
+        "x": 360,
+        "y": 800,
+        "wires": [
+            [
+                "c68bef6563c5d07e"
+            ]
+        ]
+    },
+    {
+        "id": "3b7537939b63eee8",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "60",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 800,
+        "wires": [
+            [
+                "3c36252a6f45eed9"
+            ]
+        ]
+    },
+    {
+        "id": "aabce5ff7fbbeec6",
+        "type": "status",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "scope": [
+            "3d7babac3a298e60",
+            "452e3e6171aa7a25",
+            "0ed3cd7e0d60beda",
+            "6703815a8874b156",
+            "82638dac6ac32bb1",
+            "6216377792cba653",
+            "12ce98441601c981",
+            "4b787bfb023ccf23",
+            "3c36252a6f45eed9"
+        ],
+        "x": 1020,
+        "y": 380,
+        "wires": [
+            [
+                "94f051597d18eaa3"
+            ]
+        ]
+    },
+    {
+        "id": "94f051597d18eaa3",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "status.source.name",
+        "statusType": "msg",
+        "x": 1180,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "296297c79b544f59",
+        "type": "catch",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 1020,
+        "y": 300,
+        "wires": [
+            [
+                "0073218b1ebc53f1"
+            ]
+        ]
+    },
+    {
+        "id": "0073218b1ebc53f1",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 1200,
+        "y": 300,
+        "wires": []
     }
 ]

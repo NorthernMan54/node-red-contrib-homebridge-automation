@@ -8,6 +8,7 @@ class HBConfigNode {
     if (!config.jest) {
       RED.nodes.createNode(this, config);
 
+      // Initialize properties
       this.username = config.username;
       this.macAddress = config.macAddress || '';
       this.users = {};
@@ -19,6 +20,7 @@ class HBConfigNode {
       this.monitorNodes = [];
       this.log = new Log(console, true);
 
+      // Initialize queue
       this.reqisterQueue = new Queue(this._register.bind(this), {
         concurrent: 1,
         autoResume: false,
@@ -29,27 +31,25 @@ class HBConfigNode {
       });
       this.reqisterQueue.pause();
 
+      // Initialize HAP client
       this.hapClient = new HapClient({
         config: { debug: false },
         pin: config.username,
         logger: this.log,
       });
 
-      this.waitForNoMoreDiscoveries();
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
-
+      this.waitForNoMoreDiscoveries();
       this.on('close', this.close.bind(this));
     }
   }
 
   waitForNoMoreDiscoveries = () => {
-    if (this.discoveryTimeout) {
-      clearTimeout(this.discoveryTimeout);
-    }
-
+    clearTimeout(this.discoveryTimeout);
     this.discoveryTimeout = setTimeout(() => {
       this.log.debug('No more instances discovered, publishing services');
       this.hapClient.removeListener('instance-discovered', this.waitForNoMoreDiscoveries);
+      this.hapClient.on('instance-discovered', async (instance) => { debug('instance-discovered', instance); await this.monitorDevices(); });
       this.handleReady();
     }, 5000);
   };
@@ -58,10 +58,9 @@ class HBConfigNode {
     this.hbDevices = await this.hapClient.getAllServices();
     this.evDevices = this.toList({ perms: 'ev' });
     this.ctDevices = this.toList({ perms: 'pw' });
-    console.log('evDevices', this.evDevices);
-    console.log('ctDevices', this.ctDevices);
+    this.log.info(`Devices initialized: evDevices: ${this.evDevices.length}, ctDevices: ${this.ctDevices.length}`);
     this.handleDuplicates(this.evDevices);
-    debug('Queue', this.reqisterQueue.getStats());
+    debug('Queue stats:', this.reqisterQueue.getStats());
     this.reqisterQueue.resume();
   }
 
@@ -92,23 +91,19 @@ class HBConfigNode {
     const seenFullNames = new Set();
     const seenUniqueIds = new Set();
 
-    for (const endpoint of list) {
-      if (seenFullNames.has(endpoint.fullName)) {
+    list.forEach(endpoint => {
+      if (!seenFullNames.add(endpoint.fullName)) {
         console.warn('WARNING: Duplicate device name', endpoint.fullName);
-      } else {
-        seenFullNames.add(endpoint.fullName);
       }
 
-      if (seenUniqueIds.has(endpoint.uniqueId)) {
-        console.error('ERROR: Parsing failed, duplicate uniqueID.', endpoint.fullName);
-      } else {
-        seenUniqueIds.add(endpoint.uniqueId);
+      if (!seenUniqueIds.add(endpoint.uniqueId)) {
+        console.error('ERROR: Duplicate uniqueId detected.', endpoint.fullName);
       }
-    }
+    });
   }
 
   register(clientNode) {
-    debug('Register %s -> %s', clientNode.type, clientNode.name);
+    debug('Register: %s type: %s', clientNode.type, clientNode.name);
     this.clientNodes[clientNode.id] = clientNode;
     this.reqisterQueue.push(clientNode);
     clientNode.status({ fill: 'yellow', shape: 'ring', text: 'connecting' });
@@ -116,64 +111,52 @@ class HBConfigNode {
 
   async _register(clientNodes, cb) {
     for (const clientNode of clientNodes) {
-      debug('_Register %s -> %s', clientNode.type, clientNode.name);
-      clientNode.hbDevice = this.hbDevices.find(service => {
-        const deviceUnique = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`;
-        if (clientNode.device === deviceUnique) {
-          clientNode.status({ fill: 'green', shape: 'dot', text: 'connected' });
-          clientNode.emit('hbReady', service);
+      debug('_Register: %s type: %s', clientNode.type, clientNode.name);
+      const matchedDevice = this.hbDevices.find(service =>
+        clientNode.device === `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`
+      );
+
+      if (matchedDevice) {
+        clientNode.hbDevice = matchedDevice;
+        clientNode.status({ fill: 'green', shape: 'dot', text: 'connected' });
+        clientNode.emit('hbReady', matchedDevice);
+        if (clientNode.config.type === 'hb-status') {
+          this.monitorNodes[clientNode.device] = matchedDevice;
         }
-        return clientNode.device === deviceUnique;
-      });
-
-      if (clientNode.config.type === 'hb-status') {
-        this.monitorNodes[clientNode.device] = clientNode.hbDevice;
-      }
-
-      if (!clientNode.hbDevice) {
-        console.error('ERROR: _register - HB Device Missing', clientNode.name);
+      } else {
+        console.error('ERROR: Device registration failed', clientNode.name);
       }
     }
 
+    await this.monitorDevices();
+
+    cb(null);
+  }
+
+  async monitorDevices() {
     if (Object.keys(this.monitorNodes).length) {
       this.monitor = await this.hapClient.monitorCharacteristics(Object.values(this.monitorNodes));
       this.monitor.on('service-update', (services) => {
-        for (const service of services) {
-          const eventNodes = Object.values(this.clientNodes).filter(
-            clientNode =>
-              clientNode.config.device === `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`
+        services.forEach(service => {
+          const eventNodes = Object.values(this.clientNodes).filter(clientNode =>
+            clientNode.config.device === `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`
           );
-
-          eventNodes.forEach((eventNode) => {
-            if (eventNode._events && typeof eventNode.emit === 'function') {
-              eventNode.emit('hbEvent', service);
-            }
-          });
-        }
+          eventNodes.forEach(eventNode => eventNode.emit('hbEvent', service));
+        });
       });
     }
-    cb(null);
   }
-  /*
-    deregister(clientNode) {
-      clientNode.status({ text: 'disconnected', shape: 'ring', fill: 'red' });
-      delete this.clientNodes[clientNode.id];
-    }
-  */
   close() {
-    if (this.hapClient) {
-      this.hapClient.destroy();
-    }
+    this.hapClient?.destroy();
   }
-
 }
 
-// Cameras have multiple AID's of 1....
+
+// Filter unique devices by AID, service name, username, and port
 const filterUnique = (data) => {
   const seen = new Set();
   return data.filter(item => {
     const uniqueKey = `${item.aid}-${item.serviceName}-${item.instance.username}-${item.instance.port}`;
-    console.log(uniqueKey, seen.has(uniqueKey))
     if (seen.has(uniqueKey)) return false;
     seen.add(uniqueKey);
     return true;

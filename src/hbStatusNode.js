@@ -15,13 +15,19 @@ class HbStatusNode extends HbBaseNode {
     }
 
     const result = await this.hbDevice.refreshCharacteristics();
-    this.status({
-      text: this.statusText(JSON.stringify(await this.hbDevice.values)),
-      shape: 'dot',
-      fill: 'green'
-    });
+    if (result) {
+      this.status({
+        text: this.statusText(JSON.stringify(await this.hbDevice.values)),
+        shape: 'dot',
+        fill: 'green'
+      });
 
-    send(Object.assign(message, this.createMessage(result)));
+      send(Object.assign(message, this.createMessage(result)));
+    } else {
+      this.status({ fill: "red", shape: "ring", text: "disconnected" });
+      this.error("No response from device", this.name);
+    }
+
   }
 }
 

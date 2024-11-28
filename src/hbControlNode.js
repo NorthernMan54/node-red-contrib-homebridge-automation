@@ -54,6 +54,7 @@ class HbControlNode extends hbBaseNode {
             const result = await this.hbDevice.setCharacteristicByType(key, message.payload[key]);
             results.push({ [result.type]: result.value });
           } catch (error) {
+            console.log(error)
             this.error(`Failed to set value for "${key}": ${error.message}`);
             results.push({ [key]: `Error: ${error.message}` });
             fill = 'red';
