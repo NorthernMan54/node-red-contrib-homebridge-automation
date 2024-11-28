@@ -40,7 +40,7 @@ class HbResumeNode extends HbBaseNode {
     }
 
     this.status({
-      text: JSON.stringify(message.payload),
+      text: this.statusText(JSON.stringify(message.payload)),
       shape: 'dot',
       fill: 'green',
     });

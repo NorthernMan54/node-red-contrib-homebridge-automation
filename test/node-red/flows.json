@@ -431,5 +431,177 @@
         "x": 800,
         "y": 300,
         "wires": []
+    },
+    {
+        "id": "12ce98441601c981",
+        "type": "hb-event",
+        "z": "caef1e7b5b399e80",
+        "name": "Driveway 8E52",
+        "Homebridge": "ECI-T24F2",
+        "Manufacturer": "HikVision",
+        "Service": "CameraRTPStreamManagement",
+        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000110",
+        "conf": "557aec8e8c47e61e",
+        "sendInitialState": true,
+        "x": 340,
+        "y": 520,
+        "wires": [
+            [
+                "e2919464e7c4ab5c",
+                "08bc0ab3e3f2439f"
+            ]
+        ]
+    },
+    {
+        "id": "6216377792cba653",
+        "type": "hb-control",
+        "z": "caef1e7b5b399e80",
+        "name": "Driveway 8E52",
+        "Homebridge": "ECI-T24F2",
+        "Manufacturer": "HikVision",
+        "Service": "CameraRTPStreamManagement",
+        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000110",
+        "conf": "557aec8e8c47e61e",
+        "outputs": 1,
+        "x": 940,
+        "y": 500,
+        "wires": [
+            [
+                "9dc75e95be7ba465",
+                "12d2a40f6441c49c"
+            ]
+        ]
+    },
+    {
+        "id": "08bc0ab3e3f2439f",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 600,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "e2919464e7c4ab5c",
+        "type": "switch",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "property": "payload.MotionDetected",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 590,
+        "y": 500,
+        "wires": [
+            [
+                "4982be53458df3a8"
+            ]
+        ]
+    },
+    {
+        "id": "4982be53458df3a8",
+        "type": "change",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "date"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 740,
+        "y": 500,
+        "wires": [
+            [
+                "6216377792cba653"
+            ]
+        ]
+    },
+    {
+        "id": "9dc75e95be7ba465",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "payload",
+        "statusType": "msg",
+        "x": 1120,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "25a7fbf22f944415",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{ \"MotionDetected\": 1 }",
+        "payloadType": "json",
+        "x": 340,
+        "y": 460,
+        "wires": [
+            [
+                "e2919464e7c4ab5c"
+            ]
+        ]
+    },
+    {
+        "id": "12d2a40f6441c49c",
+        "type": "file",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "filename": "/Users/sgracey/Desktop/image.jpeg",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 1210,
+        "y": 620,
+        "wires": [
+            []
+        ]
     }
 ]

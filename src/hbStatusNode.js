@@ -16,7 +16,7 @@ class HbStatusNode extends HbBaseNode {
 
     const result = await this.hbDevice.refreshCharacteristics();
     this.status({
-      text: JSON.stringify(await this.hbDevice.values),
+      text: this.statusText(JSON.stringify(await this.hbDevice.values)),
       shape: 'dot',
       fill: 'green'
     });

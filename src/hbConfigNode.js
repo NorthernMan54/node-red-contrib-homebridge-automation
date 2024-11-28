@@ -58,6 +58,7 @@ class HBConfigNode {
     this.hbDevices = await this.hapClient.getAllServices();
     this.evDevices = this.toList({ perms: 'ev' });
     this.ctDevices = this.toList({ perms: 'pw' });
+    console.log('ctDevices', this.hbDevices.filter(service => service.type == 'CameraRTPStreamManagement' && service.serviceName == 'Driveway 8E52'));
     this.handleDuplicates(this.evDevices);
     debug('Queue', this.reqisterQueue.getStats());
     this.reqisterQueue.resume();
@@ -65,7 +66,7 @@ class HBConfigNode {
 
   toList(perms) {
     const supportedTypes = [
-      'Battery', 'Carbon Dioxide Sensor', 'Carbon Monoxide Sensor', 'Doorbell',
+      'Battery', 'Carbon Dioxide Sensor', 'Carbon Monoxide Sensor', 'Camera Rtp Stream Management', 'Doorbell',
       'Fan', 'Fanv2', 'Garage Door Opener', 'Humidity Sensor', 'Input Source',
       'Leak Sensor', 'Lightbulb', 'Lock Mechanism', 'Motion Sensor', 'Occupancy Sensor',
       'Outlet', 'Smoke Sensor', 'Speaker', 'Stateless Programmable Switch', 'Switch',

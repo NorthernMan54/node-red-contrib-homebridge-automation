@@ -11,7 +11,7 @@ class HbEventNode extends hbBaseNode {
     debug('handleHbReady', this.id, this.name, service.values)
     if (this.sendInitialState) {
       this.status({
-        text: JSON.stringify(service.values),
+        text: this.statusText(JSON.stringify(service.values)),
         shape: 'dot',
         fill: 'green',
       });

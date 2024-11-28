@@ -58,6 +58,9 @@ class HbBaseNode {
     done();
   }
 
+  statusText(message) {
+    return message.slice(0, 20)
+  }
   /**
    * 
    * @param {*} warning - Message to log and display in debug panel
@@ -66,7 +69,7 @@ class HbBaseNode {
   handleError(warning, statusText) {
     this.warn(warning);
     this.status({
-      text: (statusText ? statusText : warning),
+      text: (statusText ? statusText : warning).slice(0, 20),
       shape: 'ring',
       fill: 'red',
     });
