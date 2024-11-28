@@ -58,6 +58,20 @@ class HbBaseNode {
     done();
   }
 
+  /**
+   * 
+   * @param {*} warning - Message to log and display in debug panel
+   * @param {*} statusText - Message to display under Node ( If not present, uses warning message text)
+   */
+  handleError(warning, statusText) {
+    this.warn(warning);
+    this.status({
+      text: (statusText ? statusText : warning),
+      shape: 'ring',
+      fill: 'red',
+    });
+  }
+
   /*
     registerNode() {
       debug("Registering node:", this.fullName);

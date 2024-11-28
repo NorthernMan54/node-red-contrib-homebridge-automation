@@ -9,8 +9,7 @@ class HbControlNode extends hbBaseNode {
   async handleInput(message, send) {
     debug('handleInput', message.payload, this.name);
     if (!this.hbDevice) {
-      this.error('HB not initialized');
-      this.status({ text: 'HB not initialized', shape: 'ring', fill: 'red' });
+      this.handleError('HB not initialized');
       return;
     }
 
