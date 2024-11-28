@@ -5,7 +5,6 @@ class HbEventNode extends hbBaseNode {
   constructor(config, RED) {
     super(config, RED);
     this.sendInitialState = config.sendInitialState === true;
-    this.on('hbReady', this.handleHbReady.bind(this))
   }
 
   handleHbReady(service) {

@@ -23,6 +23,9 @@ class HbBaseNode {
     if (this.handleInput) {
       this.on('input', this.handleInput.bind(this));
     }
+    if (this.handleHbReady) {
+      this.on('hbReady', this.handleHbReady.bind(this))
+    }
     this.on('close', this.handleClose.bind(this));
     this.on('hbEvent', this.handleHBEventMessage.bind(this));
   }
