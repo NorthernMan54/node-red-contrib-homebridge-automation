@@ -58,7 +58,8 @@ class HBConfigNode {
     this.hbDevices = await this.hapClient.getAllServices();
     this.evDevices = this.toList({ perms: 'ev' });
     this.ctDevices = this.toList({ perms: 'pw' });
-    console.log('ctDevices', this.hbDevices.filter(service => service.type == 'CameraRTPStreamManagement' && service.serviceName == 'Driveway 8E52'));
+    console.log('evDevices', this.evDevices);
+    console.log('ctDevices', this.ctDevices);
     this.handleDuplicates(this.evDevices);
     debug('Queue', this.reqisterQueue.getStats());
     this.reqisterQueue.resume();
@@ -73,7 +74,7 @@ class HBConfigNode {
       'Television', 'Temperature Sensor', 'Thermostat', 'Contact Sensor',
     ];
 
-    return this.hbDevices
+    return filterUnique(this.hbDevices)
       .filter(service => supportedTypes.includes(service.humanType))
       .map(service => ({
         name: service.serviceName,
@@ -166,5 +167,17 @@ class HBConfigNode {
   }
 
 }
+
+// Cameras have multiple AID's of 1....
+const filterUnique = (data) => {
+  const seen = new Set();
+  return data.filter(item => {
+    const uniqueKey = `${item.aid}-${item.serviceName}-${item.instance.username}-${item.instance.port}`;
+    console.log(uniqueKey, seen.has(uniqueKey))
+    if (seen.has(uniqueKey)) return false;
+    seen.add(uniqueKey);
+    return true;
+  });
+};
 
 module.exports = HBConfigNode;
