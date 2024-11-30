@@ -6,7 +6,7 @@ class HbControlNode extends hbBaseNode {
     super(config, RED);
   }
 
-  async handleInput(message, send) {
+  async handleInput(message, send, done) {
     debug('handleInput', message.payload, this.name);
 
     if (!this.hbDevice) {
@@ -65,15 +65,13 @@ class HbControlNode extends hbBaseNode {
       // Update status
       const statusText = this.statusText(JSON.stringify(Object.assign({}, ...results)));
       this.status({ text: statusText, shape: 'dot', fill });
+      done
     } catch (error) {
       this.error(`Unhandled error: ${error.message}`);
       this.status({ text: 'Unhandled error', shape: 'dot', fill: 'red' });
+      done(`Unhandled error: ${error.message}`);
     }
   }
-}
-
-function btoa(str) {
-  return Buffer.isBuffer(str) ? str.toString('base64') : Buffer.from(str.toString(), 'binary').toString('base64');
 }
 
 module.exports = HbControlNode;

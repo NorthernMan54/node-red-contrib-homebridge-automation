@@ -22,12 +22,12 @@
         "tosidebar": true,
         "console": false,
         "tostatus": true,
-        "complete": "payload",
-        "targetType": "msg",
+        "complete": "true",
+        "targetType": "full",
         "statusVal": "payload",
         "statusType": "auto",
-        "x": 800,
-        "y": 140,
+        "x": 820,
+        "y": 40,
         "wires": []
     },
     {
@@ -39,12 +39,12 @@
         "tosidebar": true,
         "console": false,
         "tostatus": true,
-        "complete": "payload",
-        "targetType": "msg",
+        "complete": "true",
+        "targetType": "full",
         "statusVal": "payload",
         "statusType": "auto",
-        "x": 800,
-        "y": 260,
+        "x": 820,
+        "y": 100,
         "wires": []
     },
     {
@@ -68,12 +68,11 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 250,
-        "y": 140,
+        "x": 270,
+        "y": 40,
         "wires": [
             [
-                "3d7babac3a298e60",
-                "452e3e6171aa7a25"
+                "3d7babac3a298e60"
             ]
         ]
     },
@@ -87,48 +86,12 @@
         "Service": "Lightbulb",
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
         "conf": "557aec8e8c47e61e",
-        "x": 480,
-        "y": 140,
+        "x": 500,
+        "y": 40,
         "wires": [
             [
                 "902c5887b6877df6"
             ]
-        ]
-    },
-    {
-        "id": "696e04753d952daf",
-        "type": "hb-status",
-        "z": "caef1e7b5b399e80",
-        "d": true,
-        "name": "West Bedroom",
-        "Homebridge": "homebridge",
-        "Manufacturer": "Tasmota",
-        "Service": "Lightbulb",
-        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
-        "conf": "557aec8e8c47e61e",
-        "x": 480,
-        "y": 260,
-        "wires": [
-            [
-                "a866ae0bb24ce682"
-            ]
-        ]
-    },
-    {
-        "id": "bb88544904b343a1",
-        "type": "hb-event",
-        "z": "caef1e7b5b399e80",
-        "name": "West Bedroom",
-        "Homebridge": "homebridge",
-        "Manufacturer": "Tasmota",
-        "Service": "Lightbulb",
-        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
-        "conf": "557aec8e8c47e61e",
-        "sendInitialState": false,
-        "x": 220,
-        "y": 380,
-        "wires": [
-            []
         ]
     },
     {
@@ -141,8 +104,8 @@
         "Service": "Lightbulb",
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
         "conf": "557aec8e8c47e61e",
-        "x": 480,
-        "y": 460,
+        "x": 500,
+        "y": 160,
         "wires": [
             [
                 "1093ab38b01fd39f"
@@ -162,12 +125,27 @@
         "targetType": "msg",
         "statusVal": "payload",
         "statusType": "auto",
-        "x": 800,
-        "y": 460,
+        "x": 820,
+        "y": 160,
         "wires": []
     },
     {
         "id": "0ed3cd7e0d60beda",
+        "type": "hb-control",
+        "z": "caef1e7b5b399e80",
+        "name": "West Bedroom Fan",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Fan",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom Fan00000040",
+        "conf": "557aec8e8c47e61e",
+        "outputs": 0,
+        "x": 510,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "6703815a8874b156",
         "type": "hb-control",
         "z": "caef1e7b5b399e80",
         "name": "West Bedroom",
@@ -176,10 +154,14 @@
         "Service": "Lightbulb",
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
         "conf": "557aec8e8c47e61e",
-        "outputs": 0,
+        "outputs": 1,
         "x": 500,
-        "y": 600,
-        "wires": []
+        "y": 300,
+        "wires": [
+            [
+                "f194fc4bcb1997a9"
+            ]
+        ]
     },
     {
         "id": "24660f9d2862cee9",
@@ -200,10 +182,10 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 200,
-        "y": 600,
+        "payload": "{\"On\": true, \"RotationSpeed\": 33}",
+        "payloadType": "json",
+        "x": 90,
+        "y": 180,
         "wires": [
             [
                 "0ed3cd7e0d60beda"
@@ -211,7 +193,473 @@
         ]
     },
     {
-        "id": "d9f8181e9e6b3cfd",
+        "id": "8c0ecac45b01df73",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": false}",
+        "payloadType": "json",
+        "x": 110,
+        "y": 240,
+        "wires": [
+            [
+                "0ed3cd7e0d60beda"
+            ]
+        ]
+    },
+    {
+        "id": "b14ebf264be0c60d",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": true}",
+        "payloadType": "json",
+        "x": 110,
+        "y": 300,
+        "wires": [
+            [
+                "6703815a8874b156"
+            ]
+        ]
+    },
+    {
+        "id": "f872545e74246764",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": false}",
+        "payloadType": "json",
+        "x": 110,
+        "y": 340,
+        "wires": [
+            [
+                "6703815a8874b156"
+            ]
+        ]
+    },
+    {
+        "id": "7eae7b87f319966e",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 320,
+        "y": 260,
+        "wires": [
+            [
+                "6703815a8874b156",
+                "0ed3cd7e0d60beda"
+            ]
+        ]
+    },
+    {
+        "id": "6a7b40f6149f2d36",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"Off\": false}",
+        "payloadType": "json",
+        "x": 110,
+        "y": 380,
+        "wires": [
+            [
+                "6703815a8874b156"
+            ]
+        ]
+    },
+    {
+        "id": "80ffdbb93cd24b48",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": true}",
+        "payloadType": "json",
+        "x": 110,
+        "y": 80,
+        "wires": [
+            [
+                "452e3e6171aa7a25"
+            ]
+        ]
+    },
+    {
+        "id": "d0e413b3c28f757a",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": false}",
+        "payloadType": "json",
+        "x": 110,
+        "y": 140,
+        "wires": [
+            [
+                "452e3e6171aa7a25"
+            ]
+        ]
+    },
+    {
+        "id": "82638dac6ac32bb1",
+        "type": "hb-event",
+        "z": "caef1e7b5b399e80",
+        "name": "West Bedroom",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Lightbulb",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
+        "conf": "557aec8e8c47e61e",
+        "sendInitialState": true,
+        "x": 500,
+        "y": 100,
+        "wires": [
+            [
+                "a866ae0bb24ce682"
+            ]
+        ]
+    },
+    {
+        "id": "f194fc4bcb1997a9",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 800,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "12ce98441601c981",
+        "type": "hb-event",
+        "z": "caef1e7b5b399e80",
+        "name": "Driveway",
+        "Homebridge": "ECI-T24F2",
+        "Manufacturer": "HikVision",
+        "Service": "MotionSensor",
+        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway00000085",
+        "conf": "557aec8e8c47e61e",
+        "sendInitialState": true,
+        "x": 320,
+        "y": 520,
+        "wires": [
+            [
+                "e2919464e7c4ab5c",
+                "08bc0ab3e3f2439f"
+            ]
+        ]
+    },
+    {
+        "id": "6216377792cba653",
+        "type": "hb-control",
+        "z": "caef1e7b5b399e80",
+        "name": "Driveway 8E52",
+        "Homebridge": "ECI-T24F2",
+        "Manufacturer": "HikVision",
+        "Service": "CameraRTPStreamManagement",
+        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000110",
+        "conf": "557aec8e8c47e61e",
+        "outputs": 1,
+        "x": 940,
+        "y": 500,
+        "wires": [
+            [
+                "9dc75e95be7ba465",
+                "12d2a40f6441c49c"
+            ]
+        ]
+    },
+    {
+        "id": "08bc0ab3e3f2439f",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 600,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "e2919464e7c4ab5c",
+        "type": "switch",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "property": "payload.MotionDetected",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 590,
+        "y": 500,
+        "wires": [
+            [
+                "4982be53458df3a8"
+            ]
+        ]
+    },
+    {
+        "id": "4982be53458df3a8",
+        "type": "change",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "date"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 740,
+        "y": 500,
+        "wires": [
+            [
+                "6216377792cba653"
+            ]
+        ]
+    },
+    {
+        "id": "9dc75e95be7ba465",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "payload",
+        "statusType": "msg",
+        "x": 1120,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "25a7fbf22f944415",
+        "type": "inject",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{ \"MotionDetected\": 1 }",
+        "payloadType": "json",
+        "x": 340,
+        "y": 460,
+        "wires": [
+            [
+                "e2919464e7c4ab5c"
+            ]
+        ]
+    },
+    {
+        "id": "12d2a40f6441c49c",
+        "type": "file",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "filename": "/Users/sgracey/Desktop/image.jpeg",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 1210,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4b787bfb023ccf23",
+        "type": "hb-event",
+        "z": "caef1e7b5b399e80",
+        "name": "Backyard",
+        "Homebridge": "Default Model",
+        "Manufacturer": "NRCHKB",
+        "Service": "TemperatureSensor",
+        "device": "Default Model69:62:B7:AE:38:D4NRCHKBBackyard0000008A",
+        "conf": "557aec8e8c47e61e",
+        "sendInitialState": true,
+        "x": 160,
+        "y": 660,
+        "wires": [
+            [
+                "c68bef6563c5d07e"
+            ]
+        ]
+    },
+    {
+        "id": "c68bef6563c5d07e",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "debug 7",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 620,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "3c36252a6f45eed9",
+        "type": "hb-status",
+        "z": "caef1e7b5b399e80",
+        "name": "Backyard Tree",
+        "Homebridge": "Default Model",
+        "Manufacturer": "NRCHKB",
+        "Service": "TemperatureSensor",
+        "device": "Default Model69:62:B7:AE:38:D4NRCHKBBackyard Tree0000008A",
+        "conf": "557aec8e8c47e61e",
+        "x": 360,
+        "y": 800,
+        "wires": [
+            [
+                "c68bef6563c5d07e"
+            ]
+        ]
+    },
+    {
+        "id": "3b7537939b63eee8",
         "type": "inject",
         "z": "caef1e7b5b399e80",
         "name": "",
@@ -231,12 +679,85 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 210,
-        "y": 460,
+        "x": 150,
+        "y": 800,
         "wires": [
             [
-                "452e3e6171aa7a25"
+                "3c36252a6f45eed9"
             ]
         ]
+    },
+    {
+        "id": "aabce5ff7fbbeec6",
+        "type": "status",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "scope": [
+            "3d7babac3a298e60",
+            "452e3e6171aa7a25",
+            "0ed3cd7e0d60beda",
+            "6703815a8874b156",
+            "82638dac6ac32bb1",
+            "6216377792cba653",
+            "12ce98441601c981",
+            "4b787bfb023ccf23",
+            "3c36252a6f45eed9"
+        ],
+        "x": 1020,
+        "y": 380,
+        "wires": [
+            [
+                "94f051597d18eaa3"
+            ]
+        ]
+    },
+    {
+        "id": "94f051597d18eaa3",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "status.source.name",
+        "statusType": "msg",
+        "x": 1190,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "296297c79b544f59",
+        "type": "catch",
+        "z": "caef1e7b5b399e80",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 1020,
+        "y": 300,
+        "wires": [
+            [
+                "0073218b1ebc53f1"
+            ]
+        ]
+    },
+    {
+        "id": "0073218b1ebc53f1",
+        "type": "debug",
+        "z": "caef1e7b5b399e80",
+        "name": "Catch",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "payload",
+        "statusType": "msg",
+        "x": 1190,
+        "y": 300,
+        "wires": []
     }
 ]

@@ -6,7 +6,7 @@ class HbStatusNode extends HbBaseNode {
     super(config, RED);
   }
 
-  async handleInput(message, send) {
+  async handleInput(message, send, done) {
     debug('handleInput', message.payload, this.name);
 
     if (!this.hbDevice) {
@@ -23,9 +23,11 @@ class HbStatusNode extends HbBaseNode {
       });
 
       send(Object.assign(message, this.createMessage(result)));
+      done
     } else {
       this.status({ fill: "red", shape: "ring", text: "disconnected" });
       this.error("No response from device", this.name);
+      done("No response from device");
     }
 
   }
