@@ -183,7 +183,12 @@ class HBConfigNode {
       this.monitor.on('monitor-close', (instance, hadError) => {
         debug('monitor-close', instance.name, instance.ipAddress, instance.port, hadError)
         this.disconnectClientNodes(instance);
-        this.refreshDevices();
+        // this.refreshDevices();
+      })
+      this.monitor.on('monitor-refresh', (instance, hadError) => {
+        debug('monitor-refresh', instance.name, instance.ipAddress, instance.port, hadError)
+        this.reconnectClientNodes(instance);
+        // this.refreshDevices();
       })
       this.monitor.on('monitor-error', (instance, hadError) => {
         debug('monitor-error', instance, hadError)
@@ -200,6 +205,18 @@ class HBConfigNode {
     clientNodes.forEach(clientNode => {
       clientNode.status({ fill: 'red', shape: 'ring', text: 'disconnected' });
       clientNode.emit('hbDisconnected', instance);
+    });
+  }
+
+  reconnectClientNodes(instance) {
+    debug('reconnectClientNodes', `${instance.ipAddress}:${instance.port}`);
+    const clientNodes = Object.values(this.clientNodes).filter(clientNode => {
+      return `${clientNode.hbDevice.instance.ipAddress}:${clientNode.hbDevice.instance.port}` === `${instance.ipAddress}:${instance.port}`;
+    });
+
+    clientNodes.forEach(clientNode => {
+      clientNode.status({ fill: 'green', shape: 'dot', text: 'connected' });
+      clientNode.emit('hbReady', clientNode.hbDevice);
     });
   }
 

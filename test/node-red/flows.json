@@ -300,7 +300,7 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 320,
+        "x": 280,
         "y": 260,
         "wires": [
             [

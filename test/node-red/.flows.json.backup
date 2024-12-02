@@ -61,7 +61,7 @@
                 "vt": "str"
             }
         ],
-        "repeat": "60",
+        "repeat": "",
         "crontab": "",
         "once": true,
         "onceDelay": "60",
@@ -300,7 +300,7 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 320,
+        "x": 280,
         "y": 260,
         "wires": [
             [
@@ -672,7 +672,7 @@
                 "vt": "str"
             }
         ],
-        "repeat": "60",
+        "repeat": "",
         "crontab": "",
         "once": true,
         "onceDelay": "60",
@@ -757,7 +757,7 @@
         "statusVal": "payload",
         "statusType": "msg",
         "x": 1190,
-        "y": 300,
+        "y": 280,
         "wires": []
     }
 ]
