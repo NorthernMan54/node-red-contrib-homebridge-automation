@@ -40,6 +40,7 @@ class HBConfigNode {
   refreshDevices = () => {
     if (!this.refreshInProcess) {
 
+      this.monitor.finish();
       this.log.debug('Monitor reported homebridge stability issues, refreshing devices');
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
       this.hapClient.resetInstancePool();
@@ -85,16 +86,16 @@ class HBConfigNode {
   }
 
   toList(perms) {
-    const supportedTypes = [
-      'Battery', 'Carbon Dioxide Sensor', 'Carbon Monoxide Sensor', 'Camera Rtp Stream Management', 'Doorbell',
-      'Fan', 'Fanv2', 'Garage Door Opener', 'Humidity Sensor', 'Input Source',
+    const supportedTypes = new Set([
+      'Battery', 'Carbon Dioxide Sensor', 'Carbon Monoxide Sensor', 'Camera Rtp Stream Management',
+      'Doorbell', 'Fan', 'Fanv2', 'Garage Door Opener', 'Humidity Sensor', 'Input Source',
       'Leak Sensor', 'Lightbulb', 'Lock Mechanism', 'Motion Sensor', 'Occupancy Sensor',
       'Outlet', 'Smoke Sensor', 'Speaker', 'Stateless Programmable Switch', 'Switch',
       'Television', 'Temperature Sensor', 'Thermostat', 'Contact Sensor',
-    ];
+    ]);
 
     return filterUnique(this.hbDevices)
-      .filter(service => supportedTypes.includes(service.humanType))
+      .filter(service => supportedTypes.has(service.humanType))
       .map(service => ({
         name: service.serviceName,
         fullName: `${service.serviceName} - ${service.type}`,
@@ -107,18 +108,22 @@ class HBConfigNode {
       .sort((a, b) => a.sortName.localeCompare(b.sortName));
   }
 
+
   handleDuplicates(list) {
-    const seenFullNames = new Set();
-    const seenUniqueIds = new Set();
+    const seen = new Map();
 
     list.forEach(endpoint => {
-      if (!seenFullNames.add(endpoint.fullName)) {
-        console.warn('WARNING: Duplicate device name', endpoint.fullName);
+      const { fullName, uniqueId } = endpoint;
+
+      if (seen.has(fullName)) {
+        this.log.warn(`Duplicate device name detected: ${fullName}`);
+      }
+      if (seen.has(uniqueId)) {
+        this.log.error(`Duplicate uniqueId detected: ${uniqueId}`);
       }
 
-      if (!seenUniqueIds.add(endpoint.uniqueId)) {
-        console.error('ERROR: Duplicate uniqueId detected.', endpoint.fullName);
-      }
+      seen.set(fullName, true);
+      seen.set(uniqueId, true);
     });
   }
 
@@ -130,7 +135,6 @@ class HBConfigNode {
 
   async connectClientNodes() {
     debug('connect %s nodes', Object.keys(this.clientNodes).length);
-    console.log(this.clientNodes);
     for (const [key, clientNode] of Object.entries(this.clientNodes)) {
       // debug('_Register: %s type: %s', clientNode.type, clientNode.name, clientNode.instance);
       const matchedDevice = this.hbDevices.find(service =>
@@ -151,9 +155,22 @@ class HBConfigNode {
   }
 
   async monitorDevices() {
-    debug('monitorDevices', Object.keys(this.clientNodes).length);
     if (Object.keys(this.clientNodes).length) {
-      const monitorNodes = this.clientNodes.filter(clientNode => clientNode.config.type === 'hb-status' || clientNode.config.type === 'hb-event').hbDevice;
+      const uniqueDevices = new Set();
+
+      const monitorNodes = Object.values(this.clientNodes)
+        .filter(node => ['hb-status', 'hb-control'].includes(node.type)) // Filter by type
+        .filter(node => {
+          if (uniqueDevices.has(node.device)) {
+            return false; // Exclude duplicates
+          }
+          uniqueDevices.add(node.device);
+          return true; // Include unique devices
+        })
+        .map(node => node.hbDevice) // Map to hbDevice property
+        .filter(Boolean); // Remove any undefined or null values, if present;
+      debug('monitorNodes', Object.keys(monitorNodes).length);
+      // console.log('monitorNodes', monitorNodes);
       this.monitor = await this.hapClient.monitorCharacteristics(monitorNodes);
       this.monitor.on('service-update', (services) => {
         services.forEach(service => {
