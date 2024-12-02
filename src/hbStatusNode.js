@@ -10,7 +10,7 @@ class HbStatusNode extends HbBaseNode {
     debug('handleInput', message.payload, this.name);
 
     if (!this.hbDevice) {
-      this.handleError('HB not initialized');
+      this.handleWarning('HB not initialized');
       return;
     }
 
@@ -27,6 +27,7 @@ class HbStatusNode extends HbBaseNode {
     } else {
       this.status({ fill: "red", shape: "ring", text: "disconnected" });
       this.error("No response from device", this.name);
+      this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
       done("No response from device");
     }
 

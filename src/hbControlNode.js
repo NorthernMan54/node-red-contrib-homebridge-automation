@@ -10,7 +10,7 @@ class HbControlNode extends hbBaseNode {
     debug('handleInput', message.payload, this.name);
 
     if (!this.hbDevice) {
-      this.handleError('HB not initialized');
+      this.handleWarning('HB not initialized');
       return;
     }
 
@@ -58,6 +58,7 @@ class HbControlNode extends hbBaseNode {
             this.error(`Failed to set value for "${key}": ${error.message}`);
             results.push({ [key]: `Error: ${error.message}` });
             fill = 'red';
+            this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
           }
         }
       }
@@ -67,8 +68,7 @@ class HbControlNode extends hbBaseNode {
       this.status({ text: statusText, shape: 'dot', fill });
       done
     } catch (error) {
-      this.error(`Unhandled error: ${error.message}`);
-      this.status({ text: 'Unhandled error', shape: 'dot', fill: 'red' });
+      this.handleError(error, 'Unhandled error');
       done(`Unhandled error: ${error.message}`);
     }
   }

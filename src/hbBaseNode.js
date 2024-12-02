@@ -18,7 +18,7 @@ class HbBaseNode {
     this.fullName = `${config.name} - ${config.Service}`;
     this.hbDevice = null;
 
-    this.hbConfigNode?.register(this);
+    this.hbConfigNode?.registerClientNode(this);
 
     if (this.handleInput) {
       this.on('input', this.handleInput.bind(this));
@@ -61,20 +61,34 @@ class HbBaseNode {
   statusText(message) {
     return message.slice(0, 20)
   }
+
   /**
    * 
    * @param {*} warning - Message to log and display in debug panel
    * @param {*} statusText - Message to display under Node ( If not present, uses warning message text)
    */
-  handleError(warning, statusText) {
+  handleWarning(warning, statusText) {
     this.warn(warning);
     this.status({
       text: (statusText ? statusText : warning).slice(0, 20),
       shape: 'ring',
-      fill: 'red',
+      fill: 'yellow',
     });
   }
 
+  /**
+   * 
+   * @param {*} warning - Message to log and display in debug panel
+   * @param {*} statusText - Message to display under Node ( If not present, uses warning message text)
+   */
+  handleError(error, statusText) {
+    this.error(error);
+    this.status({
+      text: (statusText ? statusText : error).slice(0, 20),
+      shape: 'ring',
+      fill: 'red',
+    });
+  }
 }
 
 module.exports = HbBaseNode;

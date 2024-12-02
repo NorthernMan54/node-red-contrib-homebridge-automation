@@ -12,7 +12,7 @@ class HbResumeNode extends HbBaseNode {
     debug('handleInput', message.payload, this.name);
 
     if (!this.hbDevice) {
-      this.handleError('HB not initialized');
+      this.handleWarning('HB not initialized');
       return;
     }
 
@@ -20,7 +20,7 @@ class HbResumeNode extends HbBaseNode {
       const validNames = Object.keys(this.hbDevice.values)
         .filter(key => key !== 'ConfiguredName')
         .join(', ');
-      this.handleError(
+      this.handleWarning(
         `Invalid payload. Expected: {"On": false, "Brightness": 0}. Valid values: ${validNames}`,
         'Invalid payload'
       );

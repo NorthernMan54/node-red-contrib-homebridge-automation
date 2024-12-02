@@ -1,7 +1,6 @@
 const { HapClient } = require('@homebridge/hap-client');
 const debug = require('debug')('hapNodeRed:hbConfigNode');
 const { Log } = require('./lib/logger.js');
-const Queue = require('better-queue');
 
 class HBConfigNode {
   constructor(config, RED) {
@@ -17,20 +16,8 @@ class HBConfigNode {
       this.ctDevices = [];
       this.hbDevices = [];
       this.clientNodes = [];
-      this.monitorNodes = [];
       this.log = new Log(console, true);
       this.discoveryTimeout = null;
-
-      // Initialize queue
-      this.reqisterQueue = new Queue(this._register.bind(this), {
-        concurrent: 1,
-        autoResume: false,
-        maxRetries: 1000,
-        retryDelay: 30000,
-        batchDelay: 2000,
-        batchSize: 150,
-      });
-      this.reqisterQueue.pause();
 
       // Initialize HAP client
       this.hapClient = new HapClient({
@@ -42,31 +29,59 @@ class HBConfigNode {
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
       this.waitForNoMoreDiscoveries();
       this.on('close', this.close.bind(this));
+      this.refreshInProcess = true; // Prevents multiple refreshes, hapClient kicks of a discovery on start
     }
   }
 
+  /**
+   * Start device discovery after monitor reports issues
+   */
+
+  refreshDevices = () => {
+    if (!this.refreshInProcess) {
+
+      this.log.debug('Monitor reported homebridge stability issues, refreshing devices');
+      this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
+      this.hapClient.resetInstancePool();
+      this.waitForNoMoreDiscoveries();
+    }
+  };
+
+  /**
+   * Wait for no more instance discoveries to be made before publishing services
+   */
   waitForNoMoreDiscoveries = () => {
     if (!this.discoveryTimeout) {
       clearTimeout(this.discoveryTimeout);
       this.discoveryTimeout = setTimeout(() => {
         this.log.debug('No more instances discovered, publishing services');
         this.hapClient.removeListener('instance-discovered', this.waitForNoMoreDiscoveries);
-        this.hapClient.on('instance-discovered', async (instance) => { debug('instance-discovered', instance); await this.monitorDevices(); });
-        this.hapClient.on('discovery-ended', async () => { debug('discovery-ended'); });
         this.handleReady();
         this.discoveryTimeout = null;
-      }, 5000);
+        this.refreshInProcess = false;
+      }, 20000);  // resetInstancePool() triggers a discovery after 6 seconds.  Need to wait for it to finish.
     }
   };
 
+  /**
+   * Populate the list of devices and handle duplicates
+   */
   async handleReady() {
-    this.hbDevices = await this.hapClient.getAllServices();
+    const updatedDevices = await this.hapClient.getAllServices();
+    updatedDevices.forEach((updatedService, index) => {
+      if (this.hbDevices.find(service => service.uniqueId === updatedService.uniqueId)) {
+        const update = this.hbDevices.find(service => service.uniqueId === updatedService.uniqueId);
+        update.instance = updatedService.instance;
+      } else {
+        this.hbDevices.push(updatedService);
+      }
+    });
+
     this.evDevices = this.toList({ perms: 'ev' });
     this.ctDevices = this.toList({ perms: 'pw' });
     this.log.info(`Devices initialized: evDevices: ${this.evDevices.length}, ctDevices: ${this.ctDevices.length}`);
     this.handleDuplicates(this.evDevices);
-    debug('Queue stats:', this.reqisterQueue.getStats());
-    this.reqisterQueue.resume();
+    this.connectClientNodes();
   }
 
   toList(perms) {
@@ -107,16 +122,17 @@ class HBConfigNode {
     });
   }
 
-  register(clientNode) {
+  registerClientNode(clientNode) {
     debug('Register: %s type: %s', clientNode.type, clientNode.name);
     this.clientNodes[clientNode.id] = clientNode;
-    this.reqisterQueue.push(clientNode);
     clientNode.status({ fill: 'yellow', shape: 'ring', text: 'connecting' });
   }
 
-  async _register(clientNodes, cb) {
-    for (const clientNode of clientNodes) {
-      debug('_Register: %s type: %s', clientNode.type, clientNode.name, clientNode.instance);
+  async connectClientNodes() {
+    debug('connect %s nodes', Object.keys(this.clientNodes).length);
+    console.log(this.clientNodes);
+    for (const [key, clientNode] of Object.entries(this.clientNodes)) {
+      // debug('_Register: %s type: %s', clientNode.type, clientNode.name, clientNode.instance);
       const matchedDevice = this.hbDevices.find(service =>
         clientNode.device === `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`
       );
@@ -126,23 +142,19 @@ class HBConfigNode {
         clientNode.status({ fill: 'green', shape: 'dot', text: 'connected' });
         clientNode.emit('hbReady', matchedDevice);
         debug('_Registered: %s type: %s', matchedDevice.type, matchedDevice.serviceName, matchedDevice.instance);
-        if (clientNode.config.type === 'hb-status' || clientNode.config.type === 'hb-event') {
-          this.monitorNodes[clientNode.device] = matchedDevice;
-        }
       } else {
         console.error('ERROR: Device registration failed', clientNode.name);
       }
-    }
+    };
 
     await this.monitorDevices();
-
-    cb(null);
   }
 
   async monitorDevices() {
-    debug('monitorDevices', Object.keys(this.monitorNodes).length);
-    if (Object.keys(this.monitorNodes).length) {
-      this.monitor = await this.hapClient.monitorCharacteristics(Object.values(this.monitorNodes));
+    debug('monitorDevices', Object.keys(this.clientNodes).length);
+    if (Object.keys(this.clientNodes).length) {
+      const monitorNodes = this.clientNodes.filter(clientNode => clientNode.config.type === 'hb-status' || clientNode.config.type === 'hb-event').hbDevice;
+      this.monitor = await this.hapClient.monitorCharacteristics(monitorNodes);
       this.monitor.on('service-update', (services) => {
         services.forEach(service => {
           const eventNodes = Object.values(this.clientNodes).filter(clientNode =>
@@ -151,15 +163,29 @@ class HBConfigNode {
           eventNodes.forEach(eventNode => eventNode.emit('hbEvent', service));
         });
       });
-      this.monitor.on('monitor-close', (hadError) => {
-        debug('monitor-close', hadError)
-        if (!this.hapClient.this.discoveryInProgress) {
-          this.monitor.finish();
-          this.hapClient.resetInstancePool();
-        }
+      this.monitor.on('monitor-close', (instance, hadError) => {
+        debug('monitor-close', instance.name, instance.ipAddress, instance.port, hadError)
+        this.disconnectClientNodes(instance);
+        this.refreshDevices();
+      })
+      this.monitor.on('monitor-error', (instance, hadError) => {
+        debug('monitor-error', instance, hadError)
       })
     }
   }
+
+  disconnectClientNodes(instance) {
+    debug('disconnectClientNodes', `${instance.ipAddress}:${instance.port}`);
+    const clientNodes = Object.values(this.clientNodes).filter(clientNode => {
+      return `${clientNode.hbDevice.instance.ipAddress}:${clientNode.hbDevice.instance.port}` === `${instance.ipAddress}:${instance.port}`;
+    });
+
+    clientNodes.forEach(clientNode => {
+      clientNode.status({ fill: 'red', shape: 'ring', text: 'disconnected' });
+      clientNode.emit('hbDisconnected', instance);
+    });
+  }
+
   close() {
     debug('hb-config: close');
     this.hapClient?.destroy();

@@ -46,7 +46,7 @@
   "dependencies": {
     "better-queue": ">=3.8.12",
     "debug": "^4.3.5",
-    "@homebridge/hap-client": "2.0.5-beta.12"
+    "@homebridge/hap-client": "2.0.5-beta.18"
   },
   "author": "NorthernMan54",
   "license": "ISC",
