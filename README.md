@@ -183,6 +183,7 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 ### Dec 15, 2024 - Version 0.2.0
 
 - Major code base refresh, and migration from hap-node-client to hap-client ( Potential fix for #120 )
+- With the change in connectivity to homebridge, please validate all your nodes are connected after the update.  And pay particular attention to `Camera` nodes, as for some devices the name has changed.
 - Testing and Development was completed on Node-RED version: v4.0.2 and Node.js  version: v20.18.1
 
 # Backlog / Roadmap

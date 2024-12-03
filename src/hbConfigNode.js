@@ -76,7 +76,6 @@ class HBConfigNode {
         this.hbDevices.push(updatedService);
       }
     });
-
     this.evDevices = this.toList({ perms: 'ev' });
     this.ctDevices = this.toList({ perms: 'pw' });
     this.log(`Devices initialized: evDevices: ${this.evDevices.length}, ctDevices: ${this.ctDevices.length}`);
@@ -92,7 +91,6 @@ class HBConfigNode {
       'Outlet', 'Smoke Sensor', 'Speaker', 'Stateless Programmable Switch', 'Switch',
       'Television', 'Temperature Sensor', 'Thermostat', 'Contact Sensor',
     ]);
-
     return filterUnique(this.hbDevices)
       .filter(service => supportedTypes.has(service.humanType))
       .map(service => ({
@@ -158,7 +156,7 @@ class HBConfigNode {
       const uniqueDevices = new Set();
 
       const monitorNodes = Object.values(this.clientNodes)
-        .filter(node => ['hb-status', 'hb-control'].includes(node.type)) // Filter by type
+        .filter(node => ['hb-status', 'hb-control', 'hb-event', 'hb-resume'].includes(node.type)) // Filter by type
         .filter(node => {
           if (uniqueDevices.has(node.device)) {
             return false; // Exclude duplicates
@@ -230,7 +228,7 @@ class HBConfigNode {
 const filterUnique = (data) => {
   const seen = new Set();
   return data.filter(item => {
-    const uniqueKey = `${item.aid}-${item.serviceName}-${item.instance.username}-${item.instance.port}`;
+    const uniqueKey = `${item.aid}-${item.serviceName}-${item.humanType}-${item.instance.username}-${item.instance.port}`;
     if (seen.has(uniqueKey)) return false;
     seen.add(uniqueKey);
     return true;

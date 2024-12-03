@@ -8,6 +8,14 @@
         "env": []
     },
     {
+        "id": "ddaa42d2292b69e2",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "557aec8e8c47e61e",
         "type": "hb-conf",
         "username": "031-45-154",
@@ -758,6 +766,74 @@
         "statusType": "msg",
         "x": 1190,
         "y": 280,
+        "wires": []
+    },
+    {
+        "id": "834248faa510b756",
+        "type": "hb-event",
+        "z": "ddaa42d2292b69e2",
+        "name": "Backyard",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Eufy",
+        "Service": "MotionSensor",
+        "device": "homebridge0E:89:A7:DA:D3:21EufyBackyard00000085",
+        "conf": "557aec8e8c47e61e",
+        "sendInitialState": false,
+        "x": 100,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "55f84c7bfb7c121e",
+        "type": "hb-control",
+        "z": "ddaa42d2292b69e2",
+        "name": "Backyard",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Eufy",
+        "Service": "CameraRTPStreamManagement",
+        "device": "homebridge0E:89:A7:DA:D3:21EufyBackyard00000110",
+        "conf": "557aec8e8c47e61e",
+        "outputs": 0,
+        "x": 680,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "a5a864e72e6e8864",
+        "type": "hb-event",
+        "z": "ddaa42d2292b69e2",
+        "name": "Master",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Lightbulb",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaMaster00000043",
+        "conf": "557aec8e8c47e61e",
+        "sendInitialState": true,
+        "x": 170,
+        "y": 280,
+        "wires": [
+            [
+                "81f4056eb30cf459"
+            ]
+        ]
+    },
+    {
+        "id": "81f4056eb30cf459",
+        "type": "debug",
+        "z": "ddaa42d2292b69e2",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 540,
+        "y": 300,
         "wires": []
     }
 ]
