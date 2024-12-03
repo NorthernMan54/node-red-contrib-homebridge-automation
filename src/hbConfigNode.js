@@ -21,12 +21,13 @@ class HBConfigNode {
 
       // Initialize HAP client
       this.hapClient = new HapClient({
-        config: { debug: true },
+        config: { debug: false },
         pin: config.username,
         logger: this.log,
       });
 
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
+      this.hapClient.on('discovery-ended', this.hapClient.refreshInstances);
       this.waitForNoMoreDiscoveries();
       this.on('close', this.close.bind(this));
       this.refreshInProcess = true; // Prevents multiple refreshes, hapClient kicks of a discovery on start
@@ -41,7 +42,7 @@ class HBConfigNode {
     if (!this.refreshInProcess) {
 
       this.monitor.finish();
-      this.log.debug('Monitor reported homebridge stability issues, refreshing devices');
+      this.log.debug('[hb-config] Monitor reported homebridge stability issues, refreshing devices');
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
       this.hapClient.resetInstancePool();
       this.waitForNoMoreDiscoveries();
@@ -55,7 +56,7 @@ class HBConfigNode {
     if (!this.discoveryTimeout) {
       clearTimeout(this.discoveryTimeout);
       this.discoveryTimeout = setTimeout(() => {
-        this.log.debug('No more instances discovered, publishing services');
+        this.log.debug('[hb-config] No more instances discovered, publishing services');
         this.hapClient.removeListener('instance-discovered', this.waitForNoMoreDiscoveries);
         this.handleReady();
         this.discoveryTimeout = null;
@@ -80,7 +81,7 @@ class HBConfigNode {
 
     this.evDevices = this.toList({ perms: 'ev' });
     this.ctDevices = this.toList({ perms: 'pw' });
-    this.log.info(`Devices initialized: evDevices: ${this.evDevices.length}, ctDevices: ${this.ctDevices.length}`);
+    this.log.info(`[hb-config] Devices initialized: evDevices: ${this.evDevices.length}, ctDevices: ${this.ctDevices.length}`);
     this.handleDuplicates(this.evDevices);
     this.connectClientNodes();
   }
@@ -116,10 +117,10 @@ class HBConfigNode {
       const { fullName, uniqueId } = endpoint;
 
       if (seen.has(fullName)) {
-        this.log.warn(`Duplicate device name detected: ${fullName}`);
+        this.log.warn(`[hb-config] Duplicate device name detected: ${fullName}`);
       }
       if (seen.has(uniqueId)) {
-        this.log.error(`Duplicate uniqueId detected: ${uniqueId}`);
+        this.log.error(`[hb-config] Duplicate uniqueId detected: ${uniqueId}`);
       }
 
       seen.set(fullName, true);

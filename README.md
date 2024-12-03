@@ -179,6 +179,10 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 - Workaround for #111
 
+### Dec 15, 2024 - Version 0.2.0
+
+- Major code base refresh, and migration from hap-node-client to hap-client ( Potential fix for #120 )
+
 # Backlog / Roadmap
 
 * [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )

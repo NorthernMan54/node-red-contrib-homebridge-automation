@@ -430,7 +430,7 @@
     "node-red-contrib-homebridge-automation": {
         "name": "node-red-contrib-homebridge-automation",
         "version": "0.1.12",
-        "local": true,
+        "local": false,
         "user": false,
         "nodes": {
             "HAP-NodeRed": {
@@ -440,14 +440,13 @@
                     "hb-event",
                     "hb-resume",
                     "hb-status",
-                    "hb-control",
-                    "hb-configNode"
+                    "hb-control"
                 ],
                 "enabled": true,
-                "local": true,
+                "local": false,
                 "user": false,
                 "module": "node-red-contrib-homebridge-automation",
-                "file": "/Users/sgracey/Code/node-red-contrib-homebridge-automation/test/node-red/node_modules/node-red-contrib-homebridge-automation/src/HAP-NodeRed.js"
+                "file": "/Users/sgracey/npm/lib/node_modules/node-red-contrib-homebridge-automation/src/HAP-NodeRed.js"
             }
         }
     }
