@@ -1,6 +1,5 @@
 const { HapClient } = require('@homebridge/hap-client');
 const debug = require('debug')('hapNodeRed:hbConfigNode');
-const { Log } = require('./lib/logger.js');
 
 class HBConfigNode {
   constructor(config, RED) {
@@ -16,14 +15,13 @@ class HBConfigNode {
       this.ctDevices = [];
       this.hbDevices = [];
       this.clientNodes = [];
-      this.log = new Log(console, true);
+      //  this.log = new Log(console, true);
       this.discoveryTimeout = null;
 
       // Initialize HAP client
       this.hapClient = new HapClient({
         config: { debug: false },
-        pin: config.username,
-        logger: this.log,
+        pin: config.username
       });
 
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
@@ -42,7 +40,7 @@ class HBConfigNode {
     if (!this.refreshInProcess) {
 
       this.monitor.finish();
-      this.log.debug('[hb-config] Monitor reported homebridge stability issues, refreshing devices');
+      this.debug('Monitor reported homebridge stability issues, refreshing devices');
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
       this.hapClient.resetInstancePool();
       this.waitForNoMoreDiscoveries();
@@ -56,7 +54,7 @@ class HBConfigNode {
     if (!this.discoveryTimeout) {
       clearTimeout(this.discoveryTimeout);
       this.discoveryTimeout = setTimeout(() => {
-        this.log.debug('[hb-config] No more instances discovered, publishing services');
+        this.debug('No more instances discovered, publishing services');
         this.hapClient.removeListener('instance-discovered', this.waitForNoMoreDiscoveries);
         this.handleReady();
         this.discoveryTimeout = null;
@@ -81,7 +79,7 @@ class HBConfigNode {
 
     this.evDevices = this.toList({ perms: 'ev' });
     this.ctDevices = this.toList({ perms: 'pw' });
-    this.log.info(`[hb-config] Devices initialized: evDevices: ${this.evDevices.length}, ctDevices: ${this.ctDevices.length}`);
+    this.log(`Devices initialized: evDevices: ${this.evDevices.length}, ctDevices: ${this.ctDevices.length}`);
     this.handleDuplicates(this.evDevices);
     this.connectClientNodes();
   }
@@ -117,10 +115,10 @@ class HBConfigNode {
       const { fullName, uniqueId } = endpoint;
 
       if (seen.has(fullName)) {
-        this.log.warn(`[hb-config] Duplicate device name detected: ${fullName}`);
+        this.warn(`Duplicate device name detected: ${fullName}`);
       }
       if (seen.has(uniqueId)) {
-        this.log.error(`[hb-config] Duplicate uniqueId detected: ${uniqueId}`);
+        this.error(`Duplicate uniqueId detected: ${uniqueId}`);
       }
 
       seen.set(fullName, true);
@@ -148,7 +146,7 @@ class HBConfigNode {
         clientNode.emit('hbReady', matchedDevice);
         debug('_Registered: %s type: %s', matchedDevice.type, matchedDevice.serviceName, matchedDevice.instance);
       } else {
-        console.error('ERROR: Device registration failed', clientNode.name);
+        this.error(`ERROR: Device registration failed ${clientNode.name}`);
       }
     };
 
@@ -200,7 +198,7 @@ class HBConfigNode {
   disconnectClientNodes(instance) {
     debug('disconnectClientNodes', `${instance.ipAddress}:${instance.port}`);
     const clientNodes = Object.values(this.clientNodes).filter(clientNode => {
-      return `${clientNode.hbDevice.instance.ipAddress}:${clientNode.hbDevice.instance.port}` === `${instance.ipAddress}:${instance.port}`;
+      return `${clientNode.hbDevice?.instance.ipAddress}:${clientNode.hbDevice?.instance.port}` === `${instance.ipAddress}:${instance.port}`;
     });
 
     clientNodes.forEach(clientNode => {
@@ -212,7 +210,7 @@ class HBConfigNode {
   reconnectClientNodes(instance) {
     debug('reconnectClientNodes', `${instance.ipAddress}:${instance.port}`);
     const clientNodes = Object.values(this.clientNodes).filter(clientNode => {
-      return `${clientNode.hbDevice.instance.ipAddress}:${clientNode.hbDevice.instance.port}` === `${instance.ipAddress}:${instance.port}`;
+      return `${clientNode.hbDevice?.instance.ipAddress}:${clientNode.hbDevice?.instance.port}` === `${instance.ipAddress}:${instance.port}`;
     });
 
     clientNodes.forEach(clientNode => {
