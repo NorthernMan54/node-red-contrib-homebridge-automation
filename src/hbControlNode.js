@@ -7,7 +7,7 @@ class HbControlNode extends hbBaseNode {
   }
 
   async handleInput(message, send, done) {
-    debug('handleInput', message.payload, this.name);
+    debug('handleInput', this.name, JSON.stringify(message.payload));
 
     if (!this.hbDevice) {
       this.handleWarning('HB not initialized');

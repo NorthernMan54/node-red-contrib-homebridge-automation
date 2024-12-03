@@ -4,12 +4,21 @@ const debug = require('debug')('hapNodeRed:hbResumeNode');
 class HbResumeNode extends HbBaseNode {
   constructor(config, RED) {
     super(config, RED);
-
+    this.lastOutputTime = Date.now();
     this.storedState = null;
   }
 
+  handleHBEventMessage(service) {
+    debug('hbEvent for', this.id, service.serviceName, JSON.stringify(service.values));
+
+    if (service.values && Date.now() - this.lastOutputTime > 1000) {    // Ignore messages within 1 second of last output
+      this.storedState = JSON.parse(JSON.stringify(this.hbDevice.values));
+      debug('Storing state', this.name, JSON.stringify(this.storedState));
+    }
+  }
+
   handleInput(message, send) {
-    debug('handleInput', message.payload, this.name);
+    debug('handleInput', this.id, message.payload, this.name);
 
     if (!this.hbDevice) {
       this.handleWarning('HB not initialized');
@@ -32,10 +41,10 @@ class HbResumeNode extends HbBaseNode {
 
     if (message.payload.On) {
       this.storedState = JSON.parse(JSON.stringify(this.hbDevice.values));
-      debug('Storing state', this.storedState);
+      debug('Storing state', this.name, JSON.stringify(this.storedState));
     } else if (this.storedState) {
-      debug('Restoring state', this.storedState);
-      message.payload = { ...this.storedState, ...message.payload };
+      debug('Restoring state', this.name, JSON.stringify(this.storedState));
+      message.payload = { ...message.payload, ...this.storedState };
       this.storedState = null;
     }
 
@@ -45,6 +54,7 @@ class HbResumeNode extends HbBaseNode {
       fill: 'green',
     });
 
+    this.lastOutputTime = Date.now();;
     send(message);
   }
 

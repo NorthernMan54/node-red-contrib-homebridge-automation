@@ -2,7 +2,7 @@ const debug = require('debug')('hapNodeRed:hbBaseNode');
 
 class HbBaseNode {
   constructor(config, RED) {
-    debug("Constructor:", config);
+    debug("Constructor:", config.type, JSON.stringify(config));
     RED.nodes.createNode(this, config);
 
     if (!config.conf) {
@@ -31,7 +31,7 @@ class HbBaseNode {
   }
 
   handleHBEventMessage(service) {
-    debug('hbEvent for', this.id, service.serviceName, service.values);
+    debug('hbEvent for', this.id, this.type, service.serviceName, JSON.stringify(service.values));
 
     this.status({
       text: JSON.stringify(service.values),

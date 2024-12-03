@@ -13,7 +13,7 @@ module.exports = function (RED) {
 
   class hbConfigNode extends HBConfigNode {
     constructor(config) {
-      debug('hbConfigNode', config);
+      debug('hbConfigNode', JSON.stringify(config));
       super(config, RED);
     }
   }
@@ -28,7 +28,6 @@ module.exports = function (RED) {
 
   class hbEventNode extends HbEventNode {
     constructor(config) {
-      debug('hbEventNode', config);
       super(config, RED);
     }
   }
@@ -37,7 +36,6 @@ module.exports = function (RED) {
 
   class hbResumeNode extends HbResumeNode {
     constructor(config) {
-      debug('hbResumeNode', config);
       super(config, RED);
     }
   }
@@ -46,7 +44,6 @@ module.exports = function (RED) {
 
   class hbControlNode extends HbControlNode {
     constructor(config) {
-      debug('hbControlNode', config);
       super(config, RED);
     }
   }
@@ -55,7 +52,6 @@ module.exports = function (RED) {
 
   class hbStatusNode extends HbStatusNode {
     constructor(config) {
-      debug('hbStatusNode', config);
       super(config, RED);
     }
   }

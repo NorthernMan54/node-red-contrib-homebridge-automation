@@ -142,7 +142,7 @@ class HBConfigNode {
         clientNode.hbDevice = matchedDevice;
         clientNode.status({ fill: 'green', shape: 'dot', text: 'connected' });
         clientNode.emit('hbReady', matchedDevice);
-        debug('_Registered: %s type: %s', matchedDevice.type, matchedDevice.serviceName, matchedDevice.instance);
+        debug('_Registered: %s type: %s', clientNode.type, matchedDevice.type, matchedDevice.serviceName);
       } else {
         this.error(`ERROR: Device registration failed ${clientNode.name}`);
       }
@@ -174,6 +174,7 @@ class HBConfigNode {
           const eventNodes = Object.values(this.clientNodes).filter(clientNode =>
             clientNode.config.device === `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`
           );
+          // debug('service-update', service.serviceName, eventNodes);
           eventNodes.forEach(eventNode => eventNode.emit('hbEvent', service));
         });
       });
