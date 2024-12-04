@@ -26,36 +26,20 @@ class HBConfigNode {
 
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
       this.hapClient.on('discovery-ended', this.hapClient.refreshInstances);
-      this.waitForNoMoreDiscoveries();
       this.on('close', this.close.bind(this));
       this.refreshInProcess = true; // Prevents multiple refreshes, hapClient kicks of a discovery on start
     }
   }
 
   /**
-   * Start device discovery after monitor reports issues
-   */
-
-  refreshDevices = () => {
-    if (!this.refreshInProcess) {
-
-      this.monitor.finish();
-      this.debug('Monitor reported homebridge stability issues, refreshing devices');
-      this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
-      this.hapClient.resetInstancePool();
-      this.waitForNoMoreDiscoveries();
-    }
-  };
-
-  /**
    * Wait for no more instance discoveries to be made before publishing services
    */
-  waitForNoMoreDiscoveries = () => {
+  waitForNoMoreDiscoveries = (instance) => {
+    debug('Instance discovered: %s - %s %s:%s', instance?.name, instance?.username, instance?.ipAddress, instance?.port);
     if (!this.discoveryTimeout) {
       clearTimeout(this.discoveryTimeout);
       this.discoveryTimeout = setTimeout(() => {
         this.debug('No more instances discovered, publishing services');
-        this.hapClient.removeListener('instance-discovered', this.waitForNoMoreDiscoveries);
         this.handleReady();
         this.discoveryTimeout = null;
         this.refreshInProcess = false;

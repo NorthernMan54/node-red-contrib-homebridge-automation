@@ -825,7 +825,7 @@
         "Manufacturer": "Tasmota",
         "Service": "Lightbulb",
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaMaster00000043",
-        "conf": "557aec8e8c47e61e",
+        "conf": "7e647d67.f33acc",
         "sendInitialState": true,
         "x": 170,
         "y": 280,
