@@ -137,21 +137,17 @@ class HBConfigNode {
 
   async monitorDevices() {
     if (Object.keys(this.clientNodes).length) {
-      const uniqueDevices = new Set();
 
       const monitorNodes = Object.values(this.clientNodes)
-        .filter(node => ['hb-status', 'hb-control', 'hb-event', 'hb-resume'].includes(node.type)) // Filter by type
-        .filter(node => {
-          if (uniqueDevices.has(node.device)) {
-            return false; // Exclude duplicates
-          }
-          uniqueDevices.add(node.device);
-          return true; // Include unique devices
-        })
+        .filter(node => ['hb-status', 'hb-event', 'hb-resume'].includes(node.type)) // Filter by type
         .map(node => node.hbDevice) // Map to hbDevice property
         .filter(Boolean); // Remove any undefined or null values, if present;
-      debug('monitorNodes', Object.keys(monitorNodes).length);
+      this.log(`Connected to ${Object.keys(monitorNodes).length} Homebridge devices`);
       // console.log('monitorNodes', monitorNodes);
+      if (this.monitor) {
+        // This is kinda brute force, but it works
+        this.monitor.finish();
+      }
       this.monitor = await this.hapClient.monitorCharacteristics(monitorNodes);
       this.monitor.on('service-update', (services) => {
         services.forEach(service => {

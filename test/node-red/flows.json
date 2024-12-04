@@ -180,7 +180,7 @@
         "conf": "7e647d67.f33acc",
         "outputs": 1,
         "x": 500,
-        "y": 300,
+        "y": 320,
         "wires": [
             [
                 "f194fc4bcb1997a9"
@@ -453,7 +453,7 @@
         "statusVal": "payload",
         "statusType": "auto",
         "x": 800,
-        "y": 300,
+        "y": 320,
         "wires": []
     },
     {

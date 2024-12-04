@@ -32,6 +32,17 @@ class HbStatusNode extends HbBaseNode {
     }
 
   }
+
+  handleHBEventMessage(service) {
+    debug('hbEvent for', this.id, this.type, service.serviceName, JSON.stringify(service.values));
+
+    this.status({
+      text: JSON.stringify(service.values),
+      shape: 'dot',
+      fill: 'green',
+    });
+    this.send({ payload: service.values });
+  }
 }
 
 module.exports = HbStatusNode;
