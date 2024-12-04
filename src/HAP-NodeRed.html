@@ -52,14 +52,14 @@
       // var pass = $('#node-config-input-password').val();
       // console.log("pass: ", pass);
       // if (pass != '_PWD_') {
-      //  var account = {
+      //  var configNode = {
       //    id: node.id,
       //    user: user,
       //    pass: pass
       //  }
       // $.ajax({
-      //  data: JSON.stringify(account),
-      //  url: 'alexa-home/new-account',
+      //  data: JSON.stringify(configNode),
+      //  url: 'alexa-home/new-configNode',
       //  contentType: 'application/json',
       //  type: 'POST',
       //  processData: false
@@ -167,14 +167,14 @@
     oneditprepare: function() {
       var node = this;
       // console.log("foo " + node.device);
-      if (typeof node.acknoledge === 'undefined') {
-        $('#node-input-acknoledge').prop('checked', true);
+      if (typeof node.acknowledge === 'undefined') {
+        $('#node-input-acknowledge').prop('checked', true);
       }
       $('#node-input-device').change(function() {
         $('#node-input-name').val($('#node-input-device option:selected').text());
       });
-      var getDevs = function(account) {
-        $.getJSON('hap-device/evDevices/' + account, function(data) {
+      var getDevs = function(configNode) {
+        $.getJSON('hap-device/evDevices/' + configNode, function(data) {
           $('#node-input-device').find('option').remove().end();
           for (d in data) {
             $('<option/>', {
@@ -190,38 +190,38 @@
             $('#node-input-device').val(node.device);
           }
         }).fail(function(jqXHR, textStatus, errorThrown) {
-          console.log("problem getting evDevices");
+          console.log("[hb-config] problem getting evDevices");
           console.log(textStatus);
         });
 
       }
       if (node.conf) {
-        var account = $('#node-input-conf').val();
-        // console.log("account: ", account);
-        if (account != '_ADD_') {
-          getDevs(account);
+        var configNode = $('#node-input-conf').val();
+        // console.log("configNode: ", configNode);
+        if (configNode != '_ADD_') {
+          getDevs(configNode);
         }
       }
       $('#node-input-conf').change(function() {
-        var account = $('#node-input-conf').val();
-        // console.log("account changed: ", account);
-        if (account != '_ADD_') {
-          getDevs(account);
+        var configNode = $('#node-input-conf').val();
+        // console.log("configNode changed: ", configNode);
+        if (configNode != '_ADD_') {
+          getDevs(configNode);
         } else {
-          // console.log("new account");
+          // console.log("new configNode");
           $('#node-input-device').find('option').remove().end();
           $('#node-input-device').val("");
         }
       });
       $('#node-input-device-refresh').click(function() {
         $('#node-input-device-refresh').addClass('disabled');
-        var account = $('#node-input-conf').val();
+        var configNode = $('#node-input-conf').val();
         $.ajax({
-          url: 'hap-device/refresh/' + account,
+          url: 'hap-device/refresh/' + configNode,
           type: 'POST'
         }).done(function(data) {
           setTimeout(function() {
-            getDevs(account);
+            getDevs(configNode);
             $('#node-input-device-refresh').removeClass('disabled');
           }, 3000);
         });
@@ -317,15 +317,15 @@
     oneditprepare: function() {
       var node = this;
       // console.log("foo " + node.device);
-      if (typeof node.acknoledge === 'undefined') {
+      if (typeof node.acknowledge === 'undefined') {
         // console.log("ben");
-        $('#node-input-acknoledge').prop('checked', true);
+        $('#node-input-acknowledge').prop('checked', true);
       }
       $('#node-input-device').change(function() {
         $('#node-input-name').val($('#node-input-device option:selected').text());
       });
-      var getDevs = function(account) {
-        $.getJSON('hap-device/evDevices/' + account, function(data) {
+      var getDevs = function(configNode) {
+        $.getJSON('hap-device/evDevices/' + configNode, function(data) {
           $('#node-input-device').find('option').remove().end();
           for (d in data) {
             $('<option/>', {
@@ -342,38 +342,38 @@
             $('#node-input-device').val(node.device);
           }
         }).fail(function(jqXHR, textStatus, errorThrown) {
-          console.log("problem getting evDevices");
+          console.log("[hb-config] problem getting evDevices");
           console.log(textStatus);
         });
 
       }
       if (node.conf) {
-        var account = $('#node-input-conf').val();
-        // console.log("account: ", account);
-        if (account != '_ADD_') {
-          getDevs(account);
+        var configNode = $('#node-input-conf').val();
+        // console.log("configNode: ", configNode);
+        if (configNode != '_ADD_') {
+          getDevs(configNode);
         }
       }
       $('#node-input-conf').change(function() {
-        var account = $('#node-input-conf').val();
-        // console.log("account changed: ", account);
-        if (account != '_ADD_') {
-          getDevs(account);
+        var configNode = $('#node-input-conf').val();
+        // console.log("configNode changed: ", configNode);
+        if (configNode != '_ADD_') {
+          getDevs(configNode);
         } else {
-          // console.log("new account");
+          // console.log("new configNode");
           $('#node-input-device').find('option').remove().end();
           $('#node-input-device').val("");
         }
       });
       $('#node-input-device-refresh').click(function() {
         $('#node-input-device-refresh').addClass('disabled');
-        var account = $('#node-input-conf').val();
+        var configNode = $('#node-input-conf').val();
         $.ajax({
-          url: 'hap-device/refresh/' + account,
+          url: 'hap-device/refresh/' + configNode,
           type: 'POST'
         }).done(function(data) {
           setTimeout(function() {
-            getDevs(account);
+            getDevs(configNode);
             $('#node-input-device-refresh').removeClass('disabled');
           }, 3000);
         });
@@ -467,15 +467,15 @@
     oneditprepare: function() {
       var node = this;
       // console.log("foo " + node.device);
-      if (typeof node.acknoledge === 'undefined') {
+      if (typeof node.acknowledge === 'undefined') {
         // console.log("ben");
-        $('#node-input-acknoledge').prop('checked', true);
+        $('#node-input-acknowledge').prop('checked', true);
       }
       $('#node-input-device').change(function() {
         $('#node-input-name').val($('#node-input-device option:selected').text());
       });
-      var getDevs = function(account) {
-        $.getJSON('hap-device/evDevices/' + account, function(data) {
+      var getDevs = function(configNode) {
+        $.getJSON('hap-device/evDevices/' + configNode, function(data) {
           $('#node-input-device').find('option').remove().end();
           for (d in data) {
             $('<option/>', {
@@ -492,38 +492,38 @@
             $('#node-input-device').val(node.device);
           }
         }).fail(function(jqXHR, textStatus, errorThrown) {
-          console.log("problem getting ctDevices");
+          console.log("[hb-config] problem getting ctDevices");
           console.log(textStatus);
         });
 
       }
       if (node.conf) {
-        var account = $('#node-input-conf').val();
-        // console.log("account: ", account);
-        if (account != '_ADD_') {
-          getDevs(account);
+        var configNode = $('#node-input-conf').val();
+        // console.log("configNode: ", configNode);
+        if (configNode != '_ADD_') {
+          getDevs(configNode);
         }
       }
       $('#node-input-conf').change(function() {
-        var account = $('#node-input-conf').val();
-        // console.log("account changed: ", account);
-        if (account != '_ADD_') {
-          getDevs(account);
+        var configNode = $('#node-input-conf').val();
+        // console.log("configNode changed: ", configNode);
+        if (configNode != '_ADD_') {
+          getDevs(configNode);
         } else {
-          // console.log("new account");
+          // console.log("new configNode");
           $('#node-input-device').find('option').remove().end();
           $('#node-input-device').val("");
         }
       });
       $('#node-input-device-refresh').click(function() {
         $('#node-input-device-refresh').addClass('disabled');
-        var account = $('#node-input-conf').val();
+        var configNode = $('#node-input-conf').val();
         $.ajax({
-          url: 'hap-device/refresh/' + account,
+          url: 'hap-device/refresh/' + configNode,
           type: 'POST'
         }).done(function(data) {
           setTimeout(function() {
-            getDevs(account);
+            getDevs(configNode);
             $('#node-input-device-refresh').removeClass('disabled');
           }, 3000);
         });
@@ -620,15 +620,15 @@
     oneditprepare: function() {
       var node = this;
       // console.log("foo " + node.device);
-      if (typeof node.acknoledge === 'undefined') {
+      if (typeof node.acknowledge === 'undefined') {
         // console.log("ben");
-        $('#node-input-acknoledge').prop('checked', true);
+        $('#node-input-acknowledge').prop('checked', true);
       }
       $('#node-input-device').change(function() {
         $('#node-input-name').val($('#node-input-device option:selected').text());
       });
-      var getDevs = function(account) {
-        $.getJSON('hap-device/ctDevices/' + account, function(data) {
+      var getDevs = function(configNode) {
+        $.getJSON('hap-device/ctDevices/' + configNode, function(data) {
           $('#node-input-device').find('option').remove().end();
           for (d in data) {
             $('<option/>', {
@@ -645,38 +645,38 @@
             $('#node-input-device').val(node.device);
           }
         }).fail(function(jqXHR, textStatus, errorThrown) {
-          console.log("problem getting ctDevices");
+          console.log("[hb-config] problem getting ctDevices");
           console.log(textStatus);
         });
 
       }
       if (node.conf) {
-        var account = $('#node-input-conf').val();
-        // console.log("account: ", account);
-        if (account != '_ADD_') {
-          getDevs(account);
+        var configNode = $('#node-input-conf').val();
+        // console.log("configNode: ", configNode);
+        if (configNode != '_ADD_') {
+          getDevs(configNode);
         }
       }
       $('#node-input-conf').change(function() {
-        var account = $('#node-input-conf').val();
-        // console.log("account changed: ", account);
-        if (account != '_ADD_') {
-          getDevs(account);
+        var configNode = $('#node-input-conf').val();
+        // console.log("configNode changed: ", configNode);
+        if (configNode != '_ADD_') {
+          getDevs(configNode);
         } else {
-          // console.log("new account");
+          // console.log("new configNode");
           $('#node-input-device').find('option').remove().end();
           $('#node-input-device').val("");
         }
       });
       $('#node-input-device-refresh').click(function() {
         $('#node-input-device-refresh').addClass('disabled');
-        var account = $('#node-input-conf').val();
+        var configNode = $('#node-input-conf').val();
         $.ajax({
-          url: 'hap-device/refresh/' + account,
+          url: 'hap-device/refresh/' + configNode,
           type: 'POST'
         }).done(function(data) {
           setTimeout(function() {
-            getDevs(account);
+            getDevs(configNode);
             $('#node-input-device-refresh').removeClass('disabled');
           }, 3000);
         });

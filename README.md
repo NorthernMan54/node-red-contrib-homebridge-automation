@@ -34,6 +34,7 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [Jan 6, 2023 - Version 0.1.5](#jan-6-2023---version-015)
       * [Jan 11, 2023 - Version 0.1.7](#jan-11-2023---version-017)
       * [Jan 15, 2023 - Version 0.1.8](#jan-15-2023---version-018)
+      * [Dec 15, 2024 - Version 0.2.0](#dec-15-2024---version-020)
 * [Backlog / Roadmap](#backlog--roadmap)
    * [Dropped items](#dropped-items)
 * [Installation Steps](#installation-steps)
@@ -58,10 +59,6 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
 * [Donations](#donations)
 * [Troubleshooting / DEBUG MODE](#troubleshooting--debug-mode)
    * [To start Node-RED in DEBUG mode, and output Homebridge-Automation debug logs start Node-RED like this.](#to-start-node-red-in-debug-mode-and-output-homebridge-automation-debug-logs-start-node-red-like-this)
-
-<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: sgracey, at: Sun 19 Mar 2023 11:30:14 EDT -->
-
 <!--te-->
 
 # Introduction
@@ -182,6 +179,12 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 ### Jan 15, 2023 - Version 0.1.8
 
 - Workaround for #111
+
+### Dec 15, 2024 - Version 0.2.0
+
+- Major code base refresh, and migration from hap-node-client to hap-client ( Potential fix for #120 )
+- With the change in connectivity to homebridge, please validate all your nodes are connected after the update.  And pay particular attention to `Camera` nodes, as for some devices the name has changed.
+- Testing and Development was completed on Node-RED version: v4.0.2 and Node.js  version: v20.18.1
 
 # Backlog / Roadmap
 
