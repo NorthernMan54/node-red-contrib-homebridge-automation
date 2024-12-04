@@ -1837,7 +1837,8 @@
         "y": 280,
         "wires": [
             [
-                "e7671cdf7ca08bdb"
+                "e7671cdf7ca08bdb",
+                "29ef1290a4393e23"
             ]
         ]
     },
@@ -2079,7 +2080,7 @@
         "targetType": "msg",
         "statusVal": "payload",
         "statusType": "auto",
-        "x": 730,
+        "x": 890,
         "y": 360,
         "wires": []
     },
