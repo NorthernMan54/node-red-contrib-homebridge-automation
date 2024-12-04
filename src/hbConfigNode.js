@@ -35,9 +35,9 @@ class HBConfigNode {
    * Wait for no more instance discoveries to be made before publishing services
    */
   waitForNoMoreDiscoveries = (instance) => {
-    debug('Instance discovered: %s - %s %s:%s', instance?.name, instance?.username, instance?.ipAddress, instance?.port);
+    if (instance)
+      debug('Instance discovered: %s - %s %s:%s', instance?.name, instance?.username, instance?.ipAddress, instance?.port);
     if (!this.discoveryTimeout) {
-      clearTimeout(this.discoveryTimeout);
       this.discoveryTimeout = setTimeout(() => {
         this.debug('No more instances discovered, publishing services');
         this.handleReady();
@@ -112,6 +112,7 @@ class HBConfigNode {
     debug('Register: %s type: %s', clientNode.type, clientNode.name);
     this.clientNodes[clientNode.id] = clientNode;
     clientNode.status({ fill: 'yellow', shape: 'ring', text: 'connecting' });
+    this.waitForNoMoreDiscoveries(); // Connect new nodes created after startup has ended ( Need a function to rather than brute forcing it )
   }
 
   async connectClientNodes() {
@@ -128,7 +129,7 @@ class HBConfigNode {
         clientNode.emit('hbReady', matchedDevice);
         debug('_Registered: %s type: %s', clientNode.type, matchedDevice.type, matchedDevice.serviceName);
       } else {
-        this.error(`ERROR: Device registration failed ${clientNode.name}`);
+        this.error(`ERROR: Device registration failed '${clientNode.fullName}'`);
       }
     };
 
@@ -145,7 +146,7 @@ class HBConfigNode {
       this.log(`Connected to ${Object.keys(monitorNodes).length} Homebridge devices`);
       // console.log('monitorNodes', monitorNodes);
       if (this.monitor) {
-        // This is kinda brute force, but it works
+        // This is kinda brute force, and should be refactored to only refresh the changed monitorNodes
         this.monitor.finish();
       }
       this.monitor = await this.hapClient.monitorCharacteristics(monitorNodes);
