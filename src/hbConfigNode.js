@@ -78,10 +78,10 @@ class HBConfigNode {
     return filterUnique(this.hbDevices)
       .filter(service => supportedTypes.has(service.humanType))
       .map(service => ({
-        name: service.serviceName,
-        fullName: `${service.serviceName} - ${service.type}`,
-        sortName: `${service.serviceName}:${service.type}`,
-        uniqueId: `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`,
+        name: (service.serviceName ? service.serviceName : service.accessoryInformation.Name),
+        fullName: `${(service.serviceName ? service.serviceName : service.accessoryInformation.Name)} - ${service.humanType}`,
+        sortName: `${(service.serviceName ? service.serviceName : service.accessoryInformation.Name)}:${service.type}`,
+        uniqueId: `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${(service.serviceName ? service.serviceName : service.accessoryInformation.Name)}${service.uuid.slice(0, 8)}`,
         homebridge: service.instance.name,
         service: service.type,
         manufacturer: service.accessoryInformation.Manufacturer,
