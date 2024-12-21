@@ -27,7 +27,7 @@ class HbEventNode extends hbBaseNode {
       shape: 'dot',
       fill: 'green',
     });
-    this.send({ payload: service.values });
+    this.send({ ...this.createMessage(service) });
   }
 }
 
