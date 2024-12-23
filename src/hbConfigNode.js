@@ -52,11 +52,18 @@ class HBConfigNode {
    */
   async handleReady() {
     const updatedDevices = await this.hapClient.getAllServices();
+    // Fix broken uniqueId's from HAP-Client
+    updatedDevices.forEach((service) => {
+      const friendlyName = (service.serviceName ? service.serviceName : service.accessoryInformation.Name);
+      service.uniqueId = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${friendlyName}${service.uuid.slice(0, 8)}`;
+    });
     updatedDevices.forEach((updatedService, index) => {
       if (this.hbDevices.find(service => service.uniqueId === updatedService.uniqueId)) {
+        // debug(`Exsiting UniqueID breakdown - ${updatedService.serviceName}-${updatedService.instance.username}-${updatedService.aid}-${updatedService.iid}-${updatedService.type}`);
         const update = this.hbDevices.find(service => service.uniqueId === updatedService.uniqueId);
         update.instance = updatedService.instance;
       } else {
+        // debug(`New Service UniqueID breakdown - ${updatedService.serviceName}-${updatedService.instance.username}-${updatedService.aid}-${updatedService.iid}-${updatedService.type}`);
         this.hbDevices.push(updatedService);
       }
     });
@@ -81,7 +88,7 @@ class HBConfigNode {
         name: (service.serviceName ? service.serviceName : service.accessoryInformation.Name),
         fullName: `${(service.serviceName ? service.serviceName : service.accessoryInformation.Name)} - ${service.humanType}`,
         sortName: `${(service.serviceName ? service.serviceName : service.accessoryInformation.Name)}:${service.type}`,
-        uniqueId: `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${(service.serviceName ? service.serviceName : service.accessoryInformation.Name)}${service.uuid.slice(0, 8)}`,
+        uniqueId: service.uniqueId,
         homebridge: service.instance.name,
         service: service.type,
         manufacturer: service.accessoryInformation.Manufacturer,
