@@ -26,36 +26,20 @@ class HBConfigNode {
 
       this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
       this.hapClient.on('discovery-ended', this.hapClient.refreshInstances);
-      this.waitForNoMoreDiscoveries();
       this.on('close', this.close.bind(this));
       this.refreshInProcess = true; // Prevents multiple refreshes, hapClient kicks of a discovery on start
     }
   }
 
   /**
-   * Start device discovery after monitor reports issues
-   */
-
-  refreshDevices = () => {
-    if (!this.refreshInProcess) {
-
-      this.monitor.finish();
-      this.debug('Monitor reported homebridge stability issues, refreshing devices');
-      this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
-      this.hapClient.resetInstancePool();
-      this.waitForNoMoreDiscoveries();
-    }
-  };
-
-  /**
    * Wait for no more instance discoveries to be made before publishing services
    */
-  waitForNoMoreDiscoveries = () => {
+  waitForNoMoreDiscoveries = (instance) => {
+    if (instance)
+      debug('Instance discovered: %s - %s %s:%s', instance?.name, instance?.username, instance?.ipAddress, instance?.port);
     if (!this.discoveryTimeout) {
-      clearTimeout(this.discoveryTimeout);
       this.discoveryTimeout = setTimeout(() => {
         this.debug('No more instances discovered, publishing services');
-        this.hapClient.removeListener('instance-discovered', this.waitForNoMoreDiscoveries);
         this.handleReady();
         this.discoveryTimeout = null;
         this.refreshInProcess = false;
@@ -68,11 +52,18 @@ class HBConfigNode {
    */
   async handleReady() {
     const updatedDevices = await this.hapClient.getAllServices();
+    // Fix broken uniqueId's from HAP-Client
+    updatedDevices.forEach((service) => {
+      const friendlyName = (service.serviceName ? service.serviceName : service.accessoryInformation.Name);
+      service.uniqueId = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${friendlyName}${service.uuid.slice(0, 8)}`;
+    });
     updatedDevices.forEach((updatedService, index) => {
       if (this.hbDevices.find(service => service.uniqueId === updatedService.uniqueId)) {
+        // debug(`Exsiting UniqueID breakdown - ${updatedService.serviceName}-${updatedService.instance.username}-${updatedService.aid}-${updatedService.iid}-${updatedService.type}`);
         const update = this.hbDevices.find(service => service.uniqueId === updatedService.uniqueId);
         update.instance = updatedService.instance;
       } else {
+        // debug(`New Service UniqueID breakdown - ${updatedService.serviceName}-${updatedService.instance.username}-${updatedService.aid}-${updatedService.iid}-${updatedService.type}`);
         this.hbDevices.push(updatedService);
       }
     });
@@ -94,10 +85,10 @@ class HBConfigNode {
     return filterUnique(this.hbDevices)
       .filter(service => supportedTypes.has(service.humanType))
       .map(service => ({
-        name: service.serviceName,
-        fullName: `${service.serviceName} - ${service.type}`,
-        sortName: `${service.serviceName}:${service.type}`,
-        uniqueId: `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`,
+        name: (service.serviceName ? service.serviceName : service.accessoryInformation.Name),
+        fullName: `${(service.serviceName ? service.serviceName : service.accessoryInformation.Name)} - ${service.humanType}`,
+        sortName: `${(service.serviceName ? service.serviceName : service.accessoryInformation.Name)}:${service.type}`,
+        uniqueId: service.uniqueId,
         homebridge: service.instance.name,
         service: service.type,
         manufacturer: service.accessoryInformation.Manufacturer,
@@ -128,6 +119,7 @@ class HBConfigNode {
     debug('Register: %s type: %s', clientNode.type, clientNode.name);
     this.clientNodes[clientNode.id] = clientNode;
     clientNode.status({ fill: 'yellow', shape: 'ring', text: 'connecting' });
+    this.waitForNoMoreDiscoveries(); // Connect new nodes created after startup has ended ( Need a function to rather than brute forcing it )
   }
 
   async connectClientNodes() {
@@ -144,7 +136,7 @@ class HBConfigNode {
         clientNode.emit('hbReady', matchedDevice);
         debug('_Registered: %s type: %s', clientNode.type, matchedDevice.type, matchedDevice.serviceName);
       } else {
-        this.error(`ERROR: Device registration failed ${clientNode.name}`);
+        this.error(`ERROR: Device registration failed '${clientNode.fullName}'`);
       }
     };
 
@@ -153,21 +145,17 @@ class HBConfigNode {
 
   async monitorDevices() {
     if (Object.keys(this.clientNodes).length) {
-      const uniqueDevices = new Set();
 
       const monitorNodes = Object.values(this.clientNodes)
-        .filter(node => ['hb-status', 'hb-control', 'hb-event', 'hb-resume'].includes(node.type)) // Filter by type
-        .filter(node => {
-          if (uniqueDevices.has(node.device)) {
-            return false; // Exclude duplicates
-          }
-          uniqueDevices.add(node.device);
-          return true; // Include unique devices
-        })
+        .filter(node => ['hb-status', 'hb-event', 'hb-resume'].includes(node.type)) // Filter by type
         .map(node => node.hbDevice) // Map to hbDevice property
         .filter(Boolean); // Remove any undefined or null values, if present;
-      debug('monitorNodes', Object.keys(monitorNodes).length);
+      this.log(`Connected to ${Object.keys(monitorNodes).length} Homebridge devices`);
       // console.log('monitorNodes', monitorNodes);
+      if (this.monitor) {
+        // This is kinda brute force, and should be refactored to only refresh the changed monitorNodes
+        this.monitor.finish();
+      }
       this.monitor = await this.hapClient.monitorCharacteristics(monitorNodes);
       this.monitor.on('service-update', (services) => {
         services.forEach(service => {

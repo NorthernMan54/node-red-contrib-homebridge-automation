@@ -19,7 +19,7 @@
         "id": "75c3fcfcb21ddc3a",
         "type": "tab",
         "label": "Flow 3",
-        "disabled": false,
+        "disabled": true,
         "info": "",
         "env": []
     },
@@ -32,17 +32,56 @@
         "env": []
     },
     {
+        "id": "4138921fd7b9a926",
+        "type": "tab",
+        "label": "Flow 5",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "7e647d67.f33acc",
         "type": "hb-conf",
         "username": "031-45-154",
         "macAddress": ""
     },
     {
+        "id": "df5dd49178c517fa",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "mqtt.local",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
         "id": "902c5887b6877df6",
         "type": "debug",
         "z": "caef1e7b5b399e80",
         "name": "debug 1",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": true,
@@ -59,7 +98,7 @@
         "type": "debug",
         "z": "caef1e7b5b399e80",
         "name": "debug 2",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": true,
@@ -141,7 +180,7 @@
         "type": "debug",
         "z": "caef1e7b5b399e80",
         "name": "debug 3",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": true,
@@ -180,7 +219,7 @@
         "conf": "7e647d67.f33acc",
         "outputs": 1,
         "x": 500,
-        "y": 300,
+        "y": 320,
         "wires": [
             [
                 "f194fc4bcb1997a9"
@@ -444,7 +483,7 @@
         "type": "debug",
         "z": "caef1e7b5b399e80",
         "name": "debug 4",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": true,
@@ -453,7 +492,7 @@
         "statusVal": "payload",
         "statusType": "auto",
         "x": 800,
-        "y": 300,
+        "y": 320,
         "wires": []
     },
     {
@@ -501,7 +540,7 @@
         "type": "debug",
         "z": "caef1e7b5b399e80",
         "name": "debug 5",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": true,
@@ -570,7 +609,7 @@
         "type": "debug",
         "z": "caef1e7b5b399e80",
         "name": "debug 6",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": true,
@@ -634,9 +673,9 @@
         "z": "caef1e7b5b399e80",
         "name": "Backyard",
         "Homebridge": "Default Model",
-        "Manufacturer": "NRCHKB",
+        "Manufacturer": "NRCHKB - LaCrosse-TX141W",
         "Service": "TemperatureSensor",
-        "device": "Default Model69:62:B7:AE:38:D4NRCHKBBackyard0000008A",
+        "device": "Default Model69:62:B7:AE:38:D4NRCHKB - LaCrosse-TX141WBackyard0000008A",
         "conf": "7e647d67.f33acc",
         "sendInitialState": true,
         "x": 160,
@@ -656,10 +695,10 @@
         "tosidebar": true,
         "console": false,
         "tostatus": true,
-        "complete": "payload",
-        "targetType": "msg",
+        "complete": "true",
+        "targetType": "full",
         "statusVal": "payload",
-        "statusType": "auto",
+        "statusType": "msg",
         "x": 620,
         "y": 740,
         "wires": []
@@ -670,16 +709,14 @@
         "z": "caef1e7b5b399e80",
         "name": "Backyard Tree",
         "Homebridge": "Default Model",
-        "Manufacturer": "NRCHKB",
+        "Manufacturer": "NRCHKB - LaCrosse-TX141Bv3",
         "Service": "TemperatureSensor",
-        "device": "Default Model69:62:B7:AE:38:D4NRCHKBBackyard Tree0000008A",
+        "device": "Default Model69:62:B7:AE:38:D4NRCHKB - LaCrosse-TX141Bv3Backyard Tree0000008A",
         "conf": "7e647d67.f33acc",
         "x": 360,
         "y": 800,
         "wires": [
-            [
-                "c68bef6563c5d07e"
-            ]
+            []
         ]
     },
     {
@@ -740,7 +777,7 @@
         "type": "debug",
         "z": "caef1e7b5b399e80",
         "name": "Status",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": true,
@@ -772,7 +809,7 @@
         "type": "debug",
         "z": "caef1e7b5b399e80",
         "name": "Catch",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": true,
@@ -825,7 +862,7 @@
         "Manufacturer": "Tasmota",
         "Service": "Lightbulb",
         "device": "homebridge1C:22:3D:E3:CF:34TasmotaMaster00000043",
-        "conf": "557aec8e8c47e61e",
+        "conf": "7e647d67.f33acc",
         "sendInitialState": true,
         "x": 170,
         "y": 280,
@@ -2250,13 +2287,13 @@
         "id": "7ceb11204ab233ad",
         "type": "hb-resume",
         "z": "efb3c9c5f6bdfd6c",
-        "name": "Bunkie Lower",
+        "name": "Bunkie Fan",
         "Homebridge": "homebridge",
-        "Manufacturer": "WLED",
-        "Service": "Lightbulb",
-        "device": "homebridge0E:03:4B:B3:AF:4CWLEDBunkie Lower00000043",
+        "Manufacturer": "Tasmota",
+        "Service": "Fan",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaBunkie Fan00000040",
         "conf": "7e647d67.f33acc",
-        "x": 580,
+        "x": 570,
         "y": 680,
         "wires": [
             [
@@ -2351,14 +2388,14 @@
         "id": "2abd3edc55335405",
         "type": "hb-control",
         "z": "efb3c9c5f6bdfd6c",
-        "name": "Bunkie Lower",
+        "name": "Bunkie Fan",
         "Homebridge": "homebridge",
-        "Manufacturer": "WLED",
-        "Service": "Lightbulb",
-        "device": "homebridge0E:03:4B:B3:AF:4CWLEDBunkie Lower00000043",
+        "Manufacturer": "Tasmota",
+        "Service": "Fan",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaBunkie Fan00000040",
         "conf": "7e647d67.f33acc",
         "outputs": 0,
-        "x": 800,
+        "x": 790,
         "y": 680,
         "wires": []
     },
@@ -2449,5 +2486,160 @@
                 "e7671cdf7ca08bdb"
             ]
         ]
+    },
+    {
+        "id": "5a0779448d4dcdb3",
+        "type": "mqtt in",
+        "z": "4138921fd7b9a926",
+        "name": "",
+        "topic": "home/#",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "df5dd49178c517fa",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 180,
+        "wires": [
+            [
+                "4510eba830da4c9d"
+            ]
+        ]
+    },
+    {
+        "id": "d82488396ae950bf",
+        "type": "debug",
+        "z": "4138921fd7b9a926",
+        "name": "debug 17",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "device",
+        "statusType": "msg",
+        "x": 720,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "6f6d507ccce7460f",
+        "type": "switch",
+        "z": "4138921fd7b9a926",
+        "name": "",
+        "property": "shortTopic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "SYStoMQTT",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "version",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "LWT",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 4,
+        "x": 530,
+        "y": 180,
+        "wires": [
+            [
+                "d82488396ae950bf"
+            ],
+            [],
+            [
+                "1649c3dc535b26f2"
+            ],
+            [
+                "d7a34617ef5e9f31"
+            ]
+        ]
+    },
+    {
+        "id": "45cb1d621afc9b52",
+        "type": "debug",
+        "z": "4138921fd7b9a926",
+        "name": "debug 18",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "topic",
+        "statusType": "auto",
+        "x": 320,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "4510eba830da4c9d",
+        "type": "function",
+        "z": "4138921fd7b9a926",
+        "name": "function 3",
+        "func": "const [home, device, shortTopic] = msg.topic.split(\"/\");\nmsg.shortTopic = shortTopic;\nmsg.device = device;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 180,
+        "wires": [
+            [
+                "6f6d507ccce7460f",
+                "45cb1d621afc9b52"
+            ]
+        ]
+    },
+    {
+        "id": "d7a34617ef5e9f31",
+        "type": "debug",
+        "z": "4138921fd7b9a926",
+        "name": "debug 19",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "shortTopic",
+        "statusType": "msg",
+        "x": 720,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "1649c3dc535b26f2",
+        "type": "debug",
+        "z": "4138921fd7b9a926",
+        "name": "debug 20",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "device",
+        "statusType": "msg",
+        "x": 720,
+        "y": 200,
+        "wires": []
     }
 ]

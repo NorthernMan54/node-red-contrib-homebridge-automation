@@ -27,18 +27,9 @@ class HbBaseNode {
       this.on('hbReady', this.handleHbReady.bind(this))
     }
     this.on('close', this.handleClose.bind(this));
-    this.on('hbEvent', this.handleHBEventMessage.bind(this));
-  }
-
-  handleHBEventMessage(service) {
-    debug('hbEvent for', this.id, this.type, service.serviceName, JSON.stringify(service.values));
-
-    this.status({
-      text: JSON.stringify(service.values),
-      shape: 'dot',
-      fill: 'green',
-    });
-    this.send({ payload: service.values });
+    if (this.handleHBEventMessage) {
+      this.on('hbEvent', this.handleHBEventMessage.bind(this));
+    }
   }
 
   createMessage(service) {
