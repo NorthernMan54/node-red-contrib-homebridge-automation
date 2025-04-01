@@ -21,3 +21,4 @@ lerna-debug.log*
 .nyc_output
 test/node-red/.flows.json.backup
 test/node-red/.flows.json.backup
+test/node-red/.config.nodes.json.backup
