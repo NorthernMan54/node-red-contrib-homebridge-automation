@@ -81,6 +81,7 @@ class HBConfigNode {
       'Leak Sensor', 'Lightbulb', 'Lock Mechanism', 'Motion Sensor', 'Occupancy Sensor',
       'Outlet', 'Smoke Sensor', 'Speaker', 'Stateless Programmable Switch', 'Switch',
       'Television', 'Temperature Sensor', 'Thermostat', 'Contact Sensor',
+      'Window', 'Window Covering', 'Light Sensor'
     ]);
     return filterUnique(this.hbDevices)
       .filter(service => supportedTypes.has(service.humanType))
