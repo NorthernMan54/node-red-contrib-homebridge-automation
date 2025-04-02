@@ -49,8 +49,21 @@ class HbControlNode extends hbBaseNode {
         results.push({ Received: result.length });
       } else {
         // Handle other characteristics
+        try {
+          const result = await this.hbDevice.setCharacteristicsByTypes(filterIfOff(message.payload));
+          results.push(result.values);
+        } catch (error) {
+          console.log(error)
+          this.error(`Failed to set value for "${JSON.stringify(message.payload)}": ${error.message}`);
+          results.push({ 'Error': `Error: ${error.message}` });
+          fill = 'red';
+          this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
+        }
+
+        /*
         for (const key of Object.keys(message.payload)) {
           try {
+            debug('Setting value for', key, message.payload[key]);
             const result = await this.hbDevice.setCharacteristicByType(key, message.payload[key]);
             results.push({ [result.type]: result.value });
           } catch (error) {
@@ -60,7 +73,8 @@ class HbControlNode extends hbBaseNode {
             fill = 'red';
             this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
           }
-        }
+           
+        } */
       }
 
       // Update status
@@ -72,6 +86,13 @@ class HbControlNode extends hbBaseNode {
       done(`Unhandled error: ${error.message}`);
     }
   }
+}
+
+function filterIfOff(payload) {
+  if (payload.On === 0 || payload.On === false) {
+    return { On: payload.On }; // Only keep "On"
+  }
+  return payload; // Pass as is
 }
 
 module.exports = HbControlNode;

@@ -429,7 +429,7 @@
     },
     "node-red-contrib-homebridge-automation": {
         "name": "node-red-contrib-homebridge-automation",
-        "version": "0.2.1",
+        "version": "0.2.2",
         "local": true,
         "user": false,
         "nodes": {
