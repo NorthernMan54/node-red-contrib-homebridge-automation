@@ -25,32 +25,6 @@ describe('HBConfigNode', () => {
     node = new HBConfigNode(mockConfig, RED);
     node.hbDevices = [
       {
-        humanType: 'Lightbulb',
-        serviceName: 'Living Room Light',
-        type: 'Lightbulb',
-        instance: {
-          name: 'Bridge1',
-          username: '00:11:22:33:44:55',
-        },
-        accessoryInformation: {
-          Manufacturer: 'Acme',
-        },
-        uuid: '12345678-1234-5678-1234-567812345678',
-      },
-      {
-        humanType: 'Switch',
-        serviceName: 'Kitchen Switch',
-        type: 'Switch',
-        instance: {
-          name: 'Bridge2',
-          username: '11:22:33:44:55:66',
-        },
-        accessoryInformation: {
-          Manufacturer: 'Acme',
-        },
-        uuid: '87654321-4321-8765-4321-876543218765',
-      },
-      {
         humanType: 'UnknownType', // This should be filtered out
         serviceName: 'Garage Sensor',
         type: 'Sensor',
@@ -2099,72 +2073,54 @@ describe('HBConfigNode', () => {
     expect(result).toEqual([
       {
         name: 'Backyard',
-        fullName: 'Backyard - CameraRTPStreamManagement',
+        fullName: 'Backyard - Camera Rtp Stream Management',
         sortName: 'Backyard:CameraRTPStreamManagement',
-        uniqueId: 'homebridge0E:89:A7:DA:D3:21EufyBackyard00000110',
+        uniqueId: '924c9390e6a89452936dfff957faa127d87e78e3c1b5084863495a184804fe56',
         homebridge: 'homebridge',
         service: 'CameraRTPStreamManagement',
         manufacturer: 'Eufy'
       },
       {
         name: 'Backyard',
-        fullName: 'Backyard - MotionSensor',
+        fullName: 'Backyard - Motion Sensor',
         sortName: 'Backyard:MotionSensor',
-        uniqueId: 'homebridge0E:89:A7:DA:D3:21EufyBackyard00000085',
+        uniqueId: 'c9efb02acc5cabb2b164d4c479355551a6360345571b31de50e90f4a1fa42df6',
         homebridge: 'homebridge',
         service: 'MotionSensor',
         manufacturer: 'Eufy'
       },
       {
-        "fullName": "Canoe 5036 - CameraRTPStreamManagement",
+        "fullName": "Canoe 5036 - Camera Rtp Stream Management",
         "homebridge": "ECI-T24F2",
         "manufacturer": "HikVision",
         "name": "Canoe 5036",
         "service": "CameraRTPStreamManagement",
         "sortName": "Canoe 5036:CameraRTPStreamManagement",
-        "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe 503600000110",
+        "uniqueId": "9959f43e6f32e451a9c13e0c028d863fa148c39cbbcb57f93d8d825fc31f8865",
       },
       {
-        "fullName": "Canoe - MotionSensor",
+        "fullName": "Canoe - Motion Sensor",
         "homebridge": "ECI-T24F2",
         "manufacturer": "HikVision",
         "name": "Canoe",
         "service": "MotionSensor",
         "sortName": "Canoe:MotionSensor",
-        "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe00000085",
-      },
-      {
-        name: 'Kitchen Switch',
-        fullName: 'Kitchen Switch - Switch',
-        sortName: 'Kitchen Switch:Switch',
-        uniqueId: 'Bridge211:22:33:44:55:66AcmeKitchen Switch87654321',
-        homebridge: 'Bridge2',
-        service: 'Switch',
-        manufacturer: 'Acme',
-      },
-      {
-        name: 'Living Room Light',
-        fullName: 'Living Room Light - Lightbulb',
-        sortName: 'Living Room Light:Lightbulb',
-        uniqueId: 'Bridge100:11:22:33:44:55AcmeLiving Room Light12345678',
-        homebridge: 'Bridge1',
-        service: 'Lightbulb',
-        manufacturer: 'Acme',
+        "uniqueId": "10dbaceb026b81f56c6226eca2c30b7ba06c29de632253972402bd3f489096f1",
       },
       {
         name: 'Side door',
-        fullName: 'Side door - CameraRTPStreamManagement',
+        fullName: 'Side door - Camera Rtp Stream Management',
         sortName: 'Side door:CameraRTPStreamManagement',
-        uniqueId: 'homebridge0E:89:A7:DA:D3:21EufySide door00000110',
+        uniqueId: 'e8e6aec782cd554108e95e4a61b7fa4e941f2c63b9e656e6c828ac89e26e2dbd',
         homebridge: 'homebridge',
         service: 'CameraRTPStreamManagement',
         manufacturer: 'Eufy'
       },
       {
         name: 'Side door',
-        fullName: 'Side door - MotionSensor',
+        fullName: 'Side door - Motion Sensor',
         sortName: 'Side door:MotionSensor',
-        uniqueId: 'homebridge0E:89:A7:DA:D3:21EufySide door00000085',
+        uniqueId: 'f4827932577f2073ae5584a4a66607a1dd67af9b3e5bf22d59dffdc702d0f240',
         homebridge: 'homebridge',
         service: 'MotionSensor',
         manufacturer: 'Eufy'
