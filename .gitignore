@@ -21,3 +21,4 @@ lerna-debug.log*
 .nyc_output
 test/node-red/.*.backup
 test/node-red/.config.*
+src/homebridge-automation-endpoints.json

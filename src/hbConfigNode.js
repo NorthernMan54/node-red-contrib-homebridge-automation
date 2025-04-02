@@ -1,34 +1,35 @@
 const { HapClient } = require('@homebridge/hap-client');
 const debug = require('debug')('hapNodeRed:hbConfigNode');
+const fs = require('fs');
+const path = require('path');
 
 class HBConfigNode {
   constructor(config, RED) {
-    if (!config.jest) {
-      RED.nodes.createNode(this, config);
+    RED.nodes.createNode(this, config);
 
-      // Initialize properties
-      this.username = config.username;
-      this.macAddress = config.macAddress || '';
-      this.users = {};
-      this.homebridge = null;
-      this.evDevices = [];
-      this.ctDevices = [];
-      this.hbDevices = [];
-      this.clientNodes = [];
-      //  this.log = new Log(console, true);
-      this.discoveryTimeout = null;
+    // Initialize properties
+    this.username = config.username;
+    this.macAddress = config.macAddress || '';
+    this.users = {};
+    this.homebridge = null;
+    this.evDevices = [];
+    this.ctDevices = [];
+    this.hbDevices = [];
+    this.clientNodes = [];
+    //  this.log = new Log(console, true);
+    this.discoveryTimeout = null;
 
-      // Initialize HAP client
-      this.hapClient = new HapClient({
-        config: { debug: false },
-        pin: config.username
-      });
+    // Initialize HAP client
+    this.hapClient = new HapClient({
+      config: { debug: false },
+      pin: config.username
+    });
 
-      this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
-      this.hapClient.on('discovery-ended', this.hapClient.refreshInstances);
+    this.hapClient.on('instance-discovered', this.waitForNoMoreDiscoveries);
+    this.hapClient.on('discovery-ended', this.hapClient.refreshInstances);
+    if (this.on)
       this.on('close', this.close.bind(this));
-      this.refreshInProcess = true; // Prevents multiple refreshes, hapClient kicks of a discovery on start
-    }
+    this.refreshInProcess = true; // Prevents multiple refreshes, hapClient kicks of a discovery on start
   }
 
   /**
@@ -52,9 +53,15 @@ class HBConfigNode {
    */
   async handleReady() {
     const updatedDevices = await this.hapClient.getAllServices();
+    if (this.debug && updatedDevices && updatedDevices.length) {
+      const fs = require('fs');
+      const storagePath = path.join(__dirname, '/homebridge-automation-endpoints.json');
+      this.warn(`Writing Homebridge endpoints to ${storagePath}`);
+      fs.writeFileSync(storagePath, JSON.stringify(updatedDevices, null, 2));
+    }
     // Fix broken uniqueId's from HAP-Client
     updatedDevices.forEach((service) => {
-      const friendlyName = (service.serviceName ? service.serviceName : service.accessoryInformation.Name);
+      const friendlyName = (service.accessoryInformation.Name ? service.accessoryInformation.Name : service.serviceName);
       service.uniqueId = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${friendlyName}${service.uuid.slice(0, 8)}`;
     });
     updatedDevices.forEach((updatedService, index) => {
@@ -86,9 +93,9 @@ class HBConfigNode {
     return filterUnique(this.hbDevices)
       .filter(service => supportedTypes.has(service.humanType))
       .map(service => ({
-        name: (service.serviceName ? service.serviceName : service.accessoryInformation.Name),
-        fullName: `${(service.serviceName ? service.serviceName : service.accessoryInformation.Name)} - ${service.humanType}`,
-        sortName: `${(service.serviceName ? service.serviceName : service.accessoryInformation.Name)}:${service.type}`,
+        name: (service.accessoryInformation.Name ? service.accessoryInformation.Name : service.serviceName),
+        fullName: `${(service.accessoryInformation.Name ? service.accessoryInformation.Name : service.serviceName)} - ${service.humanType}`,
+        sortName: `${(service.accessoryInformation.Name ? service.accessoryInformation.Name : service.serviceName)}:${service.type}`,
         uniqueId: service.uniqueId,
         homebridge: service.instance.name,
         service: service.type,
