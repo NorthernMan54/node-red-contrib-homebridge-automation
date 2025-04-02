@@ -54,10 +54,13 @@ class HBConfigNode {
   async handleReady() {
     const updatedDevices = await this.hapClient.getAllServices();
     if (this.debug && updatedDevices && updatedDevices.length) {
-      const fs = require('fs');
-      const storagePath = path.join(__dirname, '/homebridge-automation-endpoints.json');
-      this.warn(`Writing Homebridge endpoints to ${storagePath}`);
-      fs.writeFileSync(storagePath, JSON.stringify(updatedDevices, null, 2));
+      try {
+        const storagePath = path.join(process.cwd(), '/homebridge-automation-endpoints.json');
+        this.warn(`Writing Homebridge endpoints to ${storagePath}`);
+        fs.writeFileSync(storagePath, JSON.stringify(updatedDevices, null, 2));
+      } catch (e) {
+        this.error(`Error writing Homebridge endpoints to file: ${e.message}`);
+      } 
     }
     // Fix broken uniqueId's from HAP-Client
     updatedDevices.forEach((service) => {
