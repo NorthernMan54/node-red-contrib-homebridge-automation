@@ -16,7 +16,7 @@ jest.mock('@homebridge/hap-client', () => {
   };
 });
 
-describe.skip('Issue 142', () => {
+describe('Issue 142', () => {
   let mockConfig;
   let RED;
   let node;
@@ -90,7 +90,7 @@ describe('HBConfigNode', () => {
   });
 });
 
-describe.only('from files', () => {
+describe('from files', () => {
   let mockConfig;
   let RED;
   let node;
@@ -114,10 +114,10 @@ describe.only('from files', () => {
     node.log = console.log;
   });
 
-  test('Retrieve devices, and compare with current (v2)', async () => {
-    console.log('Reading Homebridge endpoints from file', process.cwd());
+  test.skip('Retrieve devices, and compare with current (v2)', async () => {
+    // console.log('Reading Homebridge endpoints from file', process.cwd());
     var storagePath = path.join(process.cwd(), 'test/homebridge-automation-endpoints.json');
-    console.log(`Reading Homebridge endpoints from ${storagePath}`);
+    // console.log(`Reading Homebridge endpoints from ${storagePath}`);
     const fileHbDevices = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
 
     node.hapClient.getAllServices.mockResolvedValue(fileHbDevices);
@@ -126,7 +126,7 @@ describe.only('from files', () => {
     const result = node.toList({ perms: 'ev' });
 
     storagePath = path.join(process.cwd(), 'test/homebridge-automation-hbDevices-v2.json');
-    console.log(`Reading Homebridge results from ${storagePath}`);
+    // console.log(`Reading Homebridge results from ${storagePath}`);
     const fileResult = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
     expect(result.length).toBe(107);
     expect(result).toEqual(fileResult);
@@ -138,9 +138,9 @@ describe.only('from files', () => {
   });
 
   test('Retrieve devices, and compare with future (v3)', async () => {
-    console.log('Reading Homebridge endpoints from file', process.cwd());
+    // console.log('Reading Homebridge endpoints from file', process.cwd());
     var storagePath = path.join(process.cwd(), 'test/homebridge-automation-endpoints.json');
-    console.log(`Reading Homebridge endpoints from ${storagePath}`);
+    // console.log(`Reading Homebridge endpoints from ${storagePath}`);
     const fileHbDevices = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
 
     node.hapClient.getAllServices.mockResolvedValue(fileHbDevices);
@@ -149,7 +149,7 @@ describe.only('from files', () => {
     const result = node.toList({ perms: 'ev' });
 
     storagePath = path.join(process.cwd(), 'test/homebridge-automation-hbDevices-v3.json');
-    console.log(`Reading Homebridge results from ${storagePath}`);
+    // console.log(`Reading Homebridge results from ${storagePath}`);
     const fileResult = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
     expect(result.length).toBe(107);
     expect(result).toEqual(fileResult);
