@@ -199,7 +199,7 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 - Add common supported types Window, Window Covering, Light Sensor #151, tks @HDeKnop
 - HB-Control Node Turns Off then On when this message is received #152
-- Added `Debug logging` that creates a file `homebridge-automation-endpoints.json`, which contains all the homebridge devices discovered.  It can be used as part of troubleshooting device issues.
+- Added `Debug logging` configuration option that creates a file `homebridge-automation-endpoints.json`, which contains all the homebridge devices discovered.  It can be used as part of troubleshooting device issues.
 
 # Backlog / Roadmap
 
