@@ -53,7 +53,7 @@ class HBConfigNode {
    */
   async handleReady() {
     const updatedDevices = await this.hapClient.getAllServices();
-    if (this.debug && updatedDevices && updatedDevices.length) {
+    if (this.debug && updatedDevices && updatedDevices.length && process.uptime() < 300) {
       try {
         const storagePath = path.join(process.cwd(), '/homebridge-automation-endpoints.json');
         this.warn(`Writing Homebridge endpoints to ${storagePath}`);
