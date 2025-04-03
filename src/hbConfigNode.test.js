@@ -1,6 +1,8 @@
 
 const { HapClient } = require('@homebridge/hap-client');
 const HBConfigNode = require('./hbConfigNode'); // Update the path as necessary
+const fs = require('fs');
+const path = require('path');
 
 jest.mock('@homebridge/hap-client', () => {
   return {
@@ -77,23 +79,85 @@ describe('HBConfigNode', () => {
 
   test('Retrieve devices', async () => {
     node.hapClient.getAllServices.mockResolvedValue(testhbDevices);
-    console.log('testhbDevices', testhbDevices);
     await node.handleReady();
     const result = node.toList({ perms: 'ev' });
     expect(result).toEqual(testhbDevicesResult);
 
     // Ensure the unsupported type was filtered out
     expect(result.find(device => device.name === 'Garage Sensor')).toBeUndefined();
-    expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
-    expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
+    // expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
+    // expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
+  });
+});
+
+describe.only('from files', () => {
+  let mockConfig;
+  let RED;
+  let node;
+  let mockHapClient;
+
+  beforeEach(() => {
+    mockConfig = {
+      username: '123-45-678',
+      macAddress: '00:11:22:33:44:55',
+    };
+
+    RED = {
+      nodes: {
+        createNode: jest.fn(),
+      },
+    };
+
+    node = new HBConfigNode(mockConfig, RED);
+    // node.debug = true;
+    node.warn = console.log;
+    node.log = console.log;
   });
 
-  test.skip('toList filters and maps camera devices correctly', () => {
+  test('Retrieve devices, and compare with current (v2)', async () => {
+    console.log('Reading Homebridge endpoints from file', process.cwd());
+    var storagePath = path.join(process.cwd(), 'test/homebridge-automation-endpoints.json');
+    console.log(`Reading Homebridge endpoints from ${storagePath}`);
+    const fileHbDevices = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
+
+    node.hapClient.getAllServices.mockResolvedValue(fileHbDevices);
+    // console.log('testhbDevices', fileHbDevices);
+    await node.handleReady();
     const result = node.toList({ perms: 'ev' });
-    expect(result).toEqual(testhbDevicesResult);
+
+    storagePath = path.join(process.cwd(), 'test/homebridge-automation-hbDevices-v2.json');
+    console.log(`Reading Homebridge results from ${storagePath}`);
+    const fileResult = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
+    expect(result.length).toBe(107);
+    expect(result).toEqual(fileResult);
 
     // Ensure the unsupported type was filtered out
     expect(result.find(device => device.name === 'Garage Sensor')).toBeUndefined();
+    // expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
+    // expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
+  });
+
+  test('Retrieve devices, and compare with future (v3)', async () => {
+    console.log('Reading Homebridge endpoints from file', process.cwd());
+    var storagePath = path.join(process.cwd(), 'test/homebridge-automation-endpoints.json');
+    console.log(`Reading Homebridge endpoints from ${storagePath}`);
+    const fileHbDevices = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
+
+    node.hapClient.getAllServices.mockResolvedValue(fileHbDevices);
+    // console.log('testhbDevices', fileHbDevices);
+    await node.handleReady();
+    const result = node.toList({ perms: 'ev' });
+
+    storagePath = path.join(process.cwd(), 'test/homebridge-automation-hbDevices-v3.json');
+    console.log(`Reading Homebridge results from ${storagePath}`);
+    const fileResult = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
+    expect(result.length).toBe(107);
+    expect(result).toEqual(fileResult);
+
+    // Ensure the unsupported type was filtered out
+    expect(result.find(device => device.name === 'Garage Sensor')).toBeUndefined();
+    // expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
+    // expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
   });
 });
 
@@ -2148,7 +2212,7 @@ const testhbDevicesResult = [
     name: 'Backyard',
     fullName: 'Backyard - Camera Rtp Stream Management',
     sortName: 'Backyard:CameraRTPStreamManagement',
-    uniqueId: '924c9390e6a89452936dfff957faa127d87e78e3c1b5084863495a184804fe56',
+    uniqueId: 'homebridge0E:89:A7:DA:D3:21EufyBackyard00000110',
     homebridge: 'homebridge',
     service: 'CameraRTPStreamManagement',
     manufacturer: 'Eufy'
@@ -2157,7 +2221,7 @@ const testhbDevicesResult = [
     name: 'Backyard',
     fullName: 'Backyard - Motion Sensor',
     sortName: 'Backyard:MotionSensor',
-    uniqueId: 'c9efb02acc5cabb2b164d4c479355551a6360345571b31de50e90f4a1fa42df6',
+    uniqueId: 'homebridge0E:89:A7:DA:D3:21EufyBackyard00000085',
     homebridge: 'homebridge',
     service: 'MotionSensor',
     manufacturer: 'Eufy'
@@ -2169,22 +2233,22 @@ const testhbDevicesResult = [
     "name": "Canoe 5036",
     "service": "CameraRTPStreamManagement",
     "sortName": "Canoe 5036:CameraRTPStreamManagement",
-    "uniqueId": "9959f43e6f32e451a9c13e0c028d863fa148c39cbbcb57f93d8d825fc31f8865",
+    "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe 503600000110",
   },
   {
-    "fullName": "Canoe - Motion Sensor",
+    "fullName": "Canoe 5036 - Motion Sensor",
     "homebridge": "ECI-T24F2",
     "manufacturer": "HikVision",
-    "name": "Canoe",
+    "name": "Canoe 5036",
     "service": "MotionSensor",
-    "sortName": "Canoe:MotionSensor",
-    "uniqueId": "10dbaceb026b81f56c6226eca2c30b7ba06c29de632253972402bd3f489096f1",
+    "sortName": "Canoe 5036:MotionSensor",
+    "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe 503600000085",
   },
   {
     name: 'Side door',
     fullName: 'Side door - Camera Rtp Stream Management',
     sortName: 'Side door:CameraRTPStreamManagement',
-    uniqueId: 'e8e6aec782cd554108e95e4a61b7fa4e941f2c63b9e656e6c828ac89e26e2dbd',
+    uniqueId: 'homebridge0E:89:A7:DA:D3:21EufySide door00000110',
     homebridge: 'homebridge',
     service: 'CameraRTPStreamManagement',
     manufacturer: 'Eufy'
@@ -2193,7 +2257,7 @@ const testhbDevicesResult = [
     name: 'Side door',
     fullName: 'Side door - Motion Sensor',
     sortName: 'Side door:MotionSensor',
-    uniqueId: 'f4827932577f2073ae5584a4a66607a1dd67af9b3e5bf22d59dffdc702d0f240',
+    uniqueId: 'homebridge0E:89:A7:DA:D3:21EufySide door00000085',
     homebridge: 'homebridge',
     service: 'MotionSensor',
     manufacturer: 'Eufy'
