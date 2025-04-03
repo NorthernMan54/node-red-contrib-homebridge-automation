@@ -10,6 +10,7 @@ class HBConfigNode {
     // Initialize properties
     this.username = config.username;
     this.macAddress = config.macAddress || '';
+    this.debugLogging = config.debug || false;
     this.users = {};
     this.homebridge = null;
     this.evDevices = [];
@@ -53,7 +54,7 @@ class HBConfigNode {
    */
   async handleReady() {
     const updatedDevices = await this.hapClient.getAllServices();
-    if (this.debug && updatedDevices && updatedDevices.length && process.uptime() < 300) {
+    if (this.debugLogging && updatedDevices && updatedDevices.length && process.uptime() < 300) {
       try {
         const storagePath = path.join(process.cwd(), '/homebridge-automation-endpoints.json');
         this.warn(`Writing Homebridge endpoints to ${storagePath}`);

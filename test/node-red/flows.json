@@ -51,7 +51,8 @@
         "id": "7e647d67.f33acc",
         "type": "hb-conf",
         "username": "031-45-154",
-        "macAddress": ""
+        "macAddress": "",
+        "debug": true
     },
     {
         "id": "df5dd49178c517fa",
