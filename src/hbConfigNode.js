@@ -60,7 +60,7 @@ class HBConfigNode {
         fs.writeFileSync(storagePath, JSON.stringify(updatedDevices, null, 2));
       } catch (e) {
         this.error(`Error writing Homebridge endpoints to file: ${e.message}`);
-      } 
+      }
     }
     // Fix broken uniqueId's from HAP-Client
     updatedDevices.forEach((service) => {
@@ -136,10 +136,12 @@ class HBConfigNode {
   async connectClientNodes() {
     debug('connect %s nodes', Object.keys(this.clientNodes).length);
     for (const [key, clientNode] of Object.entries(this.clientNodes)) {
-      // debug('_Register: %s type: %s', clientNode.type, clientNode.name, clientNode.instance);
-      const matchedDevice = this.hbDevices.find(service =>
-        clientNode.device === `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`
-      );
+      // debug('_Register: %s type: "%s" "%s" "%s"', clientNode.type, clientNode.name, clientNode.instance, clientNode.device);
+      const matchedDevice = this.hbDevices.find(service => {
+        const friendlyName = (service.accessoryInformation.Name ? service.accessoryInformation.Name : service.serviceName);
+        const deviceIdentifier = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${friendlyName}${service.uuid.slice(0, 8)}`;
+        return clientNode.device === deviceIdentifier;
+      });
 
       if (matchedDevice) {
         clientNode.hbDevice = matchedDevice;
@@ -147,7 +149,7 @@ class HBConfigNode {
         clientNode.emit('hbReady', matchedDevice);
         debug('_Registered: %s type: %s', clientNode.type, matchedDevice.type, matchedDevice.serviceName);
       } else {
-        this.error(`ERROR: Device registration failed '${clientNode.fullName}'`);
+        this.error(`ERROR: Device registration failed '${clientNode.fullName}' - '${clientNode.device}'`);
       }
     };
 

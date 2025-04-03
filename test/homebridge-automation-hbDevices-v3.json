@@ -270,24 +270,6 @@
     "manufacturer": "Tasmota"
   },
   {
-    "name": "DEVICE Sidedoor",
-    "fullName": "DEVICE Sidedoor - Camera Rtp Stream Management",
-    "sortName": "DEVICE Sidedoor:CameraRTPStreamManagement",
-    "uniqueId": "homebridge0E:89:A7:DA:D3:21Default-ManufacturerDEVICE Sidedoor00000110",
-    "homebridge": "homebridge",
-    "service": "CameraRTPStreamManagement",
-    "manufacturer": "Default-Manufacturer"
-  },
-  {
-    "name": "DEVICE Sidedoor",
-    "fullName": "DEVICE Sidedoor - Motion Sensor",
-    "sortName": "DEVICE Sidedoor:MotionSensor",
-    "uniqueId": "homebridge0E:89:A7:DA:D3:21Default-ManufacturerDEVICE Sidedoor00000085",
-    "homebridge": "homebridge",
-    "service": "MotionSensor",
-    "manufacturer": "Default-Manufacturer"
-  },
-  {
     "name": "Dining Room Chandelier",
     "fullName": "Dining Room Chandelier - Lightbulb",
     "sortName": "Dining Room Chandelier:Lightbulb",
@@ -819,6 +801,15 @@
     "manufacturer": "SONOFF"
   },
   {
+    "name": "Side door",
+    "fullName": "Side door - Camera Rtp Stream Management",
+    "sortName": "Side door:CameraRTPStreamManagement",
+    "uniqueId": "homebridge0E:89:A7:DA:D3:21EufySide door00000110",
+    "homebridge": "homebridge",
+    "service": "CameraRTPStreamManagement",
+    "manufacturer": "Eufy"
+  },
+  {
     "name": "Side Door",
     "fullName": "Side Door - Contact Sensor",
     "sortName": "Side Door:ContactSensor",
@@ -826,6 +817,15 @@
     "homebridge": "homebridge",
     "service": "ContactSensor",
     "manufacturer": "SONOFF"
+  },
+  {
+    "name": "Side door",
+    "fullName": "Side door - Motion Sensor",
+    "sortName": "Side door:MotionSensor",
+    "uniqueId": "homebridge0E:89:A7:DA:D3:21EufySide door00000085",
+    "homebridge": "homebridge",
+    "service": "MotionSensor",
+    "manufacturer": "Eufy"
   },
   {
     "name": "Small Fridge",

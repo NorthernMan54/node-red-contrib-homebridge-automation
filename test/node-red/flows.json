@@ -11,7 +11,7 @@
         "id": "ddaa42d2292b69e2",
         "type": "tab",
         "label": "Flow 2",
-        "disabled": false,
+        "disabled": true,
         "info": "",
         "env": []
     },
@@ -36,6 +36,14 @@
         "type": "tab",
         "label": "Flow 5",
         "disabled": true,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "92f59d974b9c8a86",
+        "type": "tab",
+        "label": "Camera Test",
+        "disabled": false,
         "info": "",
         "env": []
     },
@@ -2773,5 +2781,279 @@
         "x": 720,
         "y": 200,
         "wires": []
+    },
+    {
+        "id": "6df154716efd4949",
+        "type": "hb-event",
+        "z": "92f59d974b9c8a86",
+        "name": "Side door",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Eufy",
+        "Service": "MotionSensor",
+        "device": "homebridge0E:89:A7:DA:D3:21EufySide door00000085",
+        "conf": "7e647d67.f33acc",
+        "sendInitialState": true,
+        "x": 100,
+        "y": 220,
+        "wires": [
+            [
+                "d376945f7d6314f9",
+                "943911317b27b4bc"
+            ]
+        ]
+    },
+    {
+        "id": "d376945f7d6314f9",
+        "type": "switch",
+        "z": "92f59d974b9c8a86",
+        "name": "",
+        "property": "payload.MotionDetected",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 270,
+        "y": 220,
+        "wires": [
+            [
+                "af0d07b6f7fc7582"
+            ]
+        ]
+    },
+    {
+        "id": "af0d07b6f7fc7582",
+        "type": "change",
+        "z": "92f59d974b9c8a86",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "date"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 220,
+        "wires": [
+            [
+                "769d2de2c6bd3544"
+            ]
+        ]
+    },
+    {
+        "id": "769d2de2c6bd3544",
+        "type": "hb-control",
+        "z": "92f59d974b9c8a86",
+        "name": "Side door",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Eufy",
+        "Service": "CameraRTPStreamManagement",
+        "device": "homebridge0E:89:A7:DA:D3:21EufySide door00000110",
+        "conf": "7e647d67.f33acc",
+        "outputs": 1,
+        "x": 660,
+        "y": 220,
+        "wires": [
+            [
+                "1c18c4d5c4cd94db"
+            ]
+        ]
+    },
+    {
+        "id": "1c18c4d5c4cd94db",
+        "type": "debug",
+        "z": "92f59d974b9c8a86",
+        "name": "debug 21",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 840,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "0f20a38b99769b49",
+        "type": "hb-event",
+        "z": "92f59d974b9c8a86",
+        "name": "Driveway 8E52",
+        "Homebridge": "ECI-T24F2",
+        "Manufacturer": "HikVision",
+        "Service": "MotionSensor",
+        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000085",
+        "conf": "7e647d67.f33acc",
+        "sendInitialState": true,
+        "x": 120,
+        "y": 340,
+        "wires": [
+            [
+                "6529d84b67c5459c",
+                "943911317b27b4bc"
+            ]
+        ]
+    },
+    {
+        "id": "6529d84b67c5459c",
+        "type": "switch",
+        "z": "92f59d974b9c8a86",
+        "name": "",
+        "property": "payload.MotionDetected",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 270,
+        "y": 340,
+        "wires": [
+            [
+                "339bbd909e720f6a"
+            ]
+        ]
+    },
+    {
+        "id": "339bbd909e720f6a",
+        "type": "change",
+        "z": "92f59d974b9c8a86",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "date"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 340,
+        "wires": [
+            [
+                "6376743020f33cad"
+            ]
+        ]
+    },
+    {
+        "id": "6376743020f33cad",
+        "type": "hb-control",
+        "z": "92f59d974b9c8a86",
+        "name": "Driveway 8E52",
+        "Homebridge": "ECI-T24F2",
+        "Manufacturer": "HikVision",
+        "Service": "CameraRTPStreamManagement",
+        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000110",
+        "conf": "7e647d67.f33acc",
+        "outputs": 1,
+        "x": 680,
+        "y": 340,
+        "wires": [
+            [
+                "1c18c4d5c4cd94db"
+            ]
+        ]
+    },
+    {
+        "id": "6ffdb50055b87417",
+        "type": "inject",
+        "z": "92f59d974b9c8a86",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{ \"MotionDetected\": 1 }",
+        "payloadType": "json",
+        "x": 180,
+        "y": 500,
+        "wires": [
+            [
+                "6529d84b67c5459c"
+            ]
+        ]
+    },
+    {
+        "id": "943911317b27b4bc",
+        "type": "debug",
+        "z": "92f59d974b9c8a86",
+        "name": "debug 22",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 700,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "ce6f12b351ca78bc",
+        "type": "inject",
+        "z": "92f59d974b9c8a86",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{ \"MotionDetected\": 1 }",
+        "payloadType": "json",
+        "x": 160,
+        "y": 60,
+        "wires": [
+            [
+                "d376945f7d6314f9"
+            ]
+        ]
     }
 ]
