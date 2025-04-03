@@ -2,6 +2,7 @@ const { HapClient } = require('@homebridge/hap-client');
 const debug = require('debug')('hapNodeRed:hbConfigNode');
 const fs = require('fs');
 const path = require('path');
+const process = require('process');
 
 class HBConfigNode {
   constructor(config, RED) {

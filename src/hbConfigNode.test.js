@@ -1,8 +1,8 @@
-
-const { HapClient } = require('@homebridge/hap-client');
+// File: src/hbConfigNode.test.js
 const HBConfigNode = require('./hbConfigNode'); // Update the path as necessary
 const fs = require('fs');
 const path = require('path');
+const process = require('process');
 
 jest.mock('@homebridge/hap-client', () => {
   return {
@@ -20,7 +20,6 @@ describe('Issue 142', () => {
   let mockConfig;
   let RED;
   let node;
-  let mockHapClient;
 
   beforeEach(() => {
     mockConfig = {
@@ -57,7 +56,6 @@ describe('HBConfigNode', () => {
   let mockConfig;
   let RED;
   let node;
-  let mockHapClient;
 
   beforeEach(() => {
     mockConfig = {
@@ -94,7 +92,6 @@ describe('from files', () => {
   let mockConfig;
   let RED;
   let node;
-  let mockHapClient;
 
   beforeEach(() => {
     mockConfig = {
