@@ -35,7 +35,7 @@
         "id": "4138921fd7b9a926",
         "type": "tab",
         "label": "Flow 5",
-        "disabled": true,
+        "disabled": false,
         "info": "",
         "env": []
     },
@@ -43,7 +43,7 @@
         "id": "92f59d974b9c8a86",
         "type": "tab",
         "label": "Camera Test",
-        "disabled": false,
+        "disabled": true,
         "info": "",
         "env": []
     },
@@ -53,37 +53,6 @@
         "username": "031-45-154",
         "macAddress": "",
         "debug": true
-    },
-    {
-        "id": "df5dd49178c517fa",
-        "type": "mqtt-broker",
-        "name": "",
-        "broker": "mqtt.local",
-        "port": "1883",
-        "clientid": "",
-        "autoConnect": true,
-        "usetls": false,
-        "protocolVersion": "4",
-        "keepalive": "60",
-        "cleansession": true,
-        "autoUnsubscribe": true,
-        "birthTopic": "",
-        "birthQos": "0",
-        "birthRetain": "false",
-        "birthPayload": "",
-        "birthMsg": {},
-        "closeTopic": "",
-        "closeQos": "0",
-        "closeRetain": "false",
-        "closePayload": "",
-        "closeMsg": {},
-        "willTopic": "",
-        "willQos": "0",
-        "willRetain": "false",
-        "willPayload": "",
-        "willMsg": {},
-        "userProps": "",
-        "sessionExpiry": ""
     },
     {
         "id": "902c5887b6877df6",
@@ -2629,28 +2598,41 @@
         ]
     },
     {
-        "id": "5a0779448d4dcdb3",
-        "type": "mqtt in",
+        "id": "50af5bb963e4a186",
+        "type": "hb-resume",
         "z": "4138921fd7b9a926",
-        "name": "",
-        "topic": "home/#",
-        "qos": "2",
-        "datatype": "auto-detect",
-        "broker": "df5dd49178c517fa",
-        "nl": false,
-        "rap": true,
-        "rh": 0,
-        "inputs": 0,
-        "x": 130,
-        "y": 180,
+        "name": "Floor Lamp One",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Signify Netherlands B.V.",
+        "Service": "Lightbulb",
+        "device": "homebridgeCC:22:3D:E3:CF:33Signify Netherlands B.V.Floor Lamp One00000043",
+        "conf": "7e647d67.f33acc",
+        "x": 500,
+        "y": 80,
         "wires": [
             [
-                "4510eba830da4c9d"
+                "8ba7a5a4aa28dc2f",
+                "29580d01ef2e651d"
             ]
         ]
     },
     {
-        "id": "d82488396ae950bf",
+        "id": "8ba7a5a4aa28dc2f",
+        "type": "hb-control",
+        "z": "4138921fd7b9a926",
+        "name": "Floor Lamp One",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Signify Netherlands B.V.",
+        "Service": "Lightbulb",
+        "device": "homebridgeCC:22:3D:E3:CF:33Signify Netherlands B.V.Floor Lamp One00000043",
+        "conf": "7e647d67.f33acc",
+        "outputs": 0,
+        "x": 720,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "29580d01ef2e651d",
         "type": "debug",
         "z": "4138921fd7b9a926",
         "name": "debug 17",
@@ -2660,128 +2642,242 @@
         "tostatus": true,
         "complete": "payload",
         "targetType": "msg",
-        "statusVal": "device",
-        "statusType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
         "x": 720,
         "y": 140,
         "wires": []
     },
     {
-        "id": "6f6d507ccce7460f",
-        "type": "switch",
+        "id": "b3c8e4dcd5b62de4",
+        "type": "inject",
         "z": "4138921fd7b9a926",
         "name": "",
-        "property": "shortTopic",
-        "propertyType": "msg",
-        "rules": [
+        "props": [
             {
-                "t": "eq",
-                "v": "SYStoMQTT",
-                "vt": "str"
+                "p": "payload"
             },
             {
-                "t": "eq",
-                "v": "version",
+                "p": "topic",
                 "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "LWT",
-                "vt": "str"
-            },
-            {
-                "t": "else"
             }
         ],
-        "checkall": "false",
-        "repair": false,
-        "outputs": 4,
-        "x": 530,
-        "y": 180,
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": true}",
+        "payloadType": "json",
+        "x": 170,
+        "y": 80,
         "wires": [
             [
-                "d82488396ae950bf"
-            ],
-            [],
-            [
-                "1649c3dc535b26f2"
-            ],
-            [
-                "d7a34617ef5e9f31"
+                "50af5bb963e4a186"
             ]
         ]
     },
     {
-        "id": "45cb1d621afc9b52",
+        "id": "a74ef133a980c5f3",
+        "type": "inject",
+        "z": "4138921fd7b9a926",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"On\": false}",
+        "payloadType": "json",
+        "x": 170,
+        "y": 140,
+        "wires": [
+            [
+                "50af5bb963e4a186"
+            ]
+        ]
+    },
+    {
+        "id": "1e6b8797f5279a1f",
+        "type": "inject",
+        "z": "4138921fd7b9a926",
+        "name": "{\"Brightness\":40,\"On\":true,\"ColorTemperature\":242}",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"Brightness\":40,\"On\":true,\"ColorTemperature\":242}",
+        "payloadType": "json",
+        "x": 290,
+        "y": 260,
+        "wires": [
+            [
+                "50af5bb963e4a186"
+            ]
+        ]
+    },
+    {
+        "id": "4bb2bae9fe4ffbbb",
+        "type": "hb-status",
+        "z": "4138921fd7b9a926",
+        "name": "Floor Lamp One",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Signify Netherlands B.V.",
+        "Service": "Lightbulb",
+        "device": "homebridgeCC:22:3D:E3:CF:33Signify Netherlands B.V.Floor Lamp One00000043",
+        "conf": "7e647d67.f33acc",
+        "x": 300,
+        "y": 440,
+        "wires": [
+            [
+                "96ad615138d1254e"
+            ]
+        ]
+    },
+    {
+        "id": "96ad615138d1254e",
         "type": "debug",
         "z": "4138921fd7b9a926",
         "name": "debug 18",
-        "active": false,
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 520,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "7b085aa32101811e",
+        "type": "hb-event",
+        "z": "4138921fd7b9a926",
+        "name": "Floor Lamp One",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Signify Netherlands B.V.",
+        "Service": "Lightbulb",
+        "device": "homebridgeCC:22:3D:E3:CF:33Signify Netherlands B.V.Floor Lamp One00000043",
+        "conf": "7e647d67.f33acc",
+        "sendInitialState": true,
+        "x": 300,
+        "y": 360,
+        "wires": [
+            [
+                "96ad615138d1254e"
+            ]
+        ]
+    },
+    {
+        "id": "247bb4b9017d5ed3",
+        "type": "catch",
+        "z": "4138921fd7b9a926",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 280,
+        "y": 520,
+        "wires": [
+            [
+                "ecfe37f30b4b452f"
+            ]
+        ]
+    },
+    {
+        "id": "ecfe37f30b4b452f",
+        "type": "debug",
+        "z": "4138921fd7b9a926",
+        "name": "debug 19",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 540,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "f775ab948cea1532",
+        "type": "status",
+        "z": "4138921fd7b9a926",
+        "name": "",
+        "scope": null,
+        "x": 280,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dd3e9950ef4f1482",
+        "type": "debug",
+        "z": "4138921fd7b9a926",
+        "name": "debug 20",
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": true,
         "complete": "true",
         "targetType": "full",
-        "statusVal": "topic",
+        "statusVal": "payload",
         "statusType": "auto",
-        "x": 320,
-        "y": 360,
+        "x": 540,
+        "y": 580,
         "wires": []
     },
     {
-        "id": "4510eba830da4c9d",
-        "type": "function",
+        "id": "64d1e3d573689b65",
+        "type": "inject",
         "z": "4138921fd7b9a926",
-        "name": "function 3",
-        "func": "const [home, device, shortTopic] = msg.topic.split(\"/\");\nmsg.shortTopic = shortTopic;\nmsg.device = device;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 320,
-        "y": 180,
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"ColorTemperature\": false}",
+        "payloadType": "json",
+        "x": 150,
+        "y": 200,
         "wires": [
             [
-                "6f6d507ccce7460f",
-                "45cb1d621afc9b52"
+                "8ba7a5a4aa28dc2f"
             ]
         ]
-    },
-    {
-        "id": "d7a34617ef5e9f31",
-        "type": "debug",
-        "z": "4138921fd7b9a926",
-        "name": "debug 19",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": true,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "shortTopic",
-        "statusType": "msg",
-        "x": 720,
-        "y": 260,
-        "wires": []
-    },
-    {
-        "id": "1649c3dc535b26f2",
-        "type": "debug",
-        "z": "4138921fd7b9a926",
-        "name": "debug 20",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": true,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "device",
-        "statusType": "msg",
-        "x": 720,
-        "y": 200,
-        "wires": []
     },
     {
         "id": "6df154716efd4949",
