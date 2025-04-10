@@ -68,7 +68,7 @@ class HbControlNode extends hbBaseNode {
           this.error(`${error.message} for ${JSON.stringify(message.payload)}`);
           results.push({ Error: `${error.message} for ${JSON.stringify(message.payload)}` });
           fill = 'red';
-          // this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
+          this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
         }
 
         /*
