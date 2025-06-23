@@ -90,7 +90,7 @@ class HBConfigNode {
     const supportedTypes = new Set([
       'Air Purifier', 'Air Quality Sensor', 'Battery', 'Carbon Dioxide Sensor', 'Carbon Monoxide Sensor', 'Camera Rtp Stream Management',
       'Doorbell', 'Fan', 'Fanv2', 'Garage Door Opener', 'Humidity Sensor', 'Input Source',
-      'Leak Sensor', 'Lightbulb', 'Lock Mechanism', 'Motion Sensor', 'Occupancy Sensor',
+      'Leak Sensor', 'Light Sensor', 'Lightbulb', 'Lock Mechanism', 'Motion Sensor', 'Occupancy Sensor',
       'Outlet', 'Smoke Sensor', 'Speaker', 'Stateless Programmable Switch', 'Switch',
       'Television', 'Temperature Sensor', 'Thermostat', 'Contact Sensor',
       'Window', 'Window Covering', 'Light Sensor'
