@@ -174,8 +174,11 @@ class HBConfigNode {
       this.monitor = await this.hapClient.monitorCharacteristics(monitorNodes);
       this.monitor.on('service-update', (services) => {
         services.forEach(service => {
-          const eventNodes = Object.values(this.clientNodes).filter(clientNode =>
-            clientNode.config.device === `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${service.serviceName}${service.uuid.slice(0, 8)}`
+          const eventNodes = Object.values(this.clientNodes).filter(clientNode => {
+            const deviceIdentifier = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${(service.accessoryInformation.Name ? service.accessoryInformation.Name : service.serviceName)}${service.uuid.slice(0, 8)}`;
+            // debug('service-update: compare', clientNode.config.device, deviceIdentifier);
+            return clientNode.config.device === deviceIdentifier;
+          }
           );
           // debug('service-update', service.serviceName, eventNodes);
           eventNodes.forEach(eventNode => eventNode.emit('hbEvent', service));
