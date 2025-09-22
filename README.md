@@ -35,6 +35,9 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [Jan 11, 2023 - Version 0.1.7](#jan-11-2023---version-017)
       * [Jan 15, 2023 - Version 0.1.8](#jan-15-2023---version-018)
       * [Dec 15, 2024 - Version 0.2.0](#dec-15-2024---version-020)
+      * [April 15, 2025 - Version 0.3.0](#april-15-2025---version-030)
+         * [Breaking Change](#breaking-change)
+         * [Fixes](#fixes)
 * [Backlog / Roadmap](#backlog--roadmap)
    * [Dropped items](#dropped-items)
 * [Installation Steps](#installation-steps)
@@ -185,6 +188,19 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 - Major code base refresh, and migration from hap-node-client to hap-client ( Potential fix for #120 )
 - With the change in connectivity to homebridge, please validate all your nodes are connected after the update.  And pay particular attention to `Camera` nodes, as for some devices the name has changed.
 - Testing and Development was completed on Node-RED version: v4.0.2 and Node.js  version: v20.18.1
+
+### April 15, 2025 - Version 0.3.0
+
+#### Breaking Change
+
+- Problem when choosing between multiple accessories with the same name #142. This fix has a breaking change for the name structure for Fans, Input Sources from TV's, and Camera's.  And these devices will need to be configured again.
+
+#### Fixes
+
+- Add common supported types Window, Window Covering, Light Sensor #151, tks @HDeKnop
+- HB-Control Node Turns Off then On when this message is received #152
+- Added `Debug logging` configuration option that creates a file `homebridge-automation-endpoints.json`, which contains all the homebridge devices discovered.  It can be used as part of troubleshooting device issues.
+- Fix for some camara devices not outputing events
 
 # Backlog / Roadmap
 
