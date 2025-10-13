@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-homebridge-automation",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "NodeRED Automation for HomeBridge",
   "main": "src/HAP-NodeRed.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "watch": "nodemon",
     "lint": "eslint --max-warnings=10 .",
     "lint:fix": "eslint --fix --max-warnings=0 .",
-    "test": "jest --detectOpenHandles",
+    "test": "jest --forceExit --detectOpenHandles --verbose=true",
     "test-coverage": "jest --coverage"
   },
   "keywords": [
@@ -41,8 +41,8 @@
   },
   "dependencies": {
     "better-queue": ">=3.8.12",
-    "debug": "^4.3.7",
-    "@homebridge/hap-client": "^2.0.5"
+    "debug": "^4.4.1",
+    "@homebridge/hap-client": "^3.1.1"
   },
   "author": "NorthernMan54",
   "license": "ISC",

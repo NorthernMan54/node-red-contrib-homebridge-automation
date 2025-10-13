@@ -17,18 +17,28 @@ class HbControlNode extends hbBaseNode {
     const isCamera = this.hbDevice.type === 'CameraRTPStreamManagement';
     const payloadType = typeof message.payload;
 
-    // Validate payload
+    // Is the payload a valid JSON object?
+
     if (!isCamera && payloadType !== 'object') {
       const validNames = Object.keys(this.hbDevice.values)
         .filter(key => key !== 'ConfiguredName')
         .join(', ');
-
       this.error(
         `Invalid payload. Expected JSON object, e.g., {"On":false, "Brightness":0}. Valid values: ${validNames}`
       );
       this.status({ text: 'Invalid payload', shape: 'dot', fill: 'red' });
       return;
     }
+
+    // Validate payload
+    let keysToKeep = Object.keys(this.hbDevice.values);
+
+    Object.keys(message.payload).forEach(key => {
+      if (!keysToKeep.includes(key)) {
+        this.handleWarning(`Unhandled Characteristic '${key}'`);
+        delete message.payload[key];
+      }
+    });
 
     const results = [];
     let fill = 'green';
@@ -49,8 +59,22 @@ class HbControlNode extends hbBaseNode {
         results.push({ Received: result.length });
       } else {
         // Handle other characteristics
+        try {
+          // debug('Setting value for', message.payload);
+          const result = await this.hbDevice.setCharacteristicsByTypes(filterIfOff(message.payload));
+          // debug('Result', result.values);
+          results.push(result.values);
+        } catch (error) {
+          this.error(`${error.message} for ${JSON.stringify(message.payload)}`);
+          results.push({ Error: `${error.message} for ${JSON.stringify(message.payload)}` });
+          fill = 'red';
+          this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
+        }
+
+        /*
         for (const key of Object.keys(message.payload)) {
           try {
+            debug('Setting value for', key, message.payload[key]);
             const result = await this.hbDevice.setCharacteristicByType(key, message.payload[key]);
             results.push({ [result.type]: result.value });
           } catch (error) {
@@ -60,7 +84,8 @@ class HbControlNode extends hbBaseNode {
             fill = 'red';
             this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
           }
-        }
+           
+        } */
       }
 
       // Update status
@@ -72,6 +97,13 @@ class HbControlNode extends hbBaseNode {
       done(`Unhandled error: ${error.message}`);
     }
   }
+}
+
+function filterIfOff(payload) {
+  if (payload.On === 0 || payload.On === false) {
+    return { On: payload.On }; // Only keep "On"
+  }
+  return payload; // Pass as is
 }
 
 module.exports = HbControlNode;
