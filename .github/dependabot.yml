@@ -15,12 +15,17 @@ updates:
     npm-dependencies:
       patterns:
         - "*"
+  # Automatically rebase PRs when conflicts occur
+  rebase-strategy: "auto"
+
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
     interval: daily
     time: "10:00"
   open-pull-requests-limit: 10
+  # Automatically rebase PRs when conflicts occur
+  rebase-strategy: "auto"
   groups:
     github-actions:
       patterns:
