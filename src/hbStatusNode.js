@@ -33,7 +33,7 @@ class HbStatusNode extends HbBaseNode {
 
   }
 
-  /* #194 - Removed - see event node
+  /* #195 - Removed - see event node
   handleHBEventMessage(service) {
     debug('hbEvent for', this.id, this.type, service.serviceName, JSON.stringify(service.values));
 
