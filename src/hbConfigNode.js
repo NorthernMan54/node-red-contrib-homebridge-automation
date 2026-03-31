@@ -70,10 +70,10 @@ class HBConfigNode {
       service.uniqueId = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${friendlyName}${service.uuid.slice(0, 8)}`;
     });
     updatedDevices.forEach((updatedService, index) => {
-      if (this.hbDevices.find(service => service.uniqueId === updatedService.uniqueId)) {
+      const existingDevice = this.hbDevices.find(service => service.uniqueId === updatedService.uniqueId);
+      if (existingDevice) {
         // debug(`Exsiting UniqueID breakdown - ${updatedService.serviceName}-${updatedService.instance.username}-${updatedService.aid}-${updatedService.iid}-${updatedService.type}`);
-        const update = this.hbDevices.find(service => service.uniqueId === updatedService.uniqueId);
-        update.instance = updatedService.instance;
+        Object.assign(existingDevice, updatedService);
       } else {
         // debug(`New Service UniqueID breakdown - ${updatedService.serviceName}-${updatedService.instance.username}-${updatedService.aid}-${updatedService.iid}-${updatedService.type}`);
         this.hbDevices.push(updatedService);
@@ -142,7 +142,7 @@ class HBConfigNode {
       const matchedDevice = this.hbDevices.find(service => {
         const friendlyName = (service.accessoryInformation.Name ? service.accessoryInformation.Name : service.serviceName);
         const deviceIdentifier = `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${friendlyName}${service.uuid.slice(0, 8)}`;
-        return clientNode.device === deviceIdentifier;
+        return clientNode.device === deviceIdentifier && clientNode.service === service.type;
       });
 
       if (matchedDevice) {
