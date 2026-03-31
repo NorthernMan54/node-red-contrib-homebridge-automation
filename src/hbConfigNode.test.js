@@ -89,6 +89,116 @@ describe('HBConfigNode', () => {
     // expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
     // expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
   });
+
+  test('refreshes cached service data when a known service is rediscovered', async () => {
+    const staleService = {
+      aid: 1,
+      iid: 8,
+      uuid: '00000043-0000-1000-8000-0026BB765291',
+      type: 'Lightbulb',
+      humanType: 'Lightbulb',
+      serviceName: 'Desk Lamp',
+      serviceCharacteristics: [
+        { type: 'On' }
+      ],
+      accessoryInformation: {
+        Manufacturer: 'Acme',
+        Name: 'Desk Lamp',
+      },
+      values: {
+        On: 1,
+      },
+      instance: {
+        name: 'Bridge',
+        username: 'AA:BB:CC:DD:EE:FF',
+        ipAddress: '192.168.1.10',
+        port: 11111,
+      },
+    };
+    const refreshedService = {
+      ...staleService,
+      serviceCharacteristics: [
+        { type: 'On' },
+        { type: 'Brightness' }
+      ],
+      values: {
+        On: 1,
+        Brightness: 40,
+      },
+      instance: {
+        ...staleService.instance,
+        ipAddress: '192.168.1.20',
+        port: 22222,
+      },
+    };
+
+    node.hapClient.getAllServices.mockResolvedValue([staleService]);
+    await node.handleReady();
+    expect(node.hbDevices[0].values).toEqual({ On: 1 });
+
+    node.hapClient.getAllServices.mockResolvedValue([refreshedService]);
+    await node.handleReady();
+
+    expect(node.hbDevices).toHaveLength(1);
+    expect(node.hbDevices[0].values).toEqual({ On: 1, Brightness: 40 });
+    expect(node.hbDevices[0].serviceCharacteristics).toHaveLength(2);
+    expect(node.hbDevices[0].instance.ipAddress).toBe('192.168.1.20');
+    expect(node.hbDevices[0].instance.port).toBe(22222);
+  });
+
+  test('connectClientNodes matches both device id and saved service type', async () => {
+    const sharedServiceId = 'BridgeAA:BB:CC:DD:EE:FFAcmeHall00000085';
+    const motionService = {
+      aid: 1,
+      iid: 8,
+      uuid: '00000085-0000-1000-8000-0026BB765291',
+      type: 'MotionSensor',
+      humanType: 'Motion Sensor',
+      serviceName: 'Hall Motion',
+      accessoryInformation: {
+        Manufacturer: 'Acme',
+        Name: 'Hall',
+      },
+      values: {
+        MotionDetected: 0,
+      },
+      instance: {
+        name: 'Bridge',
+        username: 'AA:BB:CC:DD:EE:FF',
+        ipAddress: '192.168.1.10',
+        port: 11111,
+      },
+    };
+    const contactService = {
+      ...motionService,
+      iid: 9,
+      type: 'ContactSensor',
+      humanType: 'Contact Sensor',
+      serviceName: 'Hall Contact',
+      values: {
+        ContactSensorState: 1,
+      },
+    };
+    const clientNode = {
+      id: 'client-1',
+      type: 'hb-control',
+      name: 'Hall Motion',
+      device: sharedServiceId,
+      service: 'ContactSensor',
+      status: jest.fn(),
+      emit: jest.fn(),
+    };
+
+    node.hbDevices = [motionService, contactService];
+    node.clientNodes = { [clientNode.id]: clientNode };
+    node.monitorDevices = jest.fn().mockResolvedValue(undefined);
+
+    await node.connectClientNodes();
+
+    expect(clientNode.hbDevice).toBe(contactService);
+    expect(clientNode.emit).toHaveBeenCalledWith('hbReady', contactService);
+    expect(clientNode.hbDevice.values).toEqual({ ContactSensorState: 1 });
+  });
 });
 
 describe('from files', () => {
