@@ -37,6 +37,7 @@ describe('Issue 142', () => {
     node.debug = true;
     node.warn = console.log;
     node.log = console.log;
+    node.error = console.error;
   });
 
   test('Validate Issue 142 fix', async () => {
@@ -73,6 +74,7 @@ describe('HBConfigNode', () => {
     node.debug = true;
     node.warn = console.log;
     node.log = console.log;
+    node.error = console.error;
   });
 
   test('Retrieve devices', async () => {
@@ -109,6 +111,7 @@ describe('from files', () => {
     // node.debug = true;
     node.warn = console.log;
     node.log = console.log;
+    node.error = console.error;
   });
 
   // eslint-disable-next-line jest/no-disabled-tests
