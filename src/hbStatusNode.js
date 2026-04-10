@@ -11,24 +11,25 @@ class HbStatusNode extends HbBaseNode {
 
     if (!this.hbDevice) {
       this.handleWarning('HB not initialized');
+      done('HB not initialized');
       return;
     }
 
     const result = await this.hbDevice.refreshCharacteristics();
     if (result) {
       this.status({
-        text: this.statusText(JSON.stringify(await this.hbDevice.values)),
+        text: this.statusText(JSON.stringify(result.values)),
         shape: 'dot',
         fill: 'green'
       });
 
       send(Object.assign(message, this.createMessage(result)));
-      done
+      done();
     } else {
       this.status({ fill: "red", shape: "ring", text: "disconnected" });
-      this.error("No response from device", this.name);
+      this.error(`No response from device ${this.name}`, message);
       this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
-      done("No response from device");
+      done(`No response from device ${this.name}`);
     }
 
   }

@@ -1,5 +1,7 @@
 const debug = require('debug')('hapNodeRed:hbBaseNode');
 
+const PENDING_MESSAGE_TIMEOUT = 30000; // 30 seconds
+
 class HbBaseNode {
   constructor(config, RED) {
     debug("Constructor:", config.type, JSON.stringify(config));
@@ -17,19 +19,66 @@ class HbBaseNode {
     this.name = config.name;
     this.fullName = `${config.name} - ${config.Service}`;
     this.hbDevice = null;
+    this._pendingMessages = [];
 
     this.hbConfigNode?.registerClientNode(this);
 
     if (this.handleInput) {
-      this.on('input', this.handleInput.bind(this));
+      this.on('input', this._onInput.bind(this));
     }
-    if (this.handleHbReady) {
-      this.on('hbReady', this.handleHbReady.bind(this))
-    }
-    this.on('close', this.handleClose.bind(this));
+    this.on('hbReady', (service) => {
+      if (this.handleHbReady) {
+        this.handleHbReady(service);
+      }
+      this._drainPendingMessages();
+    });
+    this.on('close', this._onClose.bind(this));
     if (this.handleHBEventMessage) {
       this.on('hbEvent', this.handleHBEventMessage.bind(this));
     }
+  }
+
+  _onInput(message, send, done) {
+    if (!this.hbDevice) {
+      this._queueMessage(message, send, done);
+    } else {
+      this.handleInput(message, send, done);
+    }
+  }
+
+  _queueMessage(message, send, done) {
+    const timer = setTimeout(() => {
+      this._pendingMessages = this._pendingMessages.filter(m => m.timer !== timer);
+      this.handleWarning('HB not initialized (timeout)');
+      if (done) done('HB not initialized');
+    }, PENDING_MESSAGE_TIMEOUT);
+    this._pendingMessages.push({ message, send, done, timer });
+    debug('Queued message for %s (%d pending)', this.name, this._pendingMessages.length);
+    this.status({ fill: 'yellow', shape: 'ring', text: `queued (${this._pendingMessages.length})` });
+  }
+
+  async _drainPendingMessages() {
+    if (!this._pendingMessages.length) return;
+    debug('Draining %d pending messages for %s', this._pendingMessages.length, this.name);
+    const pending = this._pendingMessages.splice(0);
+    for (const { message, send, done, timer } of pending) {
+      clearTimeout(timer);
+      try {
+        await this.handleInput(message, send, done);
+      } catch (err) {
+        debug('Error processing queued message for %s: %s', this.name, err.message);
+        if (done) done(err.message);
+      }
+    }
+  }
+
+  _onClose(removed, done) {
+    this._pendingMessages.forEach(({ timer }) => clearTimeout(timer));
+    this._pendingMessages = [];
+    if (this.hbConfigNode) {
+      this.hbConfigNode.unregisterClientNode(this);
+    }
+    this.handleClose(removed, done);
   }
 
   createMessage(service) {
