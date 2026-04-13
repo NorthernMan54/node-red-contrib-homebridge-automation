@@ -8,6 +8,10 @@ class HbResumeNode extends HbBaseNode {
     this.storedState = null;
   }
 
+  handleHbDisconnected() {
+    this.storedState = null;
+  }
+
   handleHBEventMessage(service) {
     debug('hbEvent for', this.id, service.serviceName, JSON.stringify(service.values));
 

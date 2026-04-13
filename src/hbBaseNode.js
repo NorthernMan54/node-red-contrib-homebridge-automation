@@ -20,6 +20,7 @@ class HbBaseNode {
     this.name = config.name;
     this.fullName = `${config.name} - ${config.Service}`;
     this.hbDevice = null;
+    this._disconnected = false;
     this._pendingMessages = [];
 
     this.hbConfigNode?.registerClientNode(this);
@@ -28,10 +29,17 @@ class HbBaseNode {
       this.on('input', this._onInput.bind(this));
     }
     this.on('hbReady', (service) => {
+      this._disconnected = false;
       if (this.handleHbReady) {
         this.handleHbReady(service);
       }
       this._drainPendingMessages();
+    });
+    this.on('hbDisconnected', () => {
+      this._disconnected = true;
+      if (this.handleHbDisconnected) {
+        this.handleHbDisconnected();
+      }
     });
     this.on('close', this._onClose.bind(this));
     if (this.handleHBEventMessage) {
@@ -40,7 +48,7 @@ class HbBaseNode {
   }
 
   _onInput(message, send, done) {
-    if (!this.hbDevice) {
+    if (!this.hbDevice || this._disconnected) {
       this._queueMessage(message, send, done);
     } else {
       this.handleInput(message, send, done);
@@ -48,14 +56,15 @@ class HbBaseNode {
   }
 
   _queueMessage(message, send, done) {
+    const reason = this._disconnected ? 'disconnected' : 'pending';
     const timer = setTimeout(() => {
       this._pendingMessages = this._pendingMessages.filter(m => m.timer !== timer);
       this.handleWarning('HB not initialized (timeout)');
       if (done) done('HB not initialized');
     }, PENDING_MESSAGE_TIMEOUT);
     this._pendingMessages.push({ message, send, done, timer });
-    debug('Queued message for %s (%d pending)', this.name, this._pendingMessages.length);
-    this.status({ fill: 'yellow', shape: 'ring', text: `queued (${this._pendingMessages.length})` });
+    debug('Queued message for %s (%d pending, %s)', this.name, this._pendingMessages.length, reason);
+    this.status({ fill: 'yellow', shape: 'ring', text: `queued - ${reason} (${this._pendingMessages.length})` });
   }
 
   async _drainPendingMessages() {

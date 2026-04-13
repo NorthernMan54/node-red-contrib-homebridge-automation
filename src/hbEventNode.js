@@ -20,6 +20,10 @@ class HbEventNode extends HbBaseNode {
     }
   }
 
+  handleHbDisconnected() {
+    this._initialStateSent = false;
+  }
+
   handleHBEventMessage(service) {
     debug('hbEvent for', this.id, this.type, service.serviceName, JSON.stringify(service.values));
 
