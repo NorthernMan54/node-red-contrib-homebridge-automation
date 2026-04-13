@@ -8,6 +8,12 @@ const process = require('process');
 // during redeploy. The HapClient is kept alive so mDNS discovery doesn't restart.
 const _persistedClients = new Map();
 
+// Clean up humanType strings from hap-client for display
+const HUMAN_TYPE_DISPLAY = {
+  'Camera Rtp Stream Management': 'Camera',
+  'Fanv2': 'Fan v2',
+};
+
 // Canonical device name — accessoryInformation.Name if set, otherwise serviceName
 function getFriendlyName(service) {
   return service.accessoryInformation.Name || service.serviceName;
@@ -177,14 +183,16 @@ class HBConfigNode {
       .filter(service => !perms || service.serviceCharacteristics.some(c => !c.perms || c.perms.includes(perms)))
       .map(service => {
         const name = getFriendlyName(service);
+        const displayType = HUMAN_TYPE_DISPLAY[service.humanType] || service.humanType;
+        const manufacturer = service.accessoryInformation.Manufacturer;
         return {
           name,
-          fullName: `${name} - ${service.humanType}`,
+          fullName: `${name} - ${displayType} (${manufacturer})`,
           sortName: `${name}:${service.type}`,
           uniqueId: service.uniqueId,
           homebridge: service.instance.name,
           service: service.type,
-          manufacturer: service.accessoryInformation.Manufacturer,
+          manufacturer,
         };
       })
       .sort((a, b) => a.sortName.localeCompare(b.sortName));

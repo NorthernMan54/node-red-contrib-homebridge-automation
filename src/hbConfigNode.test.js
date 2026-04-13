@@ -10,6 +10,7 @@ jest.mock('@homebridge/hap-client', () => {
       getAllServices: jest.fn(), // Will be set per test case
       on: jest.fn(), // Mock event listeners
       removeListener: jest.fn(),
+
       connect: jest.fn().mockResolvedValue(true),
       disconnect: jest.fn(),
     })),
@@ -2211,7 +2212,7 @@ const testhbDevices = [
 const testhbDevicesResult = [
   {
     name: 'Backyard',
-    fullName: 'Backyard - Camera Rtp Stream Management',
+    fullName: 'Backyard - Camera (Eufy)',
     sortName: 'Backyard:CameraRTPStreamManagement',
     uniqueId: 'homebridge0E:89:A7:DA:D3:21EufyBackyard00000110',
     homebridge: 'homebridge',
@@ -2220,7 +2221,7 @@ const testhbDevicesResult = [
   },
   {
     name: 'Backyard',
-    fullName: 'Backyard - Motion Sensor',
+    fullName: 'Backyard - Motion Sensor (Eufy)',
     sortName: 'Backyard:MotionSensor',
     uniqueId: 'homebridge0E:89:A7:DA:D3:21EufyBackyard00000085',
     homebridge: 'homebridge',
@@ -2228,7 +2229,7 @@ const testhbDevicesResult = [
     manufacturer: 'Eufy'
   },
   {
-    "fullName": "Canoe 5036 - Camera Rtp Stream Management",
+    "fullName": "Canoe 5036 - Camera (HikVision)",
     "homebridge": "ECI-T24F2",
     "manufacturer": "HikVision",
     "name": "Canoe 5036",
@@ -2237,7 +2238,7 @@ const testhbDevicesResult = [
     "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe 503600000110",
   },
   {
-    "fullName": "Canoe 5036 - Motion Sensor",
+    "fullName": "Canoe 5036 - Motion Sensor (HikVision)",
     "homebridge": "ECI-T24F2",
     "manufacturer": "HikVision",
     "name": "Canoe 5036",
@@ -2247,7 +2248,7 @@ const testhbDevicesResult = [
   },
   {
     name: 'Side door',
-    fullName: 'Side door - Camera Rtp Stream Management',
+    fullName: 'Side door - Camera (Eufy)',
     sortName: 'Side door:CameraRTPStreamManagement',
     uniqueId: 'homebridge0E:89:A7:DA:D3:21EufySide door00000110',
     homebridge: 'homebridge',
@@ -2256,7 +2257,7 @@ const testhbDevicesResult = [
   },
   {
     name: 'Side door',
-    fullName: 'Side door - Motion Sensor',
+    fullName: 'Side door - Motion Sensor (Eufy)',
     sortName: 'Side door:MotionSensor',
     uniqueId: 'homebridge0E:89:A7:DA:D3:21EufySide door00000085',
     homebridge: 'homebridge',
@@ -2337,7 +2338,7 @@ const testhbDevicesIssue142 = [
 const testhbDevicesResultIssue142 = [
   {
     name: 'Bedroom Curtain',
-    fullName: 'Bedroom Curtain - Window Covering',
+    fullName: 'Bedroom Curtain - Window Covering (Tuya Inc.)',
     sortName: 'Bedroom Curtain:WindowCovering',
     uniqueId: 'Issue1420E:89:A7:DA:D3:21Tuya Inc.Bedroom Curtain0000008C',
     homebridge: 'Issue142',
@@ -2346,7 +2347,7 @@ const testhbDevicesResultIssue142 = [
   },
   {
     name: 'Kitchen Curtain',
-    fullName: 'Kitchen Curtain - Window Covering',
+    fullName: 'Kitchen Curtain - Window Covering (Tuya Inc.)',
     sortName: 'Kitchen Curtain:WindowCovering',
     uniqueId: 'Issue1420E:89:A7:DA:D3:21Tuya Inc.Kitchen Curtain0000008C',
     homebridge: 'Issue142',
@@ -2355,7 +2356,7 @@ const testhbDevicesResultIssue142 = [
   },
   {
     name: 'Livingroom Curtain',
-    fullName: 'Livingroom Curtain - Window Covering',
+    fullName: 'Livingroom Curtain - Window Covering (Tuya Inc.)',
     sortName: 'Livingroom Curtain:WindowCovering',
     uniqueId: 'Issue1420E:89:A7:DA:D3:21Tuya Inc.Livingroom Curtain0000008C',
     homebridge: 'Issue142',

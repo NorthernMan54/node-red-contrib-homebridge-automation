@@ -1,7 +1,7 @@
 [
   {
     "name": "Alexa",
-    "fullName": "Alexa - Contact Sensor",
+    "fullName": "Alexa - Contact Sensor (homebridge-alexa)",
     "sortName": "Alexa:ContactSensor",
     "uniqueId": "homebridgeCC:22:3D:E3:CF:37homebridge-alexaAlexa00000080",
     "homebridge": "homebridge",
@@ -10,7 +10,7 @@
   },
   {
     "name": "Alice’s Light",
-    "fullName": "Alice’s Light - Lightbulb",
+    "fullName": "Alice’s Light - Lightbulb (Signify Netherlands B.V.)",
     "sortName": "Alice’s Light:Lightbulb",
     "uniqueId": "homebridgeCC:22:3D:E3:CF:33Signify Netherlands B.V.Alice’s Light00000043",
     "homebridge": "homebridge",
@@ -19,7 +19,7 @@
   },
   {
     "name": "Attic",
-    "fullName": "Attic - Temperature Sensor",
+    "fullName": "Attic - Temperature Sensor (NRCHKB - Acurite-Tower/A)",
     "sortName": "Attic:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - Acurite-Tower/AAttic0000008A",
     "homebridge": "Default Model",
@@ -28,7 +28,7 @@
   },
   {
     "name": "Backyard Tree",
-    "fullName": "Backyard Tree - Temperature Sensor",
+    "fullName": "Backyard Tree - Temperature Sensor (NRCHKB - LaCrosse-TX141Bv3)",
     "sortName": "Backyard Tree:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - LaCrosse-TX141Bv3Backyard Tree0000008A",
     "homebridge": "Default Model",
@@ -37,7 +37,7 @@
   },
   {
     "name": "Backyard",
-    "fullName": "Backyard - Camera Rtp Stream Management",
+    "fullName": "Backyard - Camera (Eufy)",
     "sortName": "Backyard:CameraRTPStreamManagement",
     "uniqueId": "homebridge0E:89:A7:DA:D3:21EufyBackyard00000110",
     "homebridge": "homebridge",
@@ -46,7 +46,7 @@
   },
   {
     "name": "Backyard",
-    "fullName": "Backyard - Humidity Sensor",
+    "fullName": "Backyard - Humidity Sensor (NRCHKB - LaCrosse-TX141W)",
     "sortName": "Backyard:HumiditySensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - LaCrosse-TX141WBackyard00000082",
     "homebridge": "Default Model",
@@ -55,7 +55,7 @@
   },
   {
     "name": "Backyard",
-    "fullName": "Backyard - Motion Sensor",
+    "fullName": "Backyard - Motion Sensor (Eufy)",
     "sortName": "Backyard:MotionSensor",
     "uniqueId": "homebridge0E:89:A7:DA:D3:21EufyBackyard00000085",
     "homebridge": "homebridge",
@@ -64,7 +64,7 @@
   },
   {
     "name": "Backyard",
-    "fullName": "Backyard - Temperature Sensor",
+    "fullName": "Backyard - Temperature Sensor (NRCHKB - LaCrosse-TX141W)",
     "sortName": "Backyard:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - LaCrosse-TX141WBackyard0000008A",
     "homebridge": "Default Model",
@@ -73,7 +73,7 @@
   },
   {
     "name": "Bathroom Fan",
-    "fullName": "Bathroom Fan - Outlet",
+    "fullName": "Bathroom Fan - Outlet (Tasmota)",
     "sortName": "Bathroom Fan:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaBathroom Fan00000047",
     "homebridge": "homebridge",
@@ -82,7 +82,7 @@
   },
   {
     "name": "Bathroom",
-    "fullName": "Bathroom - Humidity Sensor",
+    "fullName": "Bathroom - Humidity Sensor (NRCHKB)",
     "sortName": "Bathroom:HumiditySensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBBathroom00000082",
     "homebridge": "Default Model",
@@ -91,7 +91,7 @@
   },
   {
     "name": "Bathroom",
-    "fullName": "Bathroom - Temperature Sensor",
+    "fullName": "Bathroom - Temperature Sensor (NRCHKB)",
     "sortName": "Bathroom:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBBathroom0000008A",
     "homebridge": "Default Model",
@@ -100,7 +100,7 @@
   },
   {
     "name": "Bunkie Fan Light",
-    "fullName": "Bunkie Fan Light - Lightbulb",
+    "fullName": "Bunkie Fan Light - Lightbulb (Tasmota)",
     "sortName": "Bunkie Fan Light:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaBunkie Fan Light00000043",
     "homebridge": "homebridge",
@@ -109,7 +109,7 @@
   },
   {
     "name": "Bunkie Fan",
-    "fullName": "Bunkie Fan - Fan",
+    "fullName": "Bunkie Fan - Fan (Tasmota)",
     "sortName": "Bunkie Fan:Fan",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaBunkie Fan00000040",
     "homebridge": "homebridge",
@@ -118,7 +118,7 @@
   },
   {
     "name": "Bunkie Group",
-    "fullName": "Bunkie Group - Lightbulb",
+    "fullName": "Bunkie Group - Lightbulb (NRCHKB)",
     "sortName": "Bunkie Group:Lightbulb",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBBunkie Group00000043",
     "homebridge": "Default Model",
@@ -127,7 +127,7 @@
   },
   {
     "name": "Bunkie Light",
-    "fullName": "Bunkie Light - Lightbulb",
+    "fullName": "Bunkie Light - Lightbulb (Tasmota)",
     "sortName": "Bunkie Light:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaBunkie Light00000043",
     "homebridge": "homebridge",
@@ -136,7 +136,7 @@
   },
   {
     "name": "Bunkie Lower",
-    "fullName": "Bunkie Lower - Lightbulb",
+    "fullName": "Bunkie Lower - Lightbulb (WLED)",
     "sortName": "Bunkie Lower:Lightbulb",
     "uniqueId": "homebridge0E:03:4B:B3:AF:4CWLEDBunkie Lower00000043",
     "homebridge": "homebridge",
@@ -145,7 +145,7 @@
   },
   {
     "name": "Bunkie Upper",
-    "fullName": "Bunkie Upper - Lightbulb",
+    "fullName": "Bunkie Upper - Lightbulb (Tasmota)",
     "sortName": "Bunkie Upper:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaBunkie Upper00000043",
     "homebridge": "homebridge",
@@ -154,7 +154,7 @@
   },
   {
     "name": "Bunkie",
-    "fullName": "Bunkie - Humidity Sensor",
+    "fullName": "Bunkie - Humidity Sensor (NRCHKB - OMG)",
     "sortName": "Bunkie:HumiditySensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - OMGBunkie00000082",
     "homebridge": "Default Model",
@@ -163,7 +163,7 @@
   },
   {
     "name": "Bunkie",
-    "fullName": "Bunkie - Temperature Sensor",
+    "fullName": "Bunkie - Temperature Sensor (NRCHKB - OMG)",
     "sortName": "Bunkie:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - OMGBunkie0000008A",
     "homebridge": "Default Model",
@@ -172,7 +172,7 @@
   },
   {
     "name": "Busy Bee",
-    "fullName": "Busy Bee - Contact Sensor",
+    "fullName": "Busy Bee - Contact Sensor (Shark)",
     "sortName": "Busy Bee:ContactSensor",
     "uniqueId": "homebridge0E:D3:21:BA:8C:5CSharkBusy Bee00000080",
     "homebridge": "homebridge",
@@ -181,7 +181,7 @@
   },
   {
     "name": "Busy Bee",
-    "fullName": "Busy Bee - Fanv2",
+    "fullName": "Busy Bee - Fan v2 (Shark)",
     "sortName": "Busy Bee:Fanv2",
     "uniqueId": "homebridge0E:D3:21:BA:8C:5CSharkBusy Bee000000B7",
     "homebridge": "homebridge",
@@ -190,7 +190,7 @@
   },
   {
     "name": "Busy Bee",
-    "fullName": "Busy Bee - Switch",
+    "fullName": "Busy Bee - Switch (Shark)",
     "sortName": "Busy Bee:Switch",
     "uniqueId": "homebridge0E:D3:21:BA:8C:5CSharkBusy Bee00000049",
     "homebridge": "homebridge",
@@ -199,7 +199,7 @@
   },
   {
     "name": "Canoe 5036",
-    "fullName": "Canoe 5036 - Camera Rtp Stream Management",
+    "fullName": "Canoe 5036 - Camera (HikVision)",
     "sortName": "Canoe 5036:CameraRTPStreamManagement",
     "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe 503600000110",
     "homebridge": "ECI-T24F2",
@@ -208,7 +208,7 @@
   },
   {
     "name": "Canoe 5036",
-    "fullName": "Canoe 5036 - Motion Sensor",
+    "fullName": "Canoe 5036 - Motion Sensor (HikVision)",
     "sortName": "Canoe 5036:MotionSensor",
     "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe 503600000085",
     "homebridge": "ECI-T24F2",
@@ -217,7 +217,7 @@
   },
   {
     "name": "Cottage Main 8365",
-    "fullName": "Cottage Main 8365 - Input Source",
+    "fullName": "Cottage Main 8365 - Input Source (Apple Inc.)",
     "sortName": "Cottage Main 8365:InputSource",
     "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Cottage Main 8365000000D9",
     "homebridge": "Apple TV 4",
@@ -226,7 +226,7 @@
   },
   {
     "name": "Cottage Main 8365",
-    "fullName": "Cottage Main 8365 - Speaker",
+    "fullName": "Cottage Main 8365 - Speaker (Apple Inc.)",
     "sortName": "Cottage Main 8365:Speaker",
     "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Cottage Main 836500000113",
     "homebridge": "Apple TV 4",
@@ -235,7 +235,7 @@
   },
   {
     "name": "Cottage Main 8365",
-    "fullName": "Cottage Main 8365 - Television",
+    "fullName": "Cottage Main 8365 - Television (Apple Inc.)",
     "sortName": "Cottage Main 8365:Television",
     "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Cottage Main 8365000000D8",
     "homebridge": "Apple TV 4",
@@ -244,7 +244,7 @@
   },
   {
     "name": "Deck 6EED",
-    "fullName": "Deck 6EED - Camera Rtp Stream Management",
+    "fullName": "Deck 6EED - Camera (HikVision)",
     "sortName": "Deck 6EED:CameraRTPStreamManagement",
     "uniqueId": "ECI-T24F28E:88:AB:7A:D0:54HikVisionDeck 6EED00000110",
     "homebridge": "ECI-T24F2",
@@ -253,7 +253,7 @@
   },
   {
     "name": "Deck 6EED",
-    "fullName": "Deck 6EED - Motion Sensor",
+    "fullName": "Deck 6EED - Motion Sensor (HikVision)",
     "sortName": "Deck 6EED:MotionSensor",
     "uniqueId": "ECI-T24F28E:88:AB:7A:D0:54HikVisionDeck 6EED00000085",
     "homebridge": "ECI-T24F2",
@@ -262,7 +262,7 @@
   },
   {
     "name": "Deck Light",
-    "fullName": "Deck Light - Lightbulb",
+    "fullName": "Deck Light - Lightbulb (Tasmota)",
     "sortName": "Deck Light:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDeck Light00000043",
     "homebridge": "homebridge",
@@ -271,7 +271,7 @@
   },
   {
     "name": "Dining Room Chandelier",
-    "fullName": "Dining Room Chandelier - Lightbulb",
+    "fullName": "Dining Room Chandelier - Lightbulb (Tasmota)",
     "sortName": "Dining Room Chandelier:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDining Room Chandelier00000043",
     "homebridge": "homebridge",
@@ -280,7 +280,7 @@
   },
   {
     "name": "Door Power",
-    "fullName": "Door Power - Outlet",
+    "fullName": "Door Power - Outlet (Tasmota)",
     "sortName": "Door Power:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDoor Power00000047",
     "homebridge": "homebridge",
@@ -289,7 +289,7 @@
   },
   {
     "name": "Doorbell Button",
-    "fullName": "Doorbell Button - Humidity Sensor",
+    "fullName": "Doorbell Button - Humidity Sensor (Tasmota)",
     "sortName": "Doorbell Button:HumiditySensor",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDoorbell Button00000082",
     "homebridge": "homebridge",
@@ -298,7 +298,7 @@
   },
   {
     "name": "Doorbell Button",
-    "fullName": "Doorbell Button - Outlet",
+    "fullName": "Doorbell Button - Outlet (Tasmota)",
     "sortName": "Doorbell Button:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDoorbell Button00000047",
     "homebridge": "homebridge",
@@ -307,7 +307,7 @@
   },
   {
     "name": "Doorbell Button",
-    "fullName": "Doorbell Button - Temperature Sensor",
+    "fullName": "Doorbell Button - Temperature Sensor (Tasmota)",
     "sortName": "Doorbell Button:TemperatureSensor",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDoorbell Button0000008A",
     "homebridge": "homebridge",
@@ -316,7 +316,7 @@
   },
   {
     "name": "Driveway 8E52",
-    "fullName": "Driveway 8E52 - Camera Rtp Stream Management",
+    "fullName": "Driveway 8E52 - Camera (HikVision)",
     "sortName": "Driveway 8E52:CameraRTPStreamManagement",
     "uniqueId": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000110",
     "homebridge": "ECI-T24F2",
@@ -325,7 +325,7 @@
   },
   {
     "name": "Driveway 8E52",
-    "fullName": "Driveway 8E52 - Motion Sensor",
+    "fullName": "Driveway 8E52 - Motion Sensor (HikVision)",
     "sortName": "Driveway 8E52:MotionSensor",
     "uniqueId": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000085",
     "homebridge": "ECI-T24F2",
@@ -334,7 +334,7 @@
   },
   {
     "name": "Dryer Power",
-    "fullName": "Dryer Power - Outlet",
+    "fullName": "Dryer Power - Outlet (Tasmota)",
     "sortName": "Dryer Power:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDryer Power00000047",
     "homebridge": "homebridge",
@@ -343,7 +343,7 @@
   },
   {
     "name": "Dryer Working",
-    "fullName": "Dryer Working - Contact Sensor",
+    "fullName": "Dryer Working - Contact Sensor (NRCHKB)",
     "sortName": "Dryer Working:ContactSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBDryer Working00000080",
     "homebridge": "Default Model",
@@ -352,7 +352,7 @@
   },
   {
     "name": "East Bedroom",
-    "fullName": "East Bedroom - Fan",
+    "fullName": "East Bedroom - Fan (Tasmota)",
     "sortName": "East Bedroom:Fan",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaEast Bedroom00000040",
     "homebridge": "homebridge",
@@ -361,7 +361,7 @@
   },
   {
     "name": "East Bedroom",
-    "fullName": "East Bedroom - Lightbulb",
+    "fullName": "East Bedroom - Lightbulb (Tasmota)",
     "sortName": "East Bedroom:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaEast Bedroom00000043",
     "homebridge": "homebridge",
@@ -370,7 +370,7 @@
   },
   {
     "name": "Evening Lights",
-    "fullName": "Evening Lights - Lightbulb",
+    "fullName": "Evening Lights - Lightbulb (Node Red)",
     "sortName": "Evening Lights:Lightbulb",
     "uniqueId": "Default Model69:62:B7:AE:38:D4Node RedEvening Lights00000043",
     "homebridge": "Default Model",
@@ -379,7 +379,7 @@
   },
   {
     "name": "Firepit light",
-    "fullName": "Firepit light - Lightbulb",
+    "fullName": "Firepit light - Lightbulb (Tasmota)",
     "sortName": "Firepit light:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaFirepit light00000043",
     "homebridge": "homebridge",
@@ -388,7 +388,7 @@
   },
   {
     "name": "Floor Lamp One",
-    "fullName": "Floor Lamp One - Lightbulb",
+    "fullName": "Floor Lamp One - Lightbulb (Signify Netherlands B.V.)",
     "sortName": "Floor Lamp One:Lightbulb",
     "uniqueId": "homebridgeCC:22:3D:E3:CF:33Signify Netherlands B.V.Floor Lamp One00000043",
     "homebridge": "homebridge",
@@ -397,7 +397,7 @@
   },
   {
     "name": "Floor Lamp Two",
-    "fullName": "Floor Lamp Two - Lightbulb",
+    "fullName": "Floor Lamp Two - Lightbulb (Signify Netherlands B.V.)",
     "sortName": "Floor Lamp Two:Lightbulb",
     "uniqueId": "homebridgeCC:22:3D:E3:CF:33Signify Netherlands B.V.Floor Lamp Two00000043",
     "homebridge": "homebridge",
@@ -406,7 +406,7 @@
   },
   {
     "name": "Freezer",
-    "fullName": "Freezer - Temperature Sensor",
+    "fullName": "Freezer - Temperature Sensor (NRCHKB - Acurite-986/2F)",
     "sortName": "Freezer:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - Acurite-986/2FFreezer0000008A",
     "homebridge": "Default Model",
@@ -415,7 +415,7 @@
   },
   {
     "name": "Fridge",
-    "fullName": "Fridge - Temperature Sensor",
+    "fullName": "Fridge - Temperature Sensor (NRCHKB - Acurite-986/1R)",
     "sortName": "Fridge:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - Acurite-986/1RFridge0000008A",
     "homebridge": "Default Model",
@@ -424,7 +424,7 @@
   },
   {
     "name": "Front Hall",
-    "fullName": "Front Hall - Lightbulb",
+    "fullName": "Front Hall - Lightbulb (Tasmota)",
     "sortName": "Front Hall:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaFront Hall00000043",
     "homebridge": "homebridge",
@@ -433,7 +433,7 @@
   },
   {
     "name": "Front Soffit",
-    "fullName": "Front Soffit - Lightbulb",
+    "fullName": "Front Soffit - Lightbulb (Tasmota)",
     "sortName": "Front Soffit:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaFront Soffit00000043",
     "homebridge": "homebridge",
@@ -442,7 +442,7 @@
   },
   {
     "name": "Garage Door",
-    "fullName": "Garage Door - Garage Door Opener",
+    "fullName": "Garage Door - Garage Door Opener (Tasmota)",
     "sortName": "Garage Door:GarageDoorOpener",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaGarage Door00000041",
     "homebridge": "homebridge",
@@ -451,7 +451,7 @@
   },
   {
     "name": "Garage Soffit",
-    "fullName": "Garage Soffit - Lightbulb",
+    "fullName": "Garage Soffit - Lightbulb (Tasmota)",
     "sortName": "Garage Soffit:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaGarage Soffit00000043",
     "homebridge": "homebridge",
@@ -460,7 +460,7 @@
   },
   {
     "name": "Greeni",
-    "fullName": "Greeni - Outlet",
+    "fullName": "Greeni - Outlet (Tasmota)",
     "sortName": "Greeni:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaGreeni00000047",
     "homebridge": "homebridge",
@@ -469,7 +469,7 @@
   },
   {
     "name": "Hue Bridge",
-    "fullName": "Hue Bridge - Stateless Programmable Switch",
+    "fullName": "Hue Bridge - Stateless Programmable Switch (Signify Netherlands B.V.)",
     "sortName": "Hue Bridge:StatelessProgrammableSwitch",
     "uniqueId": "homebridgeCC:22:3D:E3:CF:33Signify Netherlands B.V.Hue Bridge00000089",
     "homebridge": "homebridge",
@@ -478,7 +478,7 @@
   },
   {
     "name": "Laundry",
-    "fullName": "Laundry - Humidity Sensor",
+    "fullName": "Laundry - Humidity Sensor (NRCHKB - OMG)",
     "sortName": "Laundry:HumiditySensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - OMGLaundry00000082",
     "homebridge": "Default Model",
@@ -487,7 +487,7 @@
   },
   {
     "name": "Laundry",
-    "fullName": "Laundry - Lightbulb",
+    "fullName": "Laundry - Lightbulb (Tasmota)",
     "sortName": "Laundry:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaLaundry00000043",
     "homebridge": "homebridge",
@@ -496,7 +496,7 @@
   },
   {
     "name": "Laundry",
-    "fullName": "Laundry - Temperature Sensor",
+    "fullName": "Laundry - Temperature Sensor (NRCHKB - OMG)",
     "sortName": "Laundry:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - OMGLaundry0000008A",
     "homebridge": "Default Model",
@@ -505,7 +505,7 @@
   },
   {
     "name": "Main Room Group",
-    "fullName": "Main Room Group - Lightbulb",
+    "fullName": "Main Room Group - Lightbulb (Node Red)",
     "sortName": "Main Room Group:Lightbulb",
     "uniqueId": "Default Model69:62:B7:AE:38:D4Node RedMain Room Group00000043",
     "homebridge": "Default Model",
@@ -514,7 +514,7 @@
   },
   {
     "name": "Master Lights",
-    "fullName": "Master Lights - Lightbulb",
+    "fullName": "Master Lights - Lightbulb (Node Red)",
     "sortName": "Master Lights:Lightbulb",
     "uniqueId": "Default Model69:62:B7:AE:38:D4Node RedMaster Lights00000043",
     "homebridge": "Default Model",
@@ -523,7 +523,7 @@
   },
   {
     "name": "Master",
-    "fullName": "Master - Fan",
+    "fullName": "Master - Fan (Tasmota)",
     "sortName": "Master:Fan",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaMaster00000040",
     "homebridge": "homebridge",
@@ -532,7 +532,7 @@
   },
   {
     "name": "Master",
-    "fullName": "Master - Lightbulb",
+    "fullName": "Master - Lightbulb (Tasmota)",
     "sortName": "Master:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaMaster00000043",
     "homebridge": "homebridge",
@@ -541,7 +541,7 @@
   },
   {
     "name": "Music Port",
-    "fullName": "Music Port - Switch",
+    "fullName": "Music Port - Switch (HTTP-IRBlaster)",
     "sortName": "Music Port:Switch",
     "uniqueId": "homebridgeBC:22:3D:E3:CF:43HTTP-IRBlasterMusic Port00000049",
     "homebridge": "homebridge",
@@ -550,7 +550,7 @@
   },
   {
     "name": "Patio Door",
-    "fullName": "Patio Door - Battery",
+    "fullName": "Patio Door - Battery (SONOFF)",
     "sortName": "Patio Door:Battery",
     "uniqueId": "homebridge0E:BA:1B:4F:CA:8DSONOFFPatio Door00000096",
     "homebridge": "homebridge",
@@ -559,7 +559,7 @@
   },
   {
     "name": "Patio Door",
-    "fullName": "Patio Door - Contact Sensor",
+    "fullName": "Patio Door - Contact Sensor (SONOFF)",
     "sortName": "Patio Door:ContactSensor",
     "uniqueId": "homebridge0E:BA:1B:4F:CA:8DSONOFFPatio Door00000080",
     "homebridge": "homebridge",
@@ -568,7 +568,7 @@
   },
   {
     "name": "Patio Room",
-    "fullName": "Patio Room - Fan",
+    "fullName": "Patio Room - Fan (Hunter Fan)",
     "sortName": "Patio Room:Fan",
     "uniqueId": "homebridge0E:F4:E9:FC:AD:D1Hunter FanPatio Room00000040",
     "homebridge": "homebridge",
@@ -577,7 +577,7 @@
   },
   {
     "name": "Patio Room",
-    "fullName": "Patio Room - Humidity Sensor",
+    "fullName": "Patio Room - Humidity Sensor (NRCHKB - OMG)",
     "sortName": "Patio Room:HumiditySensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - OMGPatio Room00000082",
     "homebridge": "Default Model",
@@ -586,7 +586,7 @@
   },
   {
     "name": "Patio Room",
-    "fullName": "Patio Room - Lightbulb",
+    "fullName": "Patio Room - Lightbulb (Hunter Fan)",
     "sortName": "Patio Room:Lightbulb",
     "uniqueId": "homebridge0E:F4:E9:FC:AD:D1Hunter FanPatio Room00000043",
     "homebridge": "homebridge",
@@ -595,7 +595,7 @@
   },
   {
     "name": "Patio Room",
-    "fullName": "Patio Room - Temperature Sensor",
+    "fullName": "Patio Room - Temperature Sensor (NRCHKB - OMG)",
     "sortName": "Patio Room:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - OMGPatio Room0000008A",
     "homebridge": "Default Model",
@@ -604,7 +604,7 @@
   },
   {
     "name": "Porch B6AE",
-    "fullName": "Porch B6AE - Camera Rtp Stream Management",
+    "fullName": "Porch B6AE - Camera (HikVision)",
     "sortName": "Porch B6AE:CameraRTPStreamManagement",
     "uniqueId": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionPorch B6AE00000110",
     "homebridge": "ECI-T24F2",
@@ -613,7 +613,7 @@
   },
   {
     "name": "Porch B6AE",
-    "fullName": "Porch B6AE - Doorbell",
+    "fullName": "Porch B6AE - Doorbell (HikVision)",
     "sortName": "Porch B6AE:Doorbell",
     "uniqueId": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionPorch B6AE00000121",
     "homebridge": "ECI-T24F2",
@@ -622,7 +622,7 @@
   },
   {
     "name": "Porch B6AE",
-    "fullName": "Porch B6AE - Motion Sensor",
+    "fullName": "Porch B6AE - Motion Sensor (HikVision)",
     "sortName": "Porch B6AE:MotionSensor",
     "uniqueId": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionPorch B6AE00000085",
     "homebridge": "ECI-T24F2",
@@ -631,7 +631,7 @@
   },
   {
     "name": "Porch B6AE",
-    "fullName": "Porch B6AE - Switch",
+    "fullName": "Porch B6AE - Switch (HikVision)",
     "sortName": "Porch B6AE:Switch",
     "uniqueId": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionPorch B6AE00000049",
     "homebridge": "ECI-T24F2",
@@ -640,7 +640,7 @@
   },
   {
     "name": "Porch Light Strip",
-    "fullName": "Porch Light Strip - Lightbulb",
+    "fullName": "Porch Light Strip - Lightbulb (WLED)",
     "sortName": "Porch Light Strip:Lightbulb",
     "uniqueId": "homebridge0E:03:4B:B3:AF:4CWLEDPorch Light Strip00000043",
     "homebridge": "homebridge",
@@ -649,7 +649,7 @@
   },
   {
     "name": "Porch",
-    "fullName": "Porch - Humidity Sensor",
+    "fullName": "Porch - Humidity Sensor (NRCHKB - Acurite-Tower/B)",
     "sortName": "Porch:HumiditySensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - Acurite-Tower/BPorch00000082",
     "homebridge": "Default Model",
@@ -658,7 +658,7 @@
   },
   {
     "name": "Porch",
-    "fullName": "Porch - Temperature Sensor",
+    "fullName": "Porch - Temperature Sensor (NRCHKB - Acurite-Tower/B)",
     "sortName": "Porch:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKB - Acurite-Tower/BPorch0000008A",
     "homebridge": "Default Model",
@@ -667,7 +667,7 @@
   },
   {
     "name": "Portable Fan",
-    "fullName": "Portable Fan - Outlet",
+    "fullName": "Portable Fan - Outlet (Tasmota)",
     "sortName": "Portable Fan:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaPortable Fan00000047",
     "homebridge": "homebridge",
@@ -676,7 +676,7 @@
   },
   {
     "name": "Powder Fan",
-    "fullName": "Powder Fan - Outlet",
+    "fullName": "Powder Fan - Outlet (Tasmota)",
     "sortName": "Powder Fan:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaPowder Fan00000047",
     "homebridge": "homebridge",
@@ -685,7 +685,7 @@
   },
   {
     "name": "Powder Shower",
-    "fullName": "Powder Shower - Lightbulb",
+    "fullName": "Powder Shower - Lightbulb (Tasmota)",
     "sortName": "Powder Shower:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaPowder Shower00000043",
     "homebridge": "homebridge",
@@ -694,7 +694,7 @@
   },
   {
     "name": "Powder",
-    "fullName": "Powder - Lightbulb",
+    "fullName": "Powder - Lightbulb (Tasmota)",
     "sortName": "Powder:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaPowder00000043",
     "homebridge": "homebridge",
@@ -703,7 +703,7 @@
   },
   {
     "name": "Presence",
-    "fullName": "Presence - Occupancy Sensor",
+    "fullName": "Presence - Occupancy Sensor (NRCHKB)",
     "sortName": "Presence:OccupancySensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBPresence00000086",
     "homebridge": "Default Model",
@@ -712,7 +712,7 @@
   },
   {
     "name": "Presence",
-    "fullName": "Presence - Switch",
+    "fullName": "Presence - Switch (NRCHKB)",
     "sortName": "Presence:Switch",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBPresence00000049",
     "homebridge": "Default Model",
@@ -721,7 +721,7 @@
   },
   {
     "name": "Router Power",
-    "fullName": "Router Power - Outlet",
+    "fullName": "Router Power - Outlet (Tasmota)",
     "sortName": "Router Power:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaRouter Power00000047",
     "homebridge": "homebridge",
@@ -730,7 +730,7 @@
   },
   {
     "name": "Shed Door",
-    "fullName": "Shed Door - Battery",
+    "fullName": "Shed Door - Battery (SONOFF)",
     "sortName": "Shed Door:Battery",
     "uniqueId": "homebridge0E:BA:1B:4F:CA:8DSONOFFShed Door00000096",
     "homebridge": "homebridge",
@@ -739,7 +739,7 @@
   },
   {
     "name": "Shed Door",
-    "fullName": "Shed Door - Contact Sensor",
+    "fullName": "Shed Door - Contact Sensor (SONOFF)",
     "sortName": "Shed Door:ContactSensor",
     "uniqueId": "homebridge0E:BA:1B:4F:CA:8DSONOFFShed Door00000080",
     "homebridge": "homebridge",
@@ -748,7 +748,7 @@
   },
   {
     "name": "Shed Garage Door",
-    "fullName": "Shed Garage Door - Battery",
+    "fullName": "Shed Garage Door - Battery (SONOFF)",
     "sortName": "Shed Garage Door:Battery",
     "uniqueId": "homebridge0E:BA:1B:4F:CA:8DSONOFFShed Garage Door00000096",
     "homebridge": "homebridge",
@@ -757,7 +757,7 @@
   },
   {
     "name": "Shed Garage Door",
-    "fullName": "Shed Garage Door - Contact Sensor",
+    "fullName": "Shed Garage Door - Contact Sensor (SONOFF)",
     "sortName": "Shed Garage Door:ContactSensor",
     "uniqueId": "homebridge0E:BA:1B:4F:CA:8DSONOFFShed Garage Door00000080",
     "homebridge": "homebridge",
@@ -766,7 +766,7 @@
   },
   {
     "name": "Shed Light",
-    "fullName": "Shed Light - Lightbulb",
+    "fullName": "Shed Light - Lightbulb (Tasmota)",
     "sortName": "Shed Light:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaShed Light00000043",
     "homebridge": "homebridge",
@@ -775,7 +775,7 @@
   },
   {
     "name": "Side Counter",
-    "fullName": "Side Counter - Lightbulb",
+    "fullName": "Side Counter - Lightbulb (Tasmota)",
     "sortName": "Side Counter:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaSide Counter00000043",
     "homebridge": "homebridge",
@@ -784,7 +784,7 @@
   },
   {
     "name": "Side Counter",
-    "fullName": "Side Counter - Outlet",
+    "fullName": "Side Counter - Outlet (Tasmota)",
     "sortName": "Side Counter:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaSide Counter00000047",
     "homebridge": "homebridge",
@@ -793,7 +793,7 @@
   },
   {
     "name": "Side Door",
-    "fullName": "Side Door - Battery",
+    "fullName": "Side Door - Battery (SONOFF)",
     "sortName": "Side Door:Battery",
     "uniqueId": "homebridge0E:BA:1B:4F:CA:8DSONOFFSide Door00000096",
     "homebridge": "homebridge",
@@ -802,7 +802,7 @@
   },
   {
     "name": "Side door",
-    "fullName": "Side door - Camera Rtp Stream Management",
+    "fullName": "Side door - Camera (Eufy)",
     "sortName": "Side door:CameraRTPStreamManagement",
     "uniqueId": "homebridge0E:89:A7:DA:D3:21EufySide door00000110",
     "homebridge": "homebridge",
@@ -811,7 +811,7 @@
   },
   {
     "name": "Side Door",
-    "fullName": "Side Door - Contact Sensor",
+    "fullName": "Side Door - Contact Sensor (SONOFF)",
     "sortName": "Side Door:ContactSensor",
     "uniqueId": "homebridge0E:BA:1B:4F:CA:8DSONOFFSide Door00000080",
     "homebridge": "homebridge",
@@ -820,7 +820,7 @@
   },
   {
     "name": "Side door",
-    "fullName": "Side door - Motion Sensor",
+    "fullName": "Side door - Motion Sensor (Eufy)",
     "sortName": "Side door:MotionSensor",
     "uniqueId": "homebridge0E:89:A7:DA:D3:21EufySide door00000085",
     "homebridge": "homebridge",
@@ -829,7 +829,7 @@
   },
   {
     "name": "Small Fridge",
-    "fullName": "Small Fridge - Temperature Sensor",
+    "fullName": "Small Fridge - Temperature Sensor (NRCHKB)",
     "sortName": "Small Fridge:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBSmall Fridge0000008A",
     "homebridge": "Default Model",
@@ -838,7 +838,7 @@
   },
   {
     "name": "Spare",
-    "fullName": "Spare - Temperature Sensor",
+    "fullName": "Spare - Temperature Sensor (NRCHKB)",
     "sortName": "Spare:TemperatureSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBSpare0000008A",
     "homebridge": "Default Model",
@@ -847,7 +847,7 @@
   },
   {
     "name": "Stereo",
-    "fullName": "Stereo - Fan",
+    "fullName": "Stereo - Fan (HTTP-IRBlaster)",
     "sortName": "Stereo:Fan",
     "uniqueId": "homebridgeBC:22:3D:E3:CF:44HTTP-IRBlasterStereo00000040",
     "homebridge": "homebridge",
@@ -856,7 +856,7 @@
   },
   {
     "name": "Table Light",
-    "fullName": "Table Light - Lightbulb",
+    "fullName": "Table Light - Lightbulb (Signify Netherlands B.V.)",
     "sortName": "Table Light:Lightbulb",
     "uniqueId": "homebridgeCC:22:3D:E3:CF:33Signify Netherlands B.V.Table Light00000043",
     "homebridge": "homebridge",
@@ -865,7 +865,7 @@
   },
   {
     "name": "Trailer Power",
-    "fullName": "Trailer Power - Outlet",
+    "fullName": "Trailer Power - Outlet (Tasmota)",
     "sortName": "Trailer Power:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaTrailer Power00000047",
     "homebridge": "homebridge",
@@ -874,7 +874,7 @@
   },
   {
     "name": "Tuner",
-    "fullName": "Tuner - Switch",
+    "fullName": "Tuner - Switch (HTTP-IRBlaster)",
     "sortName": "Tuner:Switch",
     "uniqueId": "homebridgeBC:22:3D:E3:CF:42HTTP-IRBlasterTuner00000049",
     "homebridge": "homebridge",
@@ -883,7 +883,7 @@
   },
   {
     "name": "Wasaga",
-    "fullName": "Wasaga - Thermostat",
+    "fullName": "Wasaga - Thermostat (TCC)",
     "sortName": "Wasaga:Thermostat",
     "uniqueId": "homebridgeAC:22:3D:E3:CF:33TCCWasaga0000004A",
     "homebridge": "homebridge",
@@ -892,7 +892,7 @@
   },
   {
     "name": "Washer Power",
-    "fullName": "Washer Power - Outlet",
+    "fullName": "Washer Power - Outlet (Tasmota)",
     "sortName": "Washer Power:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWasher Power00000047",
     "homebridge": "homebridge",
@@ -901,7 +901,7 @@
   },
   {
     "name": "Washer Working",
-    "fullName": "Washer Working - Contact Sensor",
+    "fullName": "Washer Working - Contact Sensor (NRCHKB)",
     "sortName": "Washer Working:ContactSensor",
     "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBWasher Working00000080",
     "homebridge": "Default Model",
@@ -910,7 +910,7 @@
   },
   {
     "name": "Water Meter",
-    "fullName": "Water Meter - Humidity Sensor",
+    "fullName": "Water Meter - Humidity Sensor (Tasmota)",
     "sortName": "Water Meter:HumiditySensor",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWater Meter00000082",
     "homebridge": "homebridge",
@@ -919,7 +919,7 @@
   },
   {
     "name": "Water Meter",
-    "fullName": "Water Meter - Temperature Sensor",
+    "fullName": "Water Meter - Temperature Sensor (Tasmota)",
     "sortName": "Water Meter:TemperatureSensor",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWater Meter0000008A",
     "homebridge": "homebridge",
@@ -928,7 +928,7 @@
   },
   {
     "name": "Water Valve",
-    "fullName": "Water Valve - Outlet",
+    "fullName": "Water Valve - Outlet (Tasmota)",
     "sortName": "Water Valve:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWater Valve00000047",
     "homebridge": "homebridge",
@@ -937,7 +937,7 @@
   },
   {
     "name": "West Bedroom",
-    "fullName": "West Bedroom - Fan",
+    "fullName": "West Bedroom - Fan (Tasmota)",
     "sortName": "West Bedroom:Fan",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000040",
     "homebridge": "homebridge",
@@ -946,7 +946,7 @@
   },
   {
     "name": "West Bedroom",
-    "fullName": "West Bedroom - Lightbulb",
+    "fullName": "West Bedroom - Lightbulb (Tasmota)",
     "sortName": "West Bedroom:Lightbulb",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000043",
     "homebridge": "homebridge",
@@ -955,7 +955,7 @@
   },
   {
     "name": "Xmas Tree",
-    "fullName": "Xmas Tree - Outlet",
+    "fullName": "Xmas Tree - Outlet (Tasmota)",
     "sortName": "Xmas Tree:Outlet",
     "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaXmas Tree00000047",
     "homebridge": "homebridge",
