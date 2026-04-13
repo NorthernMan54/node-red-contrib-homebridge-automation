@@ -64,7 +64,6 @@ class HBConfigNode {
         config: { debug: false },
         pin: config.username
       });
-
       // Stable discovery handler: always delegates to the current config node instance
       // via the persisted state lookup, so it survives config node restarts
       const nodeId = this.id;
@@ -235,10 +234,10 @@ class HBConfigNode {
         }
         return;
       }
-      // Device not in current list — only trigger rediscovery if not already in progress
+      // Device not in current list — refresh directly since instances are already known
       if (!this.refreshInProcess) {
         this.refreshInProcess = true;
-        this.waitForNoMoreDiscoveries();
+        this._scheduleRefresh();
       }
     }
 
@@ -252,6 +251,23 @@ class HBConfigNode {
 
   _findMatchingDevice(deviceId) {
     return this.hbDevices.find(service => deviceId === getDeviceIdentifier(service));
+  }
+
+  _scheduleRefresh() {
+    if (this._refreshTimeout) {
+      clearTimeout(this._refreshTimeout);
+    }
+    // Cancel any pending monitor-only refresh — handleReady will handle the monitor
+    if (this._monitorRefreshTimeout) {
+      clearTimeout(this._monitorRefreshTimeout);
+      this._monitorRefreshTimeout = null;
+    }
+    this._refreshTimeout = setTimeout(() => {
+      this._refreshTimeout = null;
+      this.handleReady()
+        .catch(err => this.error(`Error during device refresh: ${err.message}`))
+        .finally(() => { this.refreshInProcess = false; });
+    }, 500);
   }
 
   _scheduleMonitorRefresh() {
@@ -303,8 +319,19 @@ class HBConfigNode {
         .filter(node => ['hb-status', 'hb-event', 'hb-resume'].includes(node.type))
         .map(node => node.hbDevice) // Map to hbDevice property
         .filter(Boolean); // Remove any undefined or null values, if present;
+
+      // Skip if the monitor already covers the same set of devices
+      if (this.monitor && this._monitorNodeIds) {
+        const currentIds = monitorNodes.map(n => n.uniqueId).sort().join(',');
+        if (currentIds === this._monitorNodeIds) {
+          debug('Monitor already covers same devices, skipping recreation');
+          return;
+        }
+      }
+
       this.log(`Connected to ${monitorNodes.length} Homebridge devices`);
-      // console.log('monitorNodes', monitorNodes);
+      this._monitorNodeIds = monitorNodes.map(n => n.uniqueId).sort().join(',');
+
       if (this.monitor) {
         this._recreatingMonitor = true;
         this.monitor.finish();
@@ -383,6 +410,10 @@ class HBConfigNode {
       clearTimeout(this.discoveryTimeout);
       this.discoveryTimeout = null;
     }
+    if (this._refreshTimeout) {
+      clearTimeout(this._refreshTimeout);
+      this._refreshTimeout = null;
+    }
     if (this._monitorRefreshTimeout) {
       clearTimeout(this._monitorRefreshTimeout);
       this._monitorRefreshTimeout = null;
@@ -392,6 +423,7 @@ class HBConfigNode {
       this._recreatingMonitor = true;
       this.monitor.finish();
       this.monitor = null;
+      this._monitorNodeIds = null;
     }
 
     const persisted = this.id ? _persistedClients.get(this.id) : null;
