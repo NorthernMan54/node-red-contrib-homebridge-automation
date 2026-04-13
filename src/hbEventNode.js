@@ -24,7 +24,7 @@ class HbEventNode extends HbBaseNode {
     debug('hbEvent for', this.id, this.type, service.serviceName, JSON.stringify(service.values));
 
     this.status({
-      text: JSON.stringify(service.values),
+      text: this.statusText(JSON.stringify(service.values)),
       shape: 'dot',
       fill: 'green',
     });

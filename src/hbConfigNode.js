@@ -336,7 +336,8 @@ class HBConfigNode {
         // this.refreshDevices();
       })
       this.monitor.on('monitor-error', (instance, hadError) => {
-        debug('monitor-error', instance, hadError)
+        debug('monitor-error', instance, hadError);
+        this.warnClientNodes(instance, 'monitor error');
       })
     }
   }
@@ -350,6 +351,17 @@ class HBConfigNode {
     clientNodes.forEach(clientNode => {
       clientNode.status({ fill: 'red', shape: 'ring', text: 'disconnected' });
       clientNode.emit('hbDisconnected', instance);
+    });
+  }
+
+  warnClientNodes(instance, text) {
+    debug('warnClientNodes', `${instance.ipAddress}:${instance.port}`, text);
+    const clientNodes = Object.values(this.clientNodes).filter(clientNode => {
+      return `${clientNode.hbDevice?.instance.ipAddress}:${clientNode.hbDevice?.instance.port}` === `${instance.ipAddress}:${instance.port}`;
+    });
+
+    clientNodes.forEach(clientNode => {
+      clientNode.status({ fill: 'yellow', shape: 'ring', text });
     });
   }
 

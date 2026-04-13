@@ -9,6 +9,7 @@ class HbBaseNode {
 
     if (!config.conf) {
       this.error(`Warning: ${config.type} @ (${config.x}, ${config.y}) not connected to a HB Configuration Node`);
+      this.status({ fill: 'red', shape: 'ring', text: 'not configured' });
     }
 
     this.config = config;
@@ -99,7 +100,7 @@ class HbBaseNode {
   }
 
   statusText(message) {
-    return message.slice(0, 20)
+    return message.slice(0, 32)
   }
 
   /**
@@ -110,7 +111,7 @@ class HbBaseNode {
   handleWarning(warning, statusText) {
     this.warn(warning);
     this.status({
-      text: (statusText ? statusText : warning).slice(0, 20),
+      text: (statusText ? statusText : warning).slice(0, 32),
       shape: 'ring',
       fill: 'yellow',
     });
@@ -124,7 +125,7 @@ class HbBaseNode {
   handleError(error, statusText) {
     this.error(error);
     this.status({
-      text: (statusText ? statusText : error).slice(0, 20),
+      text: (statusText ? statusText : error).slice(0, 32),
       shape: 'ring',
       fill: 'red',
     });

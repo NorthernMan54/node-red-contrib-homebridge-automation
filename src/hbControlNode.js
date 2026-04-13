@@ -44,6 +44,7 @@ class HbControlNode extends HbBaseNode {
 
     const results = [];
     let fill = 'green';
+    let shape = 'dot';
 
     try {
       if (isCamera) {
@@ -70,13 +71,13 @@ class HbControlNode extends HbBaseNode {
           this.error(`${error.message} for ${JSON.stringify(message.payload)}`);
           results.push({ Error: `${error.message} for ${JSON.stringify(message.payload)}` });
           fill = 'red';
-          this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
+          shape = 'ring';
         }
       }
 
       // Update status
       const statusText = this.statusText(JSON.stringify(Object.assign({}, ...results)));
-      this.status({ text: statusText, shape: 'dot', fill });
+      this.status({ text: statusText, shape, fill });
       done();
     } catch (error) {
       this.handleError(error, 'Unhandled error');
