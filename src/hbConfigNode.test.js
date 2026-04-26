@@ -111,6 +111,7 @@ describe('from files', () => {
     node.log = console.log;
   });
 
+  // eslint-disable-next-line jest/no-disabled-tests
   test.skip('Retrieve devices, and compare with current (v2)', async () => {
     // console.log('Reading Homebridge endpoints from file', process.cwd());
     var storagePath = path.join(process.cwd(), 'test/homebridge-automation-endpoints.json');
