@@ -8,6 +8,10 @@ class HbResumeNode extends HbBaseNode {
     this.storedState = null;
   }
 
+  handleHbDisconnected() {
+    this.storedState = null;
+  }
+
   handleHBEventMessage(service) {
     debug('hbEvent for', this.id, service.serviceName, JSON.stringify(service.values));
 
@@ -17,11 +21,12 @@ class HbResumeNode extends HbBaseNode {
     }
   }
 
-  handleInput(message, send) {
+  handleInput(message, send, done) {
     debug('handleInput', this.id, message.payload, this.name);
 
     if (!this.hbDevice) {
       this.handleWarning('HB not initialized');
+      done('HB not initialized');
       return;
     }
 
@@ -33,6 +38,7 @@ class HbResumeNode extends HbBaseNode {
         `Invalid payload. Expected: {"On": false, "Brightness": 0}. Valid values: ${validNames}`,
         'Invalid payload'
       );
+      done();
       return;
     }
 
@@ -54,8 +60,9 @@ class HbResumeNode extends HbBaseNode {
       fill: 'green',
     });
 
-    this.lastOutputTime = Date.now();;
+    this.lastOutputTime = Date.now();
     send(message);
+    done();
   }
 
 }

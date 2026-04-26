@@ -9,7 +9,6 @@ const HbStatusNode = require('./hbStatusNode');
 const HapDeviceRoutes = require('./HapDeviceRoutes');
 
 module.exports = function (RED) {
-  var hbDevices;
 
   class hbConfigNode extends HBConfigNode {
     constructor(config) {
@@ -58,7 +57,7 @@ module.exports = function (RED) {
 
   RED.nodes.registerType("hb-status", hbStatusNode);
 
-  const hapDeviceRoutes = new HapDeviceRoutes(RED, hbDevices);
+  const hapDeviceRoutes = new HapDeviceRoutes(RED);
   hapDeviceRoutes.registerRoutes();
 
 };

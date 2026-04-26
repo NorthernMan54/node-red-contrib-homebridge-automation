@@ -62,28 +62,92 @@
     color: '#F3B567',
     label: function() {
       return this.username;
-    },
-    oneditsave: function() {
-      // var node = this;
-      // var user = $('#node-config-input-PIN').val();
-      // var pass = $('#node-config-input-password').val();
-      // console.log("pass: ", pass);
-      // if (pass != '_PWD_') {
-      //  var configNode = {
-      //    id: node.id,
-      //    user: user,
-      //    pass: pass
-      //  }
-      // $.ajax({
-      //  data: JSON.stringify(configNode),
-      //  url: 'alexa-home/new-configNode',
-      //  contentType: 'application/json',
-      //  type: 'POST',
-      //  processData: false
-      // });
-      // }
     }
   });
+</script>
+
+<script type="text/javascript">
+  // Shared editor functions for all Homebridge node types
+  function hbPopulateDevices(node, deviceKey) {
+    return function(configNode) {
+      $.getJSON('hap-device/' + deviceKey + '/' + configNode, function(data) {
+        $('#node-input-device').find('option').remove().end();
+        data.forEach(function(d) {
+          $('<option/>', {
+            value: d.uniqueId,
+            name: d.name,
+            text: d.fullName,
+            homebridge: d.homebridge,
+            manufacturer: d.manufacturer,
+            service: d.service
+          }).appendTo('#node-input-device');
+        });
+        if (node.device) {
+          $('#node-input-device').val(node.device);
+        }
+      }).fail(function() {
+        console.log('[hb-config] problem getting ' + deviceKey);
+      });
+    };
+  }
+
+  function hbOnEditPrepare(node, deviceKey) {
+    var getDevs = hbPopulateDevices(node, deviceKey);
+
+    $('#node-input-device').change(function() {
+      $('#node-input-name').val($('#node-input-device option:selected').text());
+    });
+
+    if (node.conf) {
+      var configNode = $('#node-input-conf').val();
+      if (configNode != '_ADD_') {
+        getDevs(configNode);
+      }
+    }
+
+    $('#node-input-conf').change(function() {
+      var configNode = $('#node-input-conf').val();
+      if (configNode != '_ADD_') {
+        getDevs(configNode);
+      } else {
+        $('#node-input-device').find('option').remove().end();
+        $('#node-input-device').val('');
+      }
+    });
+
+    $('#node-input-device-refresh').click(function() {
+      var $btn = $('#node-input-device-refresh');
+      if ($btn.hasClass('disabled')) return;
+      $btn.addClass('disabled');
+      $btn.find('i').addClass('fa-spin');
+      var configNode = $('#node-input-conf').val();
+      $.ajax({
+        url: 'hap-device/refresh/' + configNode,
+        type: 'POST'
+      }).done(function() {
+        getDevs(configNode);
+      }).fail(function(jqXHR) {
+        if (jqXHR.status === 404) {
+          RED.notify('Please deploy first before refreshing devices.', 'warning');
+        } else {
+          RED.notify('Error refreshing devices.', 'error');
+        }
+      }).always(function() {
+        $btn.removeClass('disabled');
+        $btn.find('i').removeClass('fa-spin');
+      });
+    });
+  }
+
+  function hbOnEditSave() {
+    var selected = $('#node-input-device option:selected');
+    if (!selected.length) return;
+    this.name = (selected.attr('name') || '').toString();
+    this.Homebridge = (selected.attr('homebridge') || '').toString();
+    this.Manufacturer = (selected.attr('manufacturer') || '').toString();
+    this.Service = (selected.attr('service') || '').toString();
+    $('#node-input-name').val(this.name);
+  }
 </script>
 
 <script type="text/x-red" data-template-name="hb-event">
@@ -129,8 +193,6 @@
       <dd>Accessory service type</dd>
       <dt>_device<span class="property-type">string</span></dt>
       <dd>Internal device identifier</dd>
-      <dt>_rawEvent<span class="property-type">string</span></dt>
-      <dd>Event as received from homebridge</dd>
   </dl>
 <h3>Details</h3>
 <p>Each Homebridge Event node, will emit a message containing the updated status of the service that has changed.</p>
@@ -170,79 +232,9 @@
     label: function() {
       return this.name || "Choose accessory/service";
     },
-    oneditsave: function() {
-      var n = $('#node-input-device option:selected').text();
-      // console.log("selected name ", $('#node-input-device option:selected'));
-
-      this.name = $('#node-input-device option:selected').attr('name').toString();
-      // this.fullName = $('#node-input-device option:selected').attr('text').toString();
-      this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
-      this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Service = $('#node-input-device option:selected').attr('service').toString();
-      $('#node-input-name').val(this.name);
-    },
+    oneditsave: hbOnEditSave,
     oneditprepare: function() {
-      var node = this;
-      // console.log("foo " + node.device);
-      if (typeof node.acknowledge === 'undefined') {
-        $('#node-input-acknowledge').prop('checked', true);
-      }
-      $('#node-input-device').change(function() {
-        $('#node-input-name').val($('#node-input-device option:selected').text());
-      });
-      var getDevs = function(configNode) {
-        $.getJSON('hap-device/evDevices/' + configNode, function(data) {
-          $('#node-input-device').find('option').remove().end();
-          for (d in data) {
-            $('<option/>', {
-              value: data[d].uniqueId,
-              name: data[d].name,
-              text: data[d].fullName,
-              homebridge: data[d].homebridge,
-              manufacturer: data[d].manufacturer,
-              service: data[d].service
-            }).appendTo('#node-input-device');
-          }
-          if (node.device) {
-            $('#node-input-device').val(node.device);
-          }
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-          console.log("[hb-config] problem getting evDevices");
-          console.log(textStatus);
-        });
-
-      }
-      if (node.conf) {
-        var configNode = $('#node-input-conf').val();
-        // console.log("configNode: ", configNode);
-        if (configNode != '_ADD_') {
-          getDevs(configNode);
-        }
-      }
-      $('#node-input-conf').change(function() {
-        var configNode = $('#node-input-conf').val();
-        // console.log("configNode changed: ", configNode);
-        if (configNode != '_ADD_') {
-          getDevs(configNode);
-        } else {
-          // console.log("new configNode");
-          $('#node-input-device').find('option').remove().end();
-          $('#node-input-device').val("");
-        }
-      });
-      $('#node-input-device-refresh').click(function() {
-        $('#node-input-device-refresh').addClass('disabled');
-        var configNode = $('#node-input-conf').val();
-        $.ajax({
-          url: 'hap-device/refresh/' + configNode,
-          type: 'POST'
-        }).done(function(data) {
-          setTimeout(function() {
-            getDevs(configNode);
-            $('#node-input-device-refresh').removeClass('disabled');
-          }, 3000);
-        });
-      });
+      hbOnEditPrepare(this, 'evDevices');
     }
   });
 </script>
@@ -261,7 +253,6 @@
 	</div>
 
     <input type="hidden" id="node-input-name">
-    </div>
 </script>
 
 
@@ -284,8 +275,6 @@
       <dd>Accessory service type</dd>
       <dt>_device<span class="property-type">string</span></dt>
       <dd>Internal device identifier</dd>
-      <dt>_rawEvent<span class="property-type">string</span></dt>
-      <dd>Event as received from homebridge</dd>
   </dl>
 <h3>Where and why would you use this node?</h3>
 <p>I'm using this with a group of lights in a room, where I have either an automation to turn on all the lights for a short period of time ( ie arrive home turning on the lights around the door) or an Amazon Alexa.  And what it does is restore all the lights in the group to the state they where in, prior to being turned on.  So if you have a light on in a room, and you ask Alexa to turn on all the lights, then a few minutes later you can then ask her to turn them off, she will turn them all off except the one that was on previously.  If you ask her to turn off all the lights a second time, she will then turn them all off.</p>
@@ -321,85 +310,12 @@
     label: function() {
       return this.name || "Choose accessory/service";
     },
-    oneditsave: function() {
-      var n = $('#node-input-device option:selected').text();
-      // console.log("selected name ", $('#node-input-device option:selected'));
-
-      this.sname = $('#node-input-device option:selected').attr('name').toString();
-      this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
-      this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Service = $('#node-input-device option:selected').attr('service').toString();
-      $('#node-input-name').val(this.sname);
-    },
+    oneditsave: hbOnEditSave,
     oneditprepare: function() {
-      var node = this;
-      // console.log("foo " + node.device);
-      if (typeof node.acknowledge === 'undefined') {
-        // console.log("ben");
-        $('#node-input-acknowledge').prop('checked', true);
-      }
-      $('#node-input-device').change(function() {
-        $('#node-input-name').val($('#node-input-device option:selected').text());
-      });
-      var getDevs = function(configNode) {
-        $.getJSON('hap-device/evDevices/' + configNode, function(data) {
-          $('#node-input-device').find('option').remove().end();
-          for (d in data) {
-            $('<option/>', {
-              value: data[d].uniqueId,
-              fullName: data[d].fullName,
-              name: data[d].name,
-              text: data[d].fullName,
-              homebridge: data[d].homebridge,
-              manufacturer: data[d].manufacturer,
-              service: data[d].service
-            }).appendTo('#node-input-device');
-          }
-          if (node.device) {
-            $('#node-input-device').val(node.device);
-          }
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-          console.log("[hb-config] problem getting evDevices");
-          console.log(textStatus);
-        });
-
-      }
-      if (node.conf) {
-        var configNode = $('#node-input-conf').val();
-        // console.log("configNode: ", configNode);
-        if (configNode != '_ADD_') {
-          getDevs(configNode);
-        }
-      }
-      $('#node-input-conf').change(function() {
-        var configNode = $('#node-input-conf').val();
-        // console.log("configNode changed: ", configNode);
-        if (configNode != '_ADD_') {
-          getDevs(configNode);
-        } else {
-          // console.log("new configNode");
-          $('#node-input-device').find('option').remove().end();
-          $('#node-input-device').val("");
-        }
-      });
-      $('#node-input-device-refresh').click(function() {
-        $('#node-input-device-refresh').addClass('disabled');
-        var configNode = $('#node-input-conf').val();
-        $.ajax({
-          url: 'hap-device/refresh/' + configNode,
-          type: 'POST'
-        }).done(function(data) {
-          setTimeout(function() {
-            getDevs(configNode);
-            $('#node-input-device-refresh').removeClass('disabled');
-          }, 3000);
-        });
-      });
+      hbOnEditPrepare(this, 'evDevices');
     }
   });
 </script>
-
-// Start of HAP Status
 
 <script type="text/x-red" data-template-name="hb-status">
   <div class="form-row">
@@ -415,7 +331,6 @@
 	</div>
 
     <input type="hidden" id="node-input-name">
-    </div>
 </script>
 
 
@@ -472,84 +387,12 @@
     label: function() {
       return this.name || "Choose accessory/service";
     },
-    oneditsave: function() {
-      var n = $('#node-input-device option:selected').text();
-      // console.log("selected name " + n);
-      this.sname = $('#node-input-device option:selected').attr('name').toString();
-      this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
-      this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Service = $('#node-input-device option:selected').attr('service').toString();
-      $('#node-input-name').val(this.sname);
-    },
+    oneditsave: hbOnEditSave,
     oneditprepare: function() {
-      var node = this;
-      // console.log("foo " + node.device);
-      if (typeof node.acknowledge === 'undefined') {
-        // console.log("ben");
-        $('#node-input-acknowledge').prop('checked', true);
-      }
-      $('#node-input-device').change(function() {
-        $('#node-input-name').val($('#node-input-device option:selected').text());
-      });
-      var getDevs = function(configNode) {
-        $.getJSON('hap-device/evDevices/' + configNode, function(data) {
-          $('#node-input-device').find('option').remove().end();
-          for (d in data) {
-            $('<option/>', {
-              value: data[d].uniqueId,
-              fullName: data[d].fullName,
-              name: data[d].name,
-              text: data[d].fullName,
-              homebridge: data[d].homebridge,
-              manufacturer: data[d].manufacturer,
-              service: data[d].service
-            }).appendTo('#node-input-device');
-          }
-          if (node.device) {
-            $('#node-input-device').val(node.device);
-          }
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-          console.log("[hb-config] problem getting ctDevices");
-          console.log(textStatus);
-        });
-
-      }
-      if (node.conf) {
-        var configNode = $('#node-input-conf').val();
-        // console.log("configNode: ", configNode);
-        if (configNode != '_ADD_') {
-          getDevs(configNode);
-        }
-      }
-      $('#node-input-conf').change(function() {
-        var configNode = $('#node-input-conf').val();
-        // console.log("configNode changed: ", configNode);
-        if (configNode != '_ADD_') {
-          getDevs(configNode);
-        } else {
-          // console.log("new configNode");
-          $('#node-input-device').find('option').remove().end();
-          $('#node-input-device').val("");
-        }
-      });
-      $('#node-input-device-refresh').click(function() {
-        $('#node-input-device-refresh').addClass('disabled');
-        var configNode = $('#node-input-conf').val();
-        $.ajax({
-          url: 'hap-device/refresh/' + configNode,
-          type: 'POST'
-        }).done(function(data) {
-          setTimeout(function() {
-            getDevs(configNode);
-            $('#node-input-device-refresh').removeClass('disabled');
-          }, 3000);
-        });
-      });
+      hbOnEditPrepare(this, 'evDevices');
     }
   });
 </script>
-
-// Start of HAP Control
 
 <script type="text/x-red" data-template-name="hb-control">
   <div class="form-row">
@@ -570,7 +413,6 @@
    </div>
 
     <input type="hidden" id="node-input-name">
-    </div>
 
 </script>
 
@@ -625,79 +467,9 @@
     label: function() {
       return this.name || "Choose accessory/service";
     },
-    oneditsave: function() {
-      var n = $('#node-input-device option:selected').text();
-      // console.log("selected name " + n);
-      this.name = $('#node-input-device option:selected').attr('name').toString();
-      this.Homebridge = $('#node-input-device option:selected').attr('homebridge').toString();
-      this.Manufacturer = $('#node-input-device option:selected').attr('manufacturer').toString();
-      this.Service = $('#node-input-device option:selected').attr('service').toString();
-      $('#node-input-name').val(this.name);
-    },
+    oneditsave: hbOnEditSave,
     oneditprepare: function() {
-      var node = this;
-      // console.log("foo " + node.device);
-      if (typeof node.acknowledge === 'undefined') {
-        // console.log("ben");
-        $('#node-input-acknowledge').prop('checked', true);
-      }
-      $('#node-input-device').change(function() {
-        $('#node-input-name').val($('#node-input-device option:selected').text());
-      });
-      var getDevs = function(configNode) {
-        $.getJSON('hap-device/ctDevices/' + configNode, function(data) {
-          $('#node-input-device').find('option').remove().end();
-          for (d in data) {
-            $('<option/>', {
-              value: data[d].uniqueId,
-              fullName: data[d].fullName,
-              name: data[d].name,
-              text: data[d].fullName,
-              homebridge: data[d].homebridge,
-              manufacturer: data[d].manufacturer,
-              service: data[d].service
-            }).appendTo('#node-input-device');
-          }
-          if (node.device) {
-            $('#node-input-device').val(node.device);
-          }
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-          console.log("[hb-config] problem getting ctDevices");
-          console.log(textStatus);
-        });
-
-      }
-      if (node.conf) {
-        var configNode = $('#node-input-conf').val();
-        // console.log("configNode: ", configNode);
-        if (configNode != '_ADD_') {
-          getDevs(configNode);
-        }
-      }
-      $('#node-input-conf').change(function() {
-        var configNode = $('#node-input-conf').val();
-        // console.log("configNode changed: ", configNode);
-        if (configNode != '_ADD_') {
-          getDevs(configNode);
-        } else {
-          // console.log("new configNode");
-          $('#node-input-device').find('option').remove().end();
-          $('#node-input-device').val("");
-        }
-      });
-      $('#node-input-device-refresh').click(function() {
-        $('#node-input-device-refresh').addClass('disabled');
-        var configNode = $('#node-input-conf').val();
-        $.ajax({
-          url: 'hap-device/refresh/' + configNode,
-          type: 'POST'
-        }).done(function(data) {
-          setTimeout(function() {
-            getDevs(configNode);
-            $('#node-input-device-refresh').removeClass('disabled');
-          }, 3000);
-        });
-      });
+      hbOnEditPrepare(this, 'ctDevices');
     }
   });
 </script>
