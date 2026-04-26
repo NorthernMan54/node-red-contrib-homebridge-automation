@@ -1,5 +1,6 @@
 // File: src/hbConfigNode.test.js
 const HBConfigNode = require('./hbConfigNode'); // Update the path as necessary
+const { EventEmitter } = require('node:events');
 const fs = require('fs');
 const path = require('path');
 const process = require('process');
@@ -160,6 +161,176 @@ describe('from files', () => {
     expect(result.find(device => device.name === 'Garage Sensor')).toBeUndefined();
     // expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
     // expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
+  });
+});
+
+describe('reconnect on monitor-close', () => {
+  let node;
+  const RED = { nodes: { createNode: jest.fn() } };
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    node = new HBConfigNode({ username: '123-45-678' }, RED);
+    node.warn = jest.fn();
+    node.log = jest.fn();
+    node.error = jest.fn();
+    node._probeInstance = jest.fn();
+  });
+
+  afterEach(() => {
+    node._cancelAllReconnects();
+    jest.useRealTimers();
+  });
+
+  test('schedules a probe at the first backoff interval', async () => {
+    node._probeInstance.mockResolvedValue(false);
+    const instance = { username: 'A', ipAddress: '10.0.0.1', port: 51000 };
+    node.hapClient.instances = [instance];
+
+    node._scheduleInstanceReconnect(instance);
+    expect(node._reconnectStates.has('A')).toBe(true);
+    expect(node._probeInstance).not.toHaveBeenCalled();
+
+    await jest.advanceTimersByTimeAsync(5000);
+    expect(node._probeInstance).toHaveBeenCalledWith(instance);
+  });
+
+  test('failing probe re-schedules with exponential backoff', async () => {
+    node._probeInstance.mockResolvedValue(false);
+    const instance = { username: 'A', ipAddress: '10.0.0.1', port: 51000 };
+    node.hapClient.instances = [instance];
+    node.monitor = { refreshMonitorConnection: jest.fn() };
+
+    node._scheduleInstanceReconnect(instance);
+    await jest.advanceTimersByTimeAsync(5000);
+    expect(node._probeInstance).toHaveBeenCalledTimes(1);
+    expect(node.monitor.refreshMonitorConnection).not.toHaveBeenCalled();
+
+    // Next retry: 10s
+    await jest.advanceTimersByTimeAsync(10000);
+    expect(node._probeInstance).toHaveBeenCalledTimes(2);
+
+    // Then 20s, 30s
+    await jest.advanceTimersByTimeAsync(20000);
+    await jest.advanceTimersByTimeAsync(30000);
+    expect(node._probeInstance).toHaveBeenCalledTimes(4);
+  });
+
+  test('successful probe calls refreshMonitorConnection', async () => {
+    node._probeInstance.mockResolvedValue(true);
+    const instance = { username: 'A', ipAddress: '10.0.0.1', port: 51000 };
+    node.hapClient.instances = [instance];
+    node.monitor = { refreshMonitorConnection: jest.fn() };
+
+    node._scheduleInstanceReconnect(instance);
+    await jest.advanceTimersByTimeAsync(5000);
+
+    expect(node.monitor.refreshMonitorConnection).toHaveBeenCalledWith(instance);
+  });
+
+  test('idempotent: scheduling twice for the same username is a no-op', () => {
+    const instance = { username: 'A', ipAddress: '10.0.0.1', port: 51000 };
+    node.hapClient.instances = [instance];
+
+    node._scheduleInstanceReconnect(instance);
+    const firstState = node._reconnectStates.get('A');
+    node._scheduleInstanceReconnect(instance);
+    expect(node._reconnectStates.get('A')).toBe(firstState);
+  });
+
+  test('_cancelInstanceReconnect clears state and pending timer', async () => {
+    node._probeInstance.mockResolvedValue(false);
+    node.hapClient.instances = [{ username: 'A', ipAddress: '10.0.0.1', port: 51000 }];
+
+    node._scheduleInstanceReconnect({ username: 'A' });
+    expect(node._reconnectStates.has('A')).toBe(true);
+
+    node._cancelInstanceReconnect('A');
+    expect(node._reconnectStates.has('A')).toBe(false);
+
+    // Verify the timer really did get cleared — no probe should fire even after a long wait
+    await jest.advanceTimersByTimeAsync(120000);
+    expect(node._probeInstance).not.toHaveBeenCalled();
+  });
+
+  test('close() cancels all pending reconnects', () => {
+    node.hapClient.instances = [];
+    node.hapClient.destroy = jest.fn();
+    node._scheduleInstanceReconnect({ username: 'A' });
+    node._scheduleInstanceReconnect({ username: 'B' });
+    expect(node._reconnectStates.size).toBe(2);
+
+    node.close(false, jest.fn());
+    expect(node._reconnectStates.size).toBe(0);
+  });
+});
+
+describe('monitor lifecycle wiring', () => {
+  let node;
+  let monitor;
+  let clientNode;
+  const RED = { nodes: { createNode: jest.fn() } };
+
+  beforeEach(async () => {
+    jest.useFakeTimers();
+    node = new HBConfigNode({ username: '123-45-678' }, RED);
+    node.warn = jest.fn();
+    node.log = jest.fn();
+    node.error = jest.fn();
+    node._probeInstance = jest.fn().mockResolvedValue(false);
+
+    const instance = { username: 'A', name: 'B', ipAddress: '10.0.0.1', port: 51000 };
+    clientNode = {
+      id: 'n1',
+      type: 'hb-event',
+      hbDevice: { uniqueId: 'u1', instance },
+      status: jest.fn(),
+      emit: jest.fn(),
+    };
+    node.clientNodes = { n1: clientNode };
+
+    monitor = new EventEmitter();
+    monitor.refreshMonitorConnection = jest.fn();
+    monitor.finish = jest.fn();
+    node.hapClient.monitorCharacteristics = jest.fn().mockResolvedValue(monitor);
+    node.hapClient.instances = [instance];
+
+    await node.monitorDevices();
+  });
+
+  afterEach(() => {
+    node._cancelAllReconnects();
+    jest.useRealTimers();
+  });
+
+  test('monitor-close marks node disconnected and schedules reconnect', () => {
+    const instance = { username: 'A', name: 'B', ipAddress: '10.0.0.1', port: 51000 };
+    monitor.emit('monitor-close', instance, false);
+
+    expect(clientNode.status).toHaveBeenCalledWith({ fill: 'red', shape: 'ring', text: 'disconnected' });
+    expect(clientNode.emit).toHaveBeenCalledWith('hbDisconnected', instance);
+    expect(node._reconnectStates.has('A')).toBe(true);
+  });
+
+  test('monitor-refresh cancels reconnect and brings nodes back online', () => {
+    const instance = { username: 'A', name: 'B', ipAddress: '10.0.0.1', port: 51000 };
+    monitor.emit('monitor-close', instance, false);
+    expect(node._reconnectStates.has('A')).toBe(true);
+
+    monitor.emit('monitor-refresh', instance, false);
+
+    expect(node._reconnectStates.has('A')).toBe(false);
+    expect(clientNode.status).toHaveBeenLastCalledWith({ fill: 'green', shape: 'dot', text: 'connected' });
+    expect(clientNode.emit).toHaveBeenCalledWith('hbReady', clientNode.hbDevice);
+  });
+
+  test('monitor-close events are ignored during monitor recreation', () => {
+    const instance = { username: 'A', name: 'B', ipAddress: '10.0.0.1', port: 51000 };
+    node._recreatingMonitor = true;
+    monitor.emit('monitor-close', instance, false);
+
+    expect(clientNode.status).not.toHaveBeenCalled();
+    expect(node._reconnectStates.has('A')).toBe(false);
   });
 });
 
