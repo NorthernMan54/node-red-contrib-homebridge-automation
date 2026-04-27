@@ -41,7 +41,7 @@
     "semver": "^7.6.3"
   },
   "dependencies": {
-    "@homebridge/hap-client": "^4.0.3",
+    "@homebridge/hap-client": "beta",
     "debug": "^4.4.1"
   },
   "author": "NorthernMan54",
