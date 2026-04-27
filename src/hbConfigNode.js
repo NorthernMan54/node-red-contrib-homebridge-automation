@@ -1,15 +1,8 @@
 const { HapClient } = require('@homebridge/hap-client');
 const debug = require('debug')('hapNodeRed:hbConfigNode');
 const fs = require('fs');
-const net = require('node:net');
 const path = require('path');
 const process = require('process');
-
-// hap-client only refreshes the monitor when bonjour reports a port/name/config change.
-// A same-port restart (e.g. child bridge restart) leaves the socket dead, so we probe
-// the bridge ourselves on a backoff and call refreshMonitorConnection when it's back.
-const RECONNECT_BACKOFF_MS = [5000, 10000, 20000, 30000, 60000];
-const PROBE_TIMEOUT_MS = 3000;
 
 // Module-level persisted state: keyed by config node ID, survives config-node restarts
 // during redeploy. The HapClient is kept alive so mDNS discovery doesn't restart.
@@ -49,7 +42,6 @@ class HBConfigNode {
     this.discoveryTimeout = null;
     this._monitorRefreshTimeout = null;
     this._recreatingMonitor = false;
-    this._reconnectStates = new Map(); // username -> { timer, attempts, cancelled }
 
     const persisted = this.id ? _persistedClients.get(this.id) : null;
 
@@ -362,13 +354,13 @@ class HBConfigNode {
         if (this._recreatingMonitor) return;
         debug('monitor-close', instance.name, instance.ipAddress, instance.port, hadError)
         this.disconnectClientNodes(instance);
-        this._scheduleInstanceReconnect(instance);
+        // this.refreshDevices();
       })
       this.monitor.on('monitor-refresh', (instance, hadError) => {
         if (this._recreatingMonitor) return;
         debug('monitor-refresh', instance.name, instance.ipAddress, instance.port, hadError)
-        this._cancelInstanceReconnect(instance.username);
         this.reconnectClientNodes(instance);
+        // this.refreshDevices();
       })
       this.monitor.on('monitor-error', (instance, hadError) => {
         debug('monitor-error', instance, hadError);
@@ -412,84 +404,6 @@ class HBConfigNode {
     });
   }
 
-  // TCP-connect probe for liveness checks during reconnect retries
-  _probeInstance(instance) {
-    return new Promise((resolve) => {
-      if (!instance?.ipAddress || !instance?.port) {
-        resolve(false);
-        return;
-      }
-      let settled = false;
-      const finish = (result) => {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timer);
-        try {
-          socket.removeAllListeners();
-          socket.destroy();
-        } catch { /* ignore */ }
-        resolve(result);
-      };
-      const timer = setTimeout(() => finish(false), PROBE_TIMEOUT_MS);
-      const socket = net.createConnection({ host: instance.ipAddress, port: instance.port });
-      socket.once('connect', () => finish(true));
-      socket.once('error', () => finish(false));
-    });
-  }
-
-  _scheduleInstanceReconnect(instance) {
-    const username = instance?.username;
-    if (!username) return;
-    if (this._reconnectStates.has(username)) return; // retry already in flight
-
-    const state = { attempts: 0, cancelled: false, timer: null };
-    this._reconnectStates.set(username, state);
-
-    const tryReconnect = async () => {
-      state.timer = null;
-      if (state.cancelled) return;
-
-      const current = this.hapClient?.instances?.find(i => i.username === username);
-      const alive = current ? await this._probeInstance(current) : false;
-      if (state.cancelled) return;
-
-      if (alive && this.monitor) {
-        try {
-          this.monitor.refreshMonitorConnection(current);
-        } catch (err) {
-          debug('refreshMonitorConnection failed for %s: %s', username, err.message);
-        }
-        // refreshMonitorConnection emits monitor-refresh synchronously on success,
-        // which clears this state via _cancelInstanceReconnect. If still around,
-        // the refresh silently no-op'd — treat as a failed attempt.
-        if (state.cancelled) return;
-      }
-
-      state.attempts++;
-      const delay = RECONNECT_BACKOFF_MS[Math.min(state.attempts, RECONNECT_BACKOFF_MS.length - 1)];
-      debug('Reconnect retry for %s in %dms (attempt %d)', username, delay, state.attempts);
-      state.timer = setTimeout(tryReconnect, delay);
-    };
-
-    state.timer = setTimeout(tryReconnect, RECONNECT_BACKOFF_MS[0]);
-  }
-
-  _cancelInstanceReconnect(username) {
-    const state = this._reconnectStates.get(username);
-    if (!state) return;
-    state.cancelled = true;
-    if (state.timer) clearTimeout(state.timer);
-    this._reconnectStates.delete(username);
-  }
-
-  _cancelAllReconnects() {
-    for (const [, state] of this._reconnectStates) {
-      state.cancelled = true;
-      if (state.timer) clearTimeout(state.timer);
-    }
-    this._reconnectStates.clear();
-  }
-
   close(removed, done) {
     debug('hb-config: close');
     if (this.discoveryTimeout) {
@@ -504,7 +418,6 @@ class HBConfigNode {
       clearTimeout(this._monitorRefreshTimeout);
       this._monitorRefreshTimeout = null;
     }
-    this._cancelAllReconnects();
     // Finish monitor — it will be recreated when new client nodes register
     if (this.monitor) {
       this._recreatingMonitor = true;
