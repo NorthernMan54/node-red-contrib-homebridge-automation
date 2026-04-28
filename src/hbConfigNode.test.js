@@ -1,5 +1,6 @@
 // File: src/hbConfigNode.test.js
 const HBConfigNode = require('./hbConfigNode'); // Update the path as necessary
+const { HapClient } = require('@homebridge/hap-client');
 const fs = require('fs');
 const path = require('path');
 const process = require('process');
@@ -13,6 +14,7 @@ jest.mock('@homebridge/hap-client', () => {
 
       connect: jest.fn().mockResolvedValue(true),
       disconnect: jest.fn(),
+      destroy: jest.fn(),
     })),
   };
 });
@@ -88,6 +90,134 @@ describe('HBConfigNode', () => {
     expect(result.find(device => device.name === 'Garage Sensor')).toBeUndefined();
     // expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
     // expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
+  });
+});
+
+describe('HapClient config options', () => {
+  let RED;
+
+  beforeEach(() => {
+    HapClient.mockClear();
+    RED = {
+      nodes: {
+        createNode: jest.fn().mockImplementation(function(node, config) {
+          node.id = config.id;
+        }),
+      },
+    };
+    HBConfigNode.clearPersistedState();
+  });
+
+  test('passes hapClientDebug:true to HapClient when config.hapClientDebug is true', () => {
+    const config = { username: '123-45-678', hapClientDebug: true };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({ debug: true }),
+      })
+    );
+  });
+
+  test('passes hapClientDebug:false to HapClient when config.hapClientDebug is false', () => {
+    const config = { username: '123-45-678', hapClientDebug: false };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({ debug: false }),
+      })
+    );
+  });
+
+  test('config.debug (Debug Logging) does not affect HapClient debug option', () => {
+    const config = { username: '123-45-678', debug: true, hapClientDebug: false };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({ debug: false }),
+      })
+    );
+  });
+
+  test('passes instanceBlacklist array to HapClient when provided', () => {
+    const config = {
+      username: '123-45-678',
+      instanceBlacklist: '34:42:4E:4A:38:00, 6E:69:51:34:54:00',
+    };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({
+          instanceBlacklist: ['34:42:4E:4A:38:00', '6E:69:51:34:54:00'],
+        }),
+      })
+    );
+  });
+
+  test('does not pass instanceBlacklist to HapClient when not provided', () => {
+    const config = { username: '123-45-678' };
+    new HBConfigNode(config, RED);
+    const callArg = HapClient.mock.calls[0][0];
+    expect(callArg.config).not.toHaveProperty('instanceBlacklist');
+  });
+
+  test('does not pass instanceBlacklist to HapClient when empty string', () => {
+    const config = { username: '123-45-678', instanceBlacklist: '' };
+    new HBConfigNode(config, RED);
+    const callArg = HapClient.mock.calls[0][0];
+    expect(callArg.config).not.toHaveProperty('instanceBlacklist');
+  });
+
+  test('trims whitespace from instanceBlacklist entries', () => {
+    const config = {
+      username: '123-45-678',
+      instanceBlacklist: '  34:42:4E:4A:38:00 ,  6E:69:51:34:54:00  ',
+    };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({
+          instanceBlacklist: ['34:42:4E:4A:38:00', '6E:69:51:34:54:00'],
+        }),
+      })
+    );
+  });
+
+  test('recreates HapClient when instanceBlacklist changes on redeploy', () => {
+    const config1 = { id: 'node-1', username: '123-45-678', instanceBlacklist: '' };
+    const node1 = new HBConfigNode(config1, RED);
+    node1.close(false, () => {});
+
+    expect(HapClient).toHaveBeenCalledTimes(1);
+
+    const config2 = { id: 'node-1', username: '123-45-678', instanceBlacklist: '34:42:4E:4A:38:00' };
+    new HBConfigNode(config2, RED);
+
+    expect(HapClient).toHaveBeenCalledTimes(2);
+  });
+
+  test('recreates HapClient when hapClientDebug changes on redeploy', () => {
+    const config1 = { id: 'node-3', username: '123-45-678', hapClientDebug: false };
+    const node1 = new HBConfigNode(config1, RED);
+    node1.close(false, () => {});
+
+    expect(HapClient).toHaveBeenCalledTimes(1);
+
+    const config2 = { id: 'node-3', username: '123-45-678', hapClientDebug: true };
+    new HBConfigNode(config2, RED);
+
+    expect(HapClient).toHaveBeenCalledTimes(2);
+  });
+
+  test('reuses HapClient when config unchanged on redeploy', () => {
+    const config = { id: 'node-2', username: '123-45-678', instanceBlacklist: '34:42:4E:4A:38:00' };
+    const node1 = new HBConfigNode(config, RED);
+    node1.close(false, () => {});
+
+    expect(HapClient).toHaveBeenCalledTimes(1);
+
+    new HBConfigNode(config, RED);
+
+    expect(HapClient).toHaveBeenCalledTimes(1);
   });
 });
 

@@ -10,7 +10,15 @@
   <div class="form-row">
     <label for="node-config-input-debug"><i class="icon-tag"></i>Debug Logging</label>
     <input type="checkbox" id="node-config-input-debug" placeholder=false>
-</div>
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-hapClientDebug"><i class="icon-tag"></i>HAP-Client Debug</label>
+    <input type="checkbox" id="node-config-input-hapClientDebug" placeholder=false>
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-instanceBlacklist"><i class="icon-tag"></i>Ignored Instances</label>
+    <input type="text" id="node-config-input-instanceBlacklist" placeholder="34:42:4E:4A:38:00, 6E:69:51:34:54:00" style="width: 70%;">
+  </div>
 </script>
 
 <script type="text/x-red" data-help-name="hb-conf">
@@ -21,8 +29,12 @@
       <dd>Please enter the PIN from your homebridge instances.  Please note that the same pin must be used for all instances.</dd>
       <dt>MAC Address<span class="property-type">object</span></dt>
       <dd>Optional - Not implemented</dd>
-      <dt>Debug Logging<span class="property-type">string</span></dt>
+      <dt>Debug Logging<span class="property-type">boolean</span></dt>
       <dd>Enables debug logging and creates a file `homebridge-automation-endpoints.json`, which contains all the homebridge devices discovered.  It can be used as part of troubleshooting device issues.</dd>
+      <dt>HAP-Client Debug<span class="property-type">boolean</span></dt>
+      <dd>Enables debug logging within the HAP-Client library, which outputs detailed HAP protocol information. Useful for troubleshooting Homebridge instance discovery issues.</dd>
+      <dt>Ignored Instances<span class="property-type">string</span></dt>
+      <dd>Optional comma-separated list of Homebridge instance MAC addresses to ignore (e.g. <code>34:42:4E:4A:38:00, 6E:69:51:34:54:00</code>).</dd>
   </dl>
 </script>
 
@@ -51,6 +63,14 @@
       },
       debug: {
         value: false,
+        required: false
+      },
+      hapClientDebug: {
+        value: false,
+        required: false
+      },
+      instanceBlacklist: {
+        value: '',
         required: false
       }
     },

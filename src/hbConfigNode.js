@@ -32,6 +32,10 @@ class HBConfigNode {
     this.username = config.username;
     this.macAddress = config.macAddress || '';
     this.debugLogging = config.debug || false;
+    this.hapClientDebug = config.hapClientDebug || false;
+    this.instanceBlacklist = config.instanceBlacklist
+      ? config.instanceBlacklist.split(',').map(s => s.trim()).filter(s => s)
+      : [];
     this.users = {};
     this.homebridge = null;
     this.evDevices = [];
@@ -44,8 +48,9 @@ class HBConfigNode {
     this._recreatingMonitor = false;
 
     const persisted = this.id ? _persistedClients.get(this.id) : null;
+    const configKey = `${config.username}|${String(this.hapClientDebug)}|${this.instanceBlacklist.join(',')}`;
 
-    if (persisted && persisted.pin === config.username) {
+    if (persisted && persisted.configKey === configKey) {
       // Reuse existing HapClient from previous deploy — avoids 20-second rediscovery
       this.hapClient = persisted.hapClient;
       this.hbDevices = persisted.hbDevices;
@@ -55,13 +60,18 @@ class HBConfigNode {
       this.refreshInProcess = false;
       debug('Reusing persisted HapClient with %d devices for config node %s', this.hbDevices.length, this.id);
     } else {
-      // First startup or PIN changed — create new HapClient
+      // First startup or config changed — create new HapClient
       if (persisted) {
         persisted.hapClient.destroy();
       }
 
+      const hapClientConfig = { debug: this.hapClientDebug };
+      if (this.instanceBlacklist.length > 0) {
+        hapClientConfig.instanceBlacklist = this.instanceBlacklist;
+      }
+
       this.hapClient = new HapClient({
-        config: { debug: false },
+        config: hapClientConfig,
         pin: config.username
       });
       // Stable discovery handler: always delegates to the current config node instance
@@ -78,7 +88,7 @@ class HBConfigNode {
       if (this.id) {
         _persistedClients.set(this.id, {
           hapClient: this.hapClient,
-          pin: config.username,
+          configKey,
           hbDevices: this.hbDevices,
           evDevices: this.evDevices,
           ctDevices: this.ctDevices,
