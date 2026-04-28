@@ -41,6 +41,8 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
       * [Jan 15, 2026 - Version 0.3.3](#jan-15-2026---version-033)
          * [Breaking Change](#breaking-change-1)
          * [Fixes](#fixes-1)
+      * [Version 0.3.4](#version-034)
+         * [New Features](#new-features)
 * [Backlog / Roadmap](#backlog--roadmap)
    * [Dropped items](#dropped-items)
 * [Installation Steps](#installation-steps)
@@ -214,6 +216,13 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 #### Fixes
 
 - Fix for #195 - Status node sends messages on device state change without input trigger
+
+### Version 0.3.4
+
+#### New Features
+
+- Added **HAP-Client Debug** configuration option on the `hb-conf` node.  When enabled, enables debug logging within the HAP-Client library, which outputs detailed HAP protocol information.  Useful for troubleshooting Homebridge instance discovery issues.
+- Added **Ignored Instances** configuration option on the `hb-conf` node.  Accepts a comma-separated list of Homebridge instance MAC addresses to exclude from discovery (e.g. `34:42:4E:4A:38:00, 6E:69:51:34:54:00`).  Useful when you have Homebridge instances you do not want to integrate with Node-RED.
 
 # Backlog / Roadmap
 

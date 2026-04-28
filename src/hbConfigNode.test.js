@@ -108,8 +108,8 @@ describe('HapClient config options', () => {
     HBConfigNode.clearPersistedState();
   });
 
-  test('passes debug:true to HapClient when config.debug is true', () => {
-    const config = { username: '123-45-678', debug: true };
+  test('passes hapClientDebug:true to HapClient when config.hapClientDebug is true', () => {
+    const config = { username: '123-45-678', hapClientDebug: true };
     new HBConfigNode(config, RED);
     expect(HapClient).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -118,8 +118,18 @@ describe('HapClient config options', () => {
     );
   });
 
-  test('passes debug:false to HapClient when config.debug is false', () => {
-    const config = { username: '123-45-678', debug: false };
+  test('passes hapClientDebug:false to HapClient when config.hapClientDebug is false', () => {
+    const config = { username: '123-45-678', hapClientDebug: false };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({ debug: false }),
+      })
+    );
+  });
+
+  test('config.debug (Debug Logging) does not affect HapClient debug option', () => {
+    const config = { username: '123-45-678', debug: true, hapClientDebug: false };
     new HBConfigNode(config, RED);
     expect(HapClient).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -180,6 +190,19 @@ describe('HapClient config options', () => {
     expect(HapClient).toHaveBeenCalledTimes(1);
 
     const config2 = { id: 'node-1', username: '123-45-678', instanceBlacklist: '34:42:4E:4A:38:00' };
+    new HBConfigNode(config2, RED);
+
+    expect(HapClient).toHaveBeenCalledTimes(2);
+  });
+
+  test('recreates HapClient when hapClientDebug changes on redeploy', () => {
+    const config1 = { id: 'node-3', username: '123-45-678', hapClientDebug: false };
+    const node1 = new HBConfigNode(config1, RED);
+    node1.close(false, () => {});
+
+    expect(HapClient).toHaveBeenCalledTimes(1);
+
+    const config2 = { id: 'node-3', username: '123-45-678', hapClientDebug: true };
     new HBConfigNode(config2, RED);
 
     expect(HapClient).toHaveBeenCalledTimes(2);

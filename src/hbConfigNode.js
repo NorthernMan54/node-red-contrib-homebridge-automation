@@ -32,6 +32,7 @@ class HBConfigNode {
     this.username = config.username;
     this.macAddress = config.macAddress || '';
     this.debugLogging = config.debug || false;
+    this.hapClientDebug = config.hapClientDebug || false;
     this.instanceBlacklist = config.instanceBlacklist
       ? config.instanceBlacklist.split(',').map(s => s.trim()).filter(s => s)
       : [];
@@ -47,7 +48,7 @@ class HBConfigNode {
     this._recreatingMonitor = false;
 
     const persisted = this.id ? _persistedClients.get(this.id) : null;
-    const configKey = `${config.username}|${String(this.debugLogging)}|${this.instanceBlacklist.join(',')}`;
+    const configKey = `${config.username}|${String(this.hapClientDebug)}|${this.instanceBlacklist.join(',')}`;
 
     if (persisted && persisted.configKey === configKey) {
       // Reuse existing HapClient from previous deploy — avoids 20-second rediscovery
@@ -64,7 +65,7 @@ class HBConfigNode {
         persisted.hapClient.destroy();
       }
 
-      const hapClientConfig = { debug: this.debugLogging };
+      const hapClientConfig = { debug: this.hapClientDebug };
       if (this.instanceBlacklist.length > 0) {
         hapClientConfig.instanceBlacklist = this.instanceBlacklist;
       }
