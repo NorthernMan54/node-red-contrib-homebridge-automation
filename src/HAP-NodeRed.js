@@ -2,8 +2,10 @@ var debug = require('debug')('hapNodeRed');
 
 const HBConfigNode = require('./hbConfigNode.js');
 const HbEventNode = require('./hbEventNode'); // Import the class
+const HbEventAllNode = require('./hbEventAllNode');
 const HbResumeNode = require('./hbResumeNode'); // Import the class
 const HbControlNode = require('./hbControlNode');
+const HbControlAllNode = require('./hbControlAllNode');
 const HbStatusNode = require('./hbStatusNode');
 
 const HapDeviceRoutes = require('./HapDeviceRoutes');
@@ -33,6 +35,14 @@ module.exports = function (RED) {
 
   RED.nodes.registerType("hb-event", hbEventNode);
 
+  class hbEventAllNode extends HbEventAllNode {
+    constructor(config) {
+      super(config, RED);
+    }
+  }
+
+  RED.nodes.registerType("hb-event-all", hbEventAllNode);
+
   class hbResumeNode extends HbResumeNode {
     constructor(config) {
       super(config, RED);
@@ -48,6 +58,14 @@ module.exports = function (RED) {
   }
 
   RED.nodes.registerType("hb-control", hbControlNode);
+
+  class hbControlAllNode extends HbControlAllNode {
+    constructor(config) {
+      super(config, RED);
+    }
+  }
+
+  RED.nodes.registerType("hb-control-all", hbControlAllNode);
 
   class hbStatusNode extends HbStatusNode {
     constructor(config) {

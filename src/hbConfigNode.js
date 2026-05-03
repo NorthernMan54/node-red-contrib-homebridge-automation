@@ -50,6 +50,7 @@ class HBConfigNode {
     this.ctDevices = [];
     this.hbDevices = [];
     this.clientNodes = {};
+    this.globalEventNodes = [];
     //  this.log = new Log(console, true);
     this.discoveryTimeout = null;
     this._monitorRefreshTimeout = null;
@@ -146,8 +147,9 @@ class HBConfigNode {
     // Fix broken uniqueId's from HAP-Client
     updatedDevices.forEach((service) => {
       service.uniqueId = getDeviceIdentifier(service);
+      service.friendlyName = composeDisplayName(service);
     });
-    // Scan and report duplicate uniqueId's within the updated list — these should never happen, but if they do, the debug log will show the breakdown of the offending uniqueId for troubleshooting
+    // Scan and report duplicate uniqueId's within the updated list
     const uniqueIdCounts = {};
     updatedDevices.forEach(service => {
       uniqueIdCounts[service.uniqueId] = (uniqueIdCounts[service.uniqueId] || 0) + 1;
@@ -251,6 +253,19 @@ class HBConfigNode {
     });
   }
 
+  registerGlobalEventNode(node) {
+    debug('Register global: %s "%s"', node.type, node.name);
+    this.globalEventNodes.push(node);
+    // Trigger discovery/monitor refresh so the listener starts receiving events
+    // even when no per-device hb-event/hb-status nodes are configured.
+    this.waitForNoMoreDiscoveries();
+  }
+
+  unregisterGlobalEventNode(node) {
+    const idx = this.globalEventNodes.indexOf(node);
+    if (idx >= 0) this.globalEventNodes.splice(idx, 1);
+  }
+
   registerClientNode(clientNode) {
     debug('Register: %s type: %s', clientNode.type, clientNode.name);
     this.clientNodes[clientNode.id] = clientNode;
@@ -348,12 +363,23 @@ class HBConfigNode {
   }
 
   async monitorDevices() {
-    if (Object.keys(this.clientNodes).length) {
+    const hasClientNodes = Object.keys(this.clientNodes).length > 0;
+    const hasGlobalListeners = this.globalEventNodes.some(n => n.needsMonitor);
+    if (hasClientNodes || hasGlobalListeners) {
 
-      const monitorNodes = Object.values(this.clientNodes)
-        .filter(node => ['hb-status', 'hb-event', 'hb-resume'].includes(node.type))
-        .map(node => node.hbDevice) // Map to hbDevice property
-        .filter(Boolean); // Remove any undefined or null values, if present;
+      // When at least one global listener is present, subscribe to every
+      // ev-permitted service so the firehose covers devices that have no
+      // explicit hb-event node wired up. Otherwise, only subscribe to the
+      // services referenced by per-device nodes (existing behavior).
+      let monitorNodes;
+      if (hasGlobalListeners) {
+        monitorNodes = this.hbDevices.slice();
+      } else {
+        monitorNodes = Object.values(this.clientNodes)
+          .filter(node => ['hb-status', 'hb-event', 'hb-resume'].includes(node.type))
+          .map(node => node.hbDevice)
+          .filter(Boolean);
+      }
 
       // Skip if the monitor already covers the same set of devices
       if (this.monitor && this._monitorNodeIds) {
@@ -383,8 +409,10 @@ class HBConfigNode {
             clientNode => clientNode.config.device === deviceId
           );
           eventNodes.forEach(eventNode => eventNode.emit('hbEvent', service));
+          this.globalEventNodes.forEach(globalNode => globalNode.emit('hbEventAll', service));
         });
       });
+      this.globalEventNodes.forEach(globalNode => globalNode.emit('hbReady'));
       this.monitor.on('monitor-close', (instance, hadError) => {
         if (this._recreatingMonitor) return;
         debug('monitor-close', instance.name, instance.ipAddress, instance.port, hadError)
@@ -414,6 +442,7 @@ class HBConfigNode {
       clientNode.status({ fill: 'red', shape: 'ring', text: 'disconnected' });
       clientNode.emit('hbDisconnected', instance);
     });
+    this.globalEventNodes.forEach(globalNode => globalNode.emit('hbDisconnected', instance));
   }
 
   warnClientNodes(instance, text) {
@@ -437,6 +466,7 @@ class HBConfigNode {
       clientNode.status({ fill: 'green', shape: 'dot', text: 'connected' });
       clientNode.emit('hbReady', clientNode.hbDevice);
     });
+    this.globalEventNodes.forEach(globalNode => globalNode.emit('hbReady'));
   }
 
   close(removed, done) {

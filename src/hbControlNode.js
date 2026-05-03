@@ -1,4 +1,5 @@
 const HbBaseNode = require('./hbBaseNode');
+const { filterIfOff } = require('./utils');
 const debug = require('debug')('hapNodeRed:hbControlNode');
 
 class HbControlNode extends HbBaseNode {
@@ -84,13 +85,6 @@ class HbControlNode extends HbBaseNode {
       done(`Unhandled error: ${error.message}`);
     }
   }
-}
-
-function filterIfOff(payload) {
-  if (payload.On === 0 || payload.On === false) {
-    return { On: payload.On }; // Only keep "On"
-  }
-  return payload; // Pass as is
 }
 
 module.exports = HbControlNode;

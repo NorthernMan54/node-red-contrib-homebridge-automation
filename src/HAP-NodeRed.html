@@ -259,6 +259,71 @@
   });
 </script>
 
+<script type="text/x-red" data-template-name="hb-event-all">
+  <div class="form-row">
+    <label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
+    <input type="text" id="node-input-conf">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="All Homebridge Events">
+  </div>
+  <div class="form-row">
+    <label for="node-input-serviceFilter"><i class="icon-filter"></i> Filter</label>
+    <input type="text" id="node-input-serviceFilter" placeholder="Motion Sensor, Lightbulb (blank = all)">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="hb-event-all">
+  <p>Global event listener for every Homebridge accessory exposed by the configured bridge(s).</p>
+  <p>Unlike <code>hb-event</code>, this node does not bind to a specific device. It emits one message per characteristic-change for every monitored service, making it suitable for stream processing, event tagging, pattern learning, or generic logging.</p>
+
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>name<span class="property-type">string</span></dt>
+    <dd>Service friendly name (ConfiguredName, or serviceName, with serviceLabelIndex appended for power bars). Same value <code>hb-control-all</code> matches on as <code>msg.name</code>.</dd>
+    <dt>payload<span class="property-type">object</span></dt>
+    <dd>Service characteristic values — compatible with <code>hb-control-all</code> input</dd>
+    <dt>Homebridge<span class="property-type">string</span></dt>
+    <dd>Homebridge bridge name</dd>
+    <dt>Manufacturer<span class="property-type">string</span></dt>
+    <dd>Plugin manufacturer</dd>
+    <dt>Service<span class="property-type">string</span></dt>
+    <dd>Human-readable service type (e.g. "Motion Sensor"). Matches the values used by the Filter.</dd>
+    <dt>_device<span class="property-type">string</span></dt>
+    <dd>Service uniqueId (stable per-service identifier)</dd>
+    <dt>_ts<span class="property-type">number</span></dt>
+    <dd>Receive timestamp in ms (Date.now() at fan-out)</dd>
+  </dl>
+
+  <h3>Configuration</h3>
+  <p><b>Filter</b> — optional comma-separated list of service types (humanType) to allow through. Leave blank to receive every event. Useful to suppress noisy sensors (e.g. battery polling).</p>
+
+  <h3>Notes</h3>
+  <ul>
+    <li>The underlying HapClient subscription is shared with per-device <code>hb-event</code> nodes; adding this node causes the bridge to subscribe to <i>every</i> ev-permitted characteristic across all discovered Homebridge instances.</li>
+    <li>Each Homebridge instance must run with <code>"insecure": true</code> (same requirement as <code>hb-event</code>).</li>
+  </ul>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('hb-event-all', {
+    category: 'Homebridge',
+    defaults: {
+      name: { value: "" },
+      serviceFilter: { value: "" },
+      conf: { value: "", type: "hb-conf" }
+    },
+    outputs: 1,
+    inputs: 0,
+    color: '#F3B567',
+    icon: 'inject.png',
+    label: function() {
+      return this.name || "All Homebridge Events";
+    }
+  });
+</script>
+
 <script type="text/x-red" data-template-name="hb-resume">
   <div class="form-row">
 		<label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
@@ -490,6 +555,56 @@
     oneditsave: hbOnEditSave,
     oneditprepare: function() {
       hbOnEditPrepare(this, 'ctDevices');
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="hb-control-all">
+  <div class="form-row">
+    <label for="node-input-conf"><i class="icon-tag"></i> Pin </label>
+    <input type="text" id="node-input-conf">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="All Homebridge Control">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="hb-control-all">
+  <p>Dynamic control node for any Homebridge accessory. Unlike <code>hb-control</code>,
+  this node is not bound to a specific device — the target is specified at runtime via
+  <code>msg.name</code>. The message schema matches <code>hb-event-all</code> output.</p>
+
+  <h3>Input</h3>
+  <dl class="message-properties">
+    <dt>name<span class="property-type">string</span></dt>
+    <dd>Service friendly name to target (e.g. "Hallway"). Same value <code>hb-event-all</code> emits as <code>msg.name</code>.</dd>
+    <dt>payload<span class="property-type">object</span></dt>
+    <dd>Characteristics to set (e.g. <code>{ On: true, Brightness: 50 }</code>)</dd>
+  </dl>
+
+  <h3>Notes</h3>
+  <ul>
+    <li>When <code>On</code> is false/0, only the <code>On</code> characteristic is sent (other characteristics like Brightness are ignored to avoid HAP errors).</li>
+    <li>Device lookup matches on <code>service.friendlyName</code> (ConfiguredName, then serviceName, with serviceLabelIndex appended for multi-service accessories).</li>
+    <li>If multiple services share a friendly name (e.g. a "Hallway" Lightbulb and "Hallway" Occupancy Sensor), the one whose <code>values</code> include the requested characteristics is preferred.</li>
+  </ul>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('hb-control-all', {
+    category: 'Homebridge',
+    defaults: {
+      name: { value: "" },
+      conf: { value: "", type: "hb-conf" }
+    },
+    outputs: 0,
+    inputs: 1,
+    align: 'right',
+    color: '#F3B567',
+    icon: 'light.png',
+    label: function() {
+      return this.name || "All Homebridge Control";
     }
   });
 </script>

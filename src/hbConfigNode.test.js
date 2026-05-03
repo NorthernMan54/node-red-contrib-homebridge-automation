@@ -130,7 +130,7 @@ describe('Device list generation', () => {
     await node.handleReady();
 
     const result = node.toList({ perms: 'ev' });
-    fs.writeFileSync(path.join(__dirname, '..', 'test', 'duplicate-hbDevices.json'), JSON.stringify(result, null, 2), 'utf8');
+    // fs.writeFileSync(path.join(__dirname, '..', 'test', 'duplicate-hbDevices.json'), JSON.stringify(result, null, 2), 'utf8');
     expect(result).toHaveLength(EXPECTED_DEVICE_COUNT);
     expect(result).toEqual(expectedDevices);
     expect(node.warn).toHaveBeenCalledTimes(1);
