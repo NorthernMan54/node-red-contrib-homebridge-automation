@@ -183,7 +183,7 @@ describe('Device list generation', () => {
     expect(node.warn).toHaveBeenCalledWith(expect.stringContaining('Duplicate uniqueId —'));
   });
 
-  test("Camera's with additional CameraRTPStreamManagement services, should remove additional CameraRTPStreamManagement service", async () => {
+  test("Cameras with additional CameraRTPStreamManagement services, should remove additional CameraRTPStreamManagement service", async () => {
     const EXPECTED_DEVICE_COUNT = 2;
     const endpoints = loadFixture('camera-endpoints.json');
     const expectedDevices = loadFixture('camera-hbDevices.json');
