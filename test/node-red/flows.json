@@ -3356,47 +3356,5 @@
         "x": 400,
         "y": 340,
         "wires": []
-    },
-    {
-        "id": "afd2d511304ed61a",
-        "type": "hb-event-all",
-        "z": "1d56df32ae8e209d",
-        "name": "",
-        "serviceFilter": "",
-        "conf": "7e647d67.f33acc",
-        "x": 140,
-        "y": 460,
-        "wires": [
-            [
-                "de4c4ddbf7872ea8"
-            ]
-        ]
-    },
-    {
-        "id": "de4c4ddbf7872ea8",
-        "type": "debug",
-        "z": "1d56df32ae8e209d",
-        "name": "debug 25",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": true,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "payload",
-        "statusType": "msg",
-        "x": 400,
-        "y": 460,
-        "wires": []
-    },
-    {
-        "id": "500459c3489ae322",
-        "type": "hb-control-all",
-        "z": "1d56df32ae8e209d",
-        "name": "",
-        "conf": "7e647d67.f33acc",
-        "x": 690,
-        "y": 580,
-        "wires": []
     }
 ]
