@@ -25,9 +25,7 @@ function composeDisplayName(service) {
   const base =
     service.serviceName ||
     service.accessoryInformation?.Name ||
-    service.type ||
-    service.uuid?.slice(0, 8) ||
-    `${service.aid}:${service.iid}`;
+    `${service.instance.username}-${service.aid}:${service.iid}`;
   const index = service.values?.serviceLabelIndex;
   return index ? `${base}-${index}` : base;
 }
@@ -158,16 +156,21 @@ class HBConfigNode {
       uniqueIdCounts[service.uniqueId] = (uniqueIdCounts[service.uniqueId] || 0) + 1;
     });
     Object.entries(uniqueIdCounts).forEach(([uniqueId, count]) => {
-      if (count > 1) {
-        const duplicates = updatedDevices.filter(s => s.uniqueId === uniqueId);
-        // this.warn(`Duplicate uniqueId detected: "${uniqueId}" appears ${count} times. Breakdown: "${duplicates.map(s => `${s.friendlyName}-Homebridge:${s.instance.username}-AID:${s.aid}-IID:${s.iid}-Type:${s.type}"`).join(' | ')}`);
+      if (count <= 1) return;
 
-        // Ignore duplicate uniqueId's for Camera RTP Stream Management services since they are a known issue in HAP-Client and don't cause functional issues in this module
-        if (duplicates[0].type !== 'CameraRTPStreamManagement') {
-          // console.log(duplicates[0]);
-          this.warn(`Duplicate unique id detected: Please configure a unique name for "${composeDisplayName(duplicates[0])}".`);
-        }
-      }
+      const duplicates = updatedDevices.filter(s => s.uniqueId === uniqueId);
+
+      // For some reason Homebridge is creating multiple Camera RTP Stream Management services, this is a workaround to mask those duplicates until the root cause is identified and fixed in Homebridge or HAP-Client
+      if (duplicates[0].type === 'CameraRTPStreamManagement' && duplicates[1].type === 'CameraRTPStreamManagement') return;
+
+      const breakdown = duplicates
+        .map(s => `  • "${composeDisplayName(s)}" — ${s.instance.name} - ${s.instance.username} aid=${s.aid} iid=${s.iid} type=${s.type}`)
+        .join('\n');
+
+      this.warn(
+        `Duplicate uniqueId — ${count} services collide. ` +
+        `Set a unique ConfiguredName in HomeKit for one of:\n${breakdown}`
+      );
     });
     // Rebuild device list: update existing, add new, drop stale, deduplicate
     const existingMap = new Map(this.hbDevices.map(s => [s.uniqueId, s]));

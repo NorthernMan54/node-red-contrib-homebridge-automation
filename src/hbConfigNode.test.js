@@ -156,34 +156,14 @@ describe('Device list generation', () => {
       instance: { name: 'TestBridge', username: 'AA:BB:CC:DD:EE:FF', port: 51826 },
     };
 
-    // Fallback 1: no serviceName, no Name → should use service.type
+    // Fallback 1: no serviceName, no Name → should use username-aid:iid
     const endpointsType = [{ ...baseService, serviceName: '', accessoryInformation: { ...baseService.accessoryInformation, Name: '' } }];
     node.hapClient.getAllServices.mockResolvedValue(endpointsType);
     await node.handleReady();
     const resultType = node.toList({ perms: 'ev' });
     expect(resultType).toHaveLength(1);
     expect(resultType[0].name).not.toContain('undefined');
-    expect(resultType[0].name).toBe('Outlet');
-
-    // Fallback 2: no serviceName, no Name, no type → should use uuid prefix
-    node.hbDevices = [];
-    const endpointsUuid = [{ ...baseService, serviceName: '', type: '', accessoryInformation: { ...baseService.accessoryInformation, Name: '' } }];
-    node.hapClient.getAllServices.mockResolvedValue(endpointsUuid);
-    await node.handleReady();
-    const resultUuid = node.toList({ perms: 'ev' });
-    expect(resultUuid).toHaveLength(1);
-    expect(resultUuid[0].name).not.toContain('undefined');
-    expect(resultUuid[0].name).toBe('AABBCCDD');
-
-    // Fallback 3: no serviceName, no Name, no type, no uuid → should use aid:iid
-    node.hbDevices = [];
-    const endpointsAidIid = [{ ...baseService, serviceName: '', type: '', uuid: '', accessoryInformation: { ...baseService.accessoryInformation, Name: '' } }];
-    node.hapClient.getAllServices.mockResolvedValue(endpointsAidIid);
-    await node.handleReady();
-    const resultAidIid = node.toList({ perms: 'ev' });
-    expect(resultAidIid).toHaveLength(1);
-    expect(resultAidIid[0].name).not.toContain('undefined');
-    expect(resultAidIid[0].name).toBe('1:8');
+    expect(resultType[0].name).toBe('AA:BB:CC:DD:EE:FF-1:8');
   });
 
   test('Devices with duplicate unique IDs should be handled and logged', async () => {
@@ -196,11 +176,27 @@ describe('Device list generation', () => {
     await node.handleReady();
 
     const result = node.toList({ perms: 'ev' });
-    fs.writeFileSync(path.join(__dirname, '..', 'test', 'duplicate-hbDevices.json'), JSON.stringify(result, null, 2), 'utf8');
+    // fs.writeFileSync(path.join(__dirname, '..', 'test', 'duplicate-hbDevices.json'), JSON.stringify(result, null, 2), 'utf8');
     expect(result).toHaveLength(EXPECTED_DEVICE_COUNT);
     expect(result).toEqual(expectedDevices);
     expect(node.warn).toHaveBeenCalledTimes(1);
-    expect(node.warn).toHaveBeenCalledWith(expect.stringContaining('Duplicate unique id detected'));
+    expect(node.warn).toHaveBeenCalledWith(expect.stringContaining('Duplicate uniqueId —'));
+  });
+
+  test("Camera's with additional CameraRTPStreamManagement services, should remove additional CameraRTPStreamManagement service", async () => {
+    const EXPECTED_DEVICE_COUNT = 2;
+    const endpoints = loadFixture('camera-endpoints.json');
+    const expectedDevices = loadFixture('camera-hbDevices.json');
+
+    expect(node.warn).toHaveBeenCalledTimes(0);
+    node.hapClient.getAllServices.mockResolvedValue(endpoints);
+    await node.handleReady();
+
+    const result = node.toList({ perms: 'ev' });
+    // fs.writeFileSync(path.join(__dirname, '..', 'test', 'camera-hbDevices.json'), JSON.stringify(result, null, 2), 'utf8');
+    expect(result).toHaveLength(EXPECTED_DEVICE_COUNT);
+    expect(result).toEqual(expectedDevices);
+    expect(node.warn).toHaveBeenCalledTimes(0);
   });
 });
 
