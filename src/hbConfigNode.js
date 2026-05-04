@@ -22,7 +22,12 @@ function composeDisplayName(service) {
   const configured = service.values?.ConfiguredName?.trim();
   if (configured) return configured;
 
-  const base = service.serviceName || service.accessoryInformation?.Name;
+  const base =
+    service.serviceName ||
+    service.accessoryInformation?.Name ||
+    service.type ||
+    service.uuid?.slice(0, 8) ||
+    `${service.aid}:${service.iid}`;
   const index = service.values?.serviceLabelIndex;
   return index ? `${base}-${index}` : base;
 }

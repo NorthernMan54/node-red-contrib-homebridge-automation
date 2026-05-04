@@ -120,6 +120,72 @@ describe('Device list generation', () => {
     expect(result).toEqual(expectedDevices);
   });
 
+  test('composeDisplayName falls back gracefully when serviceName and accessoryInformation.Name are missing', async () => {
+    const baseService = {
+      aid: 1,
+      iid: 8,
+      uuid: 'AABBCCDD-0000-1000-8000-0026BB765291',
+      type: 'Outlet',
+      humanType: 'Outlet',
+      serviceName: '',
+      serviceCharacteristics: [
+        {
+          aid: 1,
+          iid: 10,
+          uuid: '00000025-0000-1000-8000-0026BB765291',
+          type: 'On',
+          serviceType: 'Outlet',
+          serviceName: '',
+          description: 'On',
+          value: 0,
+          format: 'bool',
+          perms: ['ev', 'pr', 'pw'],
+          canRead: true,
+          canWrite: true,
+          ev: true,
+        },
+      ],
+      accessoryInformation: {
+        Manufacturer: 'TestMfr',
+        Model: 'TestModel',
+        Name: '',
+        'Serial Number': 'SN-001',
+        'Firmware Revision': '1.0',
+      },
+      values: {},
+      instance: { name: 'TestBridge', username: 'AA:BB:CC:DD:EE:FF', port: 51826 },
+    };
+
+    // Fallback 1: no serviceName, no Name → should use service.type
+    const endpointsType = [{ ...baseService, serviceName: '', accessoryInformation: { ...baseService.accessoryInformation, Name: '' } }];
+    node.hapClient.getAllServices.mockResolvedValue(endpointsType);
+    await node.handleReady();
+    const resultType = node.toList({ perms: 'ev' });
+    expect(resultType).toHaveLength(1);
+    expect(resultType[0].name).not.toContain('undefined');
+    expect(resultType[0].name).toBe('Outlet');
+
+    // Fallback 2: no serviceName, no Name, no type → should use uuid prefix
+    node.hbDevices = [];
+    const endpointsUuid = [{ ...baseService, serviceName: '', type: '', accessoryInformation: { ...baseService.accessoryInformation, Name: '' } }];
+    node.hapClient.getAllServices.mockResolvedValue(endpointsUuid);
+    await node.handleReady();
+    const resultUuid = node.toList({ perms: 'ev' });
+    expect(resultUuid).toHaveLength(1);
+    expect(resultUuid[0].name).not.toContain('undefined');
+    expect(resultUuid[0].name).toBe('AABBCCDD');
+
+    // Fallback 3: no serviceName, no Name, no type, no uuid → should use aid:iid
+    node.hbDevices = [];
+    const endpointsAidIid = [{ ...baseService, serviceName: '', type: '', uuid: '', accessoryInformation: { ...baseService.accessoryInformation, Name: '' } }];
+    node.hapClient.getAllServices.mockResolvedValue(endpointsAidIid);
+    await node.handleReady();
+    const resultAidIid = node.toList({ perms: 'ev' });
+    expect(resultAidIid).toHaveLength(1);
+    expect(resultAidIid[0].name).not.toContain('undefined');
+    expect(resultAidIid[0].name).toBe('1:8');
+  });
+
   test('Devices with duplicate unique IDs should be handled and logged', async () => {
     const EXPECTED_DEVICE_COUNT = 1;
     const endpoints = loadFixture('duplicate-endpoints.json');
