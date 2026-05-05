@@ -221,7 +221,7 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 #### Breaking Change
 
-- Updated support for power bars and devices with multiple services (#216, #212, #221). As a side effect, the number of devices returned has increased and the names of devices with multiple services have changed. Please revisit your devices after installing. If, after updating, a node cannot connect to the appropriate device, the debug log will contain a `Device Registration Error`. In my setup, nodes with Camera Motion sensors and Ceiling Fans needed to be revisited.
+- Updated support for power bars and devices with multiple services (#216, #212, #221). As a side effect, the number of devices returned has increased and the names of devices with multiple services have changed. Please revisit your devices after installing. If, after updating, a node cannot connect to the appropriate device, the debug log will contain `ERROR: Device registration failed`. You will need to re-select the device in the drop down. In my setup, nodes with Camera Motion sensors and Ceiling Fans needed to be revisited.
 
 #### Changes
 
@@ -229,7 +229,7 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 
 #### New Features
 
-- Added logging of device naming/uniqueId collisions. Devices with duplicate names present only one option for selection. If a duplicate is detected, the debug log will show it as a `Duplicate name/uniqueId`. To resolve, change the device name in the Home App to be unique.
+- Added logging of device naming/uniqueId collisions. Devices with duplicate names present only one option for selection. If a duplicate is detected, the debug log will show it as a `Duplicate uniqueId`. To resolve, change the device name in the Home App to be unique.
 - Added **Ignored Instances** configuration option on the `hb-conf` node. Accepts a comma-separated list of Homebridge instance MAC addresses to exclude from discovery (e.g. `34:42:4E:4A:38:00, 6E:69:51:34:54:00`). Useful when you have Homebridge instances you do not want to integrate with Node-RED.
 - Added **HAP-Client Debug** configuration option on the `hb-conf` node. When enabled, it enables debug logging within the HAP-Client library, which outputs detailed HAP protocol information. Useful for troubleshooting Homebridge instance discovery issues.
 
