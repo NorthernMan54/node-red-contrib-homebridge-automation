@@ -1,0 +1,912 @@
+[
+  {
+    "aid": 1,
+    "iid": 8,
+    "uuid": "00000085-0000-1000-8000-0026BB765291",
+    "type": "MotionSensor",
+    "humanType": "Motion Sensor",
+    "serviceName": "Canoe",
+    "serviceCharacteristics": [
+      {
+        "aid": 1,
+        "iid": 10,
+        "uuid": "00000022-0000-1000-8000-0026BB765291",
+        "type": "MotionDetected",
+        "serviceType": "MotionSensor",
+        "serviceName": "Canoe",
+        "description": "Motion Detected",
+        "value": 0,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "HikVision",
+      "Model": "ECI-T24F2",
+      "Name": "Canoe 5036",
+      "Serial Number": "Default-SerialNumber",
+      "Firmware Revision": "0.0.0"
+    },
+    "values": {
+      "MotionDetected": 0
+    },
+    "instance": {
+      "name": "ECI-T24F2",
+      "username": "5C:EE:FE:4D:64:B4",
+      "ipAddress": "192.168.1.11",
+      "port": 41053,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "3"
+    },
+    "uniqueId": "10dbaceb026b81f56c6226eca2c30b7ba06c29de632253972402bd3f489096f1"
+  },
+  {
+    "aid": 1,
+    "iid": 14,
+    "uuid": "00000110-0000-1000-8000-0026BB765291",
+    "type": "CameraRTPStreamManagement",
+    "humanType": "Camera Rtp Stream Management",
+    "serviceName": "Canoe 5036",
+    "serviceCharacteristics": [
+      {
+        "aid": 1,
+        "iid": 17,
+        "uuid": "00000120-0000-1000-8000-0026BB765291",
+        "type": "StreamingStatus",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Streaming Status",
+        "value": "AQEA",
+        "format": "tlv8",
+        "perms": [
+          "ev",
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": true
+      },
+      {
+        "aid": 1,
+        "iid": 18,
+        "uuid": "00000115-0000-1000-8000-0026BB765291",
+        "type": "SupportedAudioStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported Audio Stream Configuration",
+        "value": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 19,
+        "uuid": "00000116-0000-1000-8000-0026BB765291",
+        "type": "SupportedRTPConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported RTP Configuration",
+        "value": "AgEA",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 20,
+        "uuid": "00000114-0000-1000-8000-0026BB765291",
+        "type": "SupportedVideoStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported Video Stream Configuration",
+        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 21,
+        "uuid": "000000B0-0000-1000-8000-0026BB765291",
+        "type": "Active",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Active",
+        "value": 1,
+        "format": "uint8",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "maxValue": 1,
+        "minValue": 0,
+        "minStep": 1,
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 1,
+        "iid": 15,
+        "uuid": "00000117-0000-1000-8000-0026BB765291",
+        "type": "SelectedRTPStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Selected RTP Stream Configuration",
+        "value": "AQMCAQI=",
+        "format": "tlv8",
+        "perms": [
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 16,
+        "uuid": "00000118-0000-1000-8000-0026BB765291",
+        "type": "SetupEndpoints",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Setup Endpoints",
+        "value": "AgEC",
+        "format": "tlv8",
+        "perms": [
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": false
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "HikVision",
+      "Model": "ECI-T24F2",
+      "Name": "Canoe 5036",
+      "Serial Number": "Default-SerialNumber",
+      "Firmware Revision": "0.0.0"
+    },
+    "values": {
+      "StreamingStatus": "AQEA",
+      "SupportedAudioStreamConfiguration": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
+      "SupportedRTPConfiguration": "AgEA",
+      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
+      "Active": 1,
+      "SelectedRTPStreamConfiguration": "AQMCAQI=",
+      "SetupEndpoints": "AgEC"
+    },
+    "instance": {
+      "name": "ECI-T24F2",
+      "username": "5C:EE:FE:4D:64:B4",
+      "ipAddress": "192.168.1.11",
+      "port": 41053,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "3"
+    },
+    "uniqueId": "9959f43e6f32e451a9c13e0c028d863fa148c39cbbcb57f93d8d825fc31f8865"
+  },
+  {
+    "aid": 1,
+    "iid": 22,
+    "uuid": "00000110-0000-1000-8000-0026BB765291",
+    "type": "CameraRTPStreamManagement",
+    "humanType": "Camera Rtp Stream Management",
+    "serviceName": "Canoe 5036",
+    "serviceCharacteristics": [
+      {
+        "aid": 1,
+        "iid": 25,
+        "uuid": "00000120-0000-1000-8000-0026BB765291",
+        "type": "StreamingStatus",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Streaming Status",
+        "value": "AQEA",
+        "format": "tlv8",
+        "perms": [
+          "ev",
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": true
+      },
+      {
+        "aid": 1,
+        "iid": 26,
+        "uuid": "00000115-0000-1000-8000-0026BB765291",
+        "type": "SupportedAudioStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported Audio Stream Configuration",
+        "value": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 27,
+        "uuid": "00000116-0000-1000-8000-0026BB765291",
+        "type": "SupportedRTPConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported RTP Configuration",
+        "value": "AgEA",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 28,
+        "uuid": "00000114-0000-1000-8000-0026BB765291",
+        "type": "SupportedVideoStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported Video Stream Configuration",
+        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 29,
+        "uuid": "000000B0-0000-1000-8000-0026BB765291",
+        "type": "Active",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Active",
+        "value": 1,
+        "format": "uint8",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "maxValue": 1,
+        "minValue": 0,
+        "minStep": 1,
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 1,
+        "iid": 23,
+        "uuid": "00000117-0000-1000-8000-0026BB765291",
+        "type": "SelectedRTPStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Selected RTP Stream Configuration",
+        "value": "AQMCAQI=",
+        "format": "tlv8",
+        "perms": [
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 24,
+        "uuid": "00000118-0000-1000-8000-0026BB765291",
+        "type": "SetupEndpoints",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Setup Endpoints",
+        "value": "AgEC",
+        "format": "tlv8",
+        "perms": [
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": false
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "HikVision",
+      "Model": "ECI-T24F2",
+      "Name": "Canoe 5036",
+      "Serial Number": "Default-SerialNumber",
+      "Firmware Revision": "0.0.0"
+    },
+    "values": {
+      "StreamingStatus": "AQEA",
+      "SupportedAudioStreamConfiguration": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
+      "SupportedRTPConfiguration": "AgEA",
+      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
+      "Active": 1,
+      "SelectedRTPStreamConfiguration": "AQMCAQI=",
+      "SetupEndpoints": "AgEC"
+    },
+    "instance": {
+      "name": "ECI-T24F2",
+      "username": "5C:EE:FE:4D:64:B4",
+      "ipAddress": "192.168.1.11",
+      "port": 41053,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "3"
+    },
+    "uniqueId": "b0824c5bbe7c7e4dd6a8ab26d483cb0138ee56b34e444a0999ab5c24d1d33a58"
+  },
+  {
+    "aid": 1,
+    "iid": 30,
+    "uuid": "00000110-0000-1000-8000-0026BB765291",
+    "type": "CameraRTPStreamManagement",
+    "humanType": "Camera Rtp Stream Management",
+    "serviceName": "Canoe 5036",
+    "serviceCharacteristics": [
+      {
+        "aid": 1,
+        "iid": 33,
+        "uuid": "00000120-0000-1000-8000-0026BB765291",
+        "type": "StreamingStatus",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Streaming Status",
+        "value": "AQEA",
+        "format": "tlv8",
+        "perms": [
+          "ev",
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": true
+      },
+      {
+        "aid": 1,
+        "iid": 34,
+        "uuid": "00000115-0000-1000-8000-0026BB765291",
+        "type": "SupportedAudioStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported Audio Stream Configuration",
+        "value": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 35,
+        "uuid": "00000116-0000-1000-8000-0026BB765291",
+        "type": "SupportedRTPConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported RTP Configuration",
+        "value": "AgEA",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 36,
+        "uuid": "00000114-0000-1000-8000-0026BB765291",
+        "type": "SupportedVideoStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported Video Stream Configuration",
+        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 37,
+        "uuid": "000000B0-0000-1000-8000-0026BB765291",
+        "type": "Active",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Active",
+        "value": 1,
+        "format": "uint8",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "maxValue": 1,
+        "minValue": 0,
+        "minStep": 1,
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 1,
+        "iid": 31,
+        "uuid": "00000117-0000-1000-8000-0026BB765291",
+        "type": "SelectedRTPStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Selected RTP Stream Configuration",
+        "value": "AQMCAQI=",
+        "format": "tlv8",
+        "perms": [
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 32,
+        "uuid": "00000118-0000-1000-8000-0026BB765291",
+        "type": "SetupEndpoints",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Setup Endpoints",
+        "value": "AgEC",
+        "format": "tlv8",
+        "perms": [
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": false
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "HikVision",
+      "Model": "ECI-T24F2",
+      "Name": "Canoe 5036",
+      "Serial Number": "Default-SerialNumber",
+      "Firmware Revision": "0.0.0"
+    },
+    "values": {
+      "StreamingStatus": "AQEA",
+      "SupportedAudioStreamConfiguration": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
+      "SupportedRTPConfiguration": "AgEA",
+      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
+      "Active": 1,
+      "SelectedRTPStreamConfiguration": "AQMCAQI=",
+      "SetupEndpoints": "AgEC"
+    },
+    "instance": {
+      "name": "ECI-T24F2",
+      "username": "5C:EE:FE:4D:64:B4",
+      "ipAddress": "192.168.1.11",
+      "port": 41053,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "3"
+    },
+    "uniqueId": "629af36fdec5d22c5537a1f0312d88b6f3765ba57e29b7def8c96538a4ffb16b"
+  },
+  {
+    "aid": 1,
+    "iid": 38,
+    "uuid": "00000110-0000-1000-8000-0026BB765291",
+    "type": "CameraRTPStreamManagement",
+    "humanType": "Camera Rtp Stream Management",
+    "serviceName": "Canoe 5036",
+    "serviceCharacteristics": [
+      {
+        "aid": 1,
+        "iid": 41,
+        "uuid": "00000120-0000-1000-8000-0026BB765291",
+        "type": "StreamingStatus",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Streaming Status",
+        "value": "AQEA",
+        "format": "tlv8",
+        "perms": [
+          "ev",
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": true
+      },
+      {
+        "aid": 1,
+        "iid": 42,
+        "uuid": "00000115-0000-1000-8000-0026BB765291",
+        "type": "SupportedAudioStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported Audio Stream Configuration",
+        "value": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 43,
+        "uuid": "00000116-0000-1000-8000-0026BB765291",
+        "type": "SupportedRTPConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported RTP Configuration",
+        "value": "AgEA",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 44,
+        "uuid": "00000114-0000-1000-8000-0026BB765291",
+        "type": "SupportedVideoStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported Video Stream Configuration",
+        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 45,
+        "uuid": "000000B0-0000-1000-8000-0026BB765291",
+        "type": "Active",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Active",
+        "value": 1,
+        "format": "uint8",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "maxValue": 1,
+        "minValue": 0,
+        "minStep": 1,
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 1,
+        "iid": 39,
+        "uuid": "00000117-0000-1000-8000-0026BB765291",
+        "type": "SelectedRTPStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Selected RTP Stream Configuration",
+        "value": "AQMCAQI=",
+        "format": "tlv8",
+        "perms": [
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 40,
+        "uuid": "00000118-0000-1000-8000-0026BB765291",
+        "type": "SetupEndpoints",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Setup Endpoints",
+        "value": "AgEC",
+        "format": "tlv8",
+        "perms": [
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": false
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "HikVision",
+      "Model": "ECI-T24F2",
+      "Name": "Canoe 5036",
+      "Serial Number": "Default-SerialNumber",
+      "Firmware Revision": "0.0.0"
+    },
+    "values": {
+      "StreamingStatus": "AQEA",
+      "SupportedAudioStreamConfiguration": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
+      "SupportedRTPConfiguration": "AgEA",
+      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
+      "Active": 1,
+      "SelectedRTPStreamConfiguration": "AQMCAQI=",
+      "SetupEndpoints": "AgEC"
+    },
+    "instance": {
+      "name": "ECI-T24F2",
+      "username": "5C:EE:FE:4D:64:B4",
+      "ipAddress": "192.168.1.11",
+      "port": 41053,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "3"
+    },
+    "uniqueId": "b3b668fc3a29d9589bfcfa0395d7ce1e1029e6b70b4ca6129579cb0103cc6ea9"
+  },
+  {
+    "aid": 1,
+    "iid": 46,
+    "uuid": "00000110-0000-1000-8000-0026BB765291",
+    "type": "CameraRTPStreamManagement",
+    "humanType": "Camera Rtp Stream Management",
+    "serviceName": "Canoe 5036",
+    "serviceCharacteristics": [
+      {
+        "aid": 1,
+        "iid": 49,
+        "uuid": "00000120-0000-1000-8000-0026BB765291",
+        "type": "StreamingStatus",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Streaming Status",
+        "value": "AQEA",
+        "format": "tlv8",
+        "perms": [
+          "ev",
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": true
+      },
+      {
+        "aid": 1,
+        "iid": 50,
+        "uuid": "00000115-0000-1000-8000-0026BB765291",
+        "type": "SupportedAudioStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported Audio Stream Configuration",
+        "value": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 51,
+        "uuid": "00000116-0000-1000-8000-0026BB765291",
+        "type": "SupportedRTPConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported RTP Configuration",
+        "value": "AgEA",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 52,
+        "uuid": "00000114-0000-1000-8000-0026BB765291",
+        "type": "SupportedVideoStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Supported Video Stream Configuration",
+        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
+        "format": "tlv8",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 53,
+        "uuid": "000000B0-0000-1000-8000-0026BB765291",
+        "type": "Active",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Active",
+        "value": 1,
+        "format": "uint8",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "maxValue": 1,
+        "minValue": 0,
+        "minStep": 1,
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 1,
+        "iid": 47,
+        "uuid": "00000117-0000-1000-8000-0026BB765291",
+        "type": "SelectedRTPStreamConfiguration",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Selected RTP Stream Configuration",
+        "value": "AQMCAQI=",
+        "format": "tlv8",
+        "perms": [
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": false
+      },
+      {
+        "aid": 1,
+        "iid": 48,
+        "uuid": "00000118-0000-1000-8000-0026BB765291",
+        "type": "SetupEndpoints",
+        "serviceType": "CameraRTPStreamManagement",
+        "serviceName": "Canoe 5036",
+        "description": "Setup Endpoints",
+        "value": "AgEC",
+        "format": "tlv8",
+        "perms": [
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": false
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "HikVision",
+      "Model": "ECI-T24F2",
+      "Name": "Canoe 5036",
+      "Serial Number": "Default-SerialNumber",
+      "Firmware Revision": "0.0.0"
+    },
+    "values": {
+      "StreamingStatus": "AQEA",
+      "SupportedAudioStreamConfiguration": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
+      "SupportedRTPConfiguration": "AgEA",
+      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
+      "Active": 1,
+      "SelectedRTPStreamConfiguration": "AQMCAQI=",
+      "SetupEndpoints": "AgEC"
+    },
+    "instance": {
+      "name": "ECI-T24F2",
+      "username": "5C:EE:FE:4D:64:B4",
+      "ipAddress": "192.168.1.11",
+      "port": 41053,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "3"
+    },
+    "uniqueId": "57cf7042ca8aac16275fa2d6d135b1855a6faaadcd2e46499ecba278bbf241d3"
+  },
+  {
+    "aid": 1,
+    "iid": 54,
+    "uuid": "000000A2-0000-1000-8000-0026BB765291",
+    "type": "ProtocolInformation",
+    "humanType": "Protocol Information",
+    "serviceName": "Canoe 5036",
+    "serviceCharacteristics": [
+      {
+        "aid": 1,
+        "iid": 55,
+        "uuid": "00000037-0000-1000-8000-0026BB765291",
+        "type": "Version",
+        "serviceType": "ProtocolInformation",
+        "serviceName": "Canoe 5036",
+        "description": "Version",
+        "value": "1.1.0",
+        "format": "string",
+        "perms": [
+          "pr"
+        ],
+        "canRead": true,
+        "canWrite": false,
+        "ev": false
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "HikVision",
+      "Model": "ECI-T24F2",
+      "Name": "Canoe 5036",
+      "Serial Number": "Default-SerialNumber",
+      "Firmware Revision": "0.0.0"
+    },
+    "values": {
+      "Version": "1.1.0"
+    },
+    "instance": {
+      "name": "ECI-T24F2",
+      "username": "5C:EE:FE:4D:64:B4",
+      "ipAddress": "192.168.1.11",
+      "port": 41053,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "3"
+    },
+    "uniqueId": "660f0569500a9c2570f435943368c4f33c9a9c5162f366c66c1eb520f874c84e"
+  }
+]

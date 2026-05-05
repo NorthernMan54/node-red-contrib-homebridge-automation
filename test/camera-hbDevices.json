@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Canoe 5036",
+    "fullName": "Canoe 5036 - Camera (HikVision)",
+    "sortName": "Canoe 5036:CameraRTPStreamManagement",
+    "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe 503600000110",
+    "homebridge": "ECI-T24F2",
+    "service": "CameraRTPStreamManagement",
+    "manufacturer": "HikVision"
+  },
+  {
+    "name": "Canoe",
+    "fullName": "Canoe - Motion Sensor (HikVision)",
+    "sortName": "Canoe:MotionSensor",
+    "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe00000085",
+    "homebridge": "ECI-T24F2",
+    "service": "MotionSensor",
+    "manufacturer": "HikVision"
+  }
+]

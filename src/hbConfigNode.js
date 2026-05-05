@@ -14,14 +14,25 @@ const HUMAN_TYPE_DISPLAY = {
   'Fanv2': 'Fan v2',
 };
 
-// Canonical device name — accessoryInformation.Name if set, otherwise serviceName
-function getFriendlyName(service) {
-  return service.accessoryInformation.Name || service.serviceName;
+// Human-readable display name - prefer the user-set ConfiguredName;
+// otherwise build a name from serviceName (or accessoryInformation.Name
+// as a fallback), appending serviceLabelIndex when present to
+// disambiguate sibling services on multi-service accessories like power bars.
+function composeDisplayName(service) {
+  const configured = service.values?.ConfiguredName?.trim();
+  if (configured) return configured;
+
+  const base =
+    service.serviceName ||
+    service.accessoryInformation?.Name ||
+    `${service.instance.username}-${service.aid}:${service.iid}`;
+  const index = service.values?.serviceLabelIndex;
+  return index ? `${base}-${index}` : base;
 }
 
 // Canonical device identifier — must be the single source of truth for matching
 function getDeviceIdentifier(service) {
-  return `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${getFriendlyName(service)}${service.uuid.slice(0, 8)}`;
+  return `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${composeDisplayName(service)}${service.uuid.slice(0, 8)}`;
 }
 
 class HBConfigNode {
@@ -139,6 +150,28 @@ class HBConfigNode {
     updatedDevices.forEach((service) => {
       service.uniqueId = getDeviceIdentifier(service);
     });
+    // Scan and report duplicate uniqueId's within the updated list — these should never happen, but if they do, the debug log will show the breakdown of the offending uniqueId for troubleshooting
+    const uniqueIdCounts = {};
+    updatedDevices.forEach(service => {
+      uniqueIdCounts[service.uniqueId] = (uniqueIdCounts[service.uniqueId] || 0) + 1;
+    });
+    Object.entries(uniqueIdCounts).forEach(([uniqueId, count]) => {
+      if (count <= 1) return;
+
+      const duplicates = updatedDevices.filter(s => s.uniqueId === uniqueId);
+
+      // For some reason Homebridge is creating multiple Camera RTP Stream Management services, this is a workaround to mask those duplicates until the root cause is identified and fixed in Homebridge or HAP-Client
+      if (duplicates[0].type === 'CameraRTPStreamManagement' && duplicates[1].type === 'CameraRTPStreamManagement') return;
+
+      const breakdown = duplicates
+        .map(s => `  • "${composeDisplayName(s)}" — ${s.instance.name} - ${s.instance.username} aid=${s.aid} iid=${s.iid} type=${s.type}`)
+        .join('\n');
+
+      this.warn(
+        `Duplicate uniqueId — ${count} services collide. ` +
+        `Set a unique ConfiguredName in HomeKit for one of:\n${breakdown}`
+      );
+    });
     // Rebuild device list: update existing, add new, drop stale, deduplicate
     const existingMap = new Map(this.hbDevices.map(s => [s.uniqueId, s]));
     const newMap = new Map();
@@ -191,7 +224,7 @@ class HBConfigNode {
       .filter(service => supportedTypes.has(service.humanType))
       .filter(service => !perms || service.serviceCharacteristics.some(c => !c.perms || c.perms.includes(perms)))
       .map(service => {
-        const name = getFriendlyName(service);
+        const name = composeDisplayName(service);
         const displayType = HUMAN_TYPE_DISPLAY[service.humanType] || service.humanType;
         const manufacturer = service.accessoryInformation.Manufacturer;
         return {

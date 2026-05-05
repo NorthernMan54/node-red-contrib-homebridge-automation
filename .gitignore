@@ -24,3 +24,7 @@ test/node-red/.config.*
 src/homebridge-automation-endpoints.json
 src/homebridge-automation-hbDevices.json
 homebridge-automation-endpoints.json
+updated.json
+test/homebridge-automation-hbDevices-v3-updated.json
+test/powerBar-hbDevices-updated.json
+test/serviceLabelIndex-hbDevices-updated.json

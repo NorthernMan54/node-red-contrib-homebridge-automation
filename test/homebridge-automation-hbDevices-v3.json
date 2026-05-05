@@ -1,5 +1,14 @@
 [
   {
+    "name": "AirPlay",
+    "fullName": "AirPlay - Input Source (Apple Inc.)",
+    "sortName": "AirPlay:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.AirPlay000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
     "name": "Alexa",
     "fullName": "Alexa - Contact Sensor (homebridge-alexa)",
     "sortName": "Alexa:ContactSensor",
@@ -18,6 +27,51 @@
     "manufacturer": "Signify Netherlands B.V."
   },
   {
+    "name": "Apple Music",
+    "fullName": "Apple Music - Input Source (Apple Inc.)",
+    "sortName": "Apple Music:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Apple Music000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "Apple TV",
+    "fullName": "Apple TV - Input Source (Apple Inc.)",
+    "sortName": "Apple TV:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Apple TV000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "Apple TV",
+    "fullName": "Apple TV - Television (Apple Inc.)",
+    "sortName": "Apple TV:Television",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Apple TV000000D8",
+    "homebridge": "Apple TV 4",
+    "service": "Television",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "AppStore",
+    "fullName": "AppStore - Input Source (Apple Inc.)",
+    "sortName": "AppStore:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.AppStore000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "Arcade",
+    "fullName": "Arcade - Input Source (Apple Inc.)",
+    "sortName": "Arcade:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Arcade000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
     "name": "Attic",
     "fullName": "Attic - Temperature Sensor (NRCHKB - Acurite-Tower/A)",
     "sortName": "Attic:TemperatureSensor",
@@ -25,6 +79,15 @@
     "homebridge": "Default Model",
     "service": "TemperatureSensor",
     "manufacturer": "NRCHKB - Acurite-Tower/A"
+  },
+  {
+    "name": "Avada Kedavra",
+    "fullName": "Avada Kedavra - Input Source (Apple Inc.)",
+    "sortName": "Avada Kedavra:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Avada Kedavra000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
   },
   {
     "name": "Backyard Tree",
@@ -99,6 +162,15 @@
     "manufacturer": "NRCHKB"
   },
   {
+    "name": "Beside Stairs",
+    "fullName": "Beside Stairs - Lightbulb (Tasmota)",
+    "sortName": "Beside Stairs:Lightbulb",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaBeside Stairs00000043",
+    "homebridge": "homebridge",
+    "service": "Lightbulb",
+    "manufacturer": "Tasmota"
+  },
+  {
     "name": "Bunkie Fan Light",
     "fullName": "Bunkie Fan Light - Lightbulb (Tasmota)",
     "sortName": "Bunkie Fan Light:Lightbulb",
@@ -124,15 +196,6 @@
     "homebridge": "Default Model",
     "service": "Lightbulb",
     "manufacturer": "NRCHKB"
-  },
-  {
-    "name": "Bunkie Light",
-    "fullName": "Bunkie Light - Lightbulb (Tasmota)",
-    "sortName": "Bunkie Light:Lightbulb",
-    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaBunkie Light00000043",
-    "homebridge": "homebridge",
-    "service": "Lightbulb",
-    "manufacturer": "Tasmota"
   },
   {
     "name": "Bunkie Lower",
@@ -171,12 +234,21 @@
     "manufacturer": "NRCHKB - OMG"
   },
   {
-    "name": "Busy Bee",
-    "fullName": "Busy Bee - Contact Sensor (Shark)",
-    "sortName": "Busy Bee:ContactSensor",
-    "uniqueId": "homebridge0E:D3:21:BA:8C:5CSharkBusy Bee00000080",
+    "name": "Busy Bee Docked",
+    "fullName": "Busy Bee Docked - Contact Sensor (Shark)",
+    "sortName": "Busy Bee Docked:ContactSensor",
+    "uniqueId": "homebridge0E:D3:21:BA:8C:5CSharkBusy Bee Docked00000080",
     "homebridge": "homebridge",
     "service": "ContactSensor",
+    "manufacturer": "Shark"
+  },
+  {
+    "name": "Busy Bee Paused",
+    "fullName": "Busy Bee Paused - Switch (Shark)",
+    "sortName": "Busy Bee Paused:Switch",
+    "uniqueId": "homebridge0E:D3:21:BA:8C:5CSharkBusy Bee Paused00000049",
+    "homebridge": "homebridge",
+    "service": "Switch",
     "manufacturer": "Shark"
   },
   {
@@ -189,15 +261,6 @@
     "manufacturer": "Shark"
   },
   {
-    "name": "Busy Bee",
-    "fullName": "Busy Bee - Switch (Shark)",
-    "sortName": "Busy Bee:Switch",
-    "uniqueId": "homebridge0E:D3:21:BA:8C:5CSharkBusy Bee00000049",
-    "homebridge": "homebridge",
-    "service": "Switch",
-    "manufacturer": "Shark"
-  },
-  {
     "name": "Canoe 5036",
     "fullName": "Canoe 5036 - Camera (HikVision)",
     "sortName": "Canoe 5036:CameraRTPStreamManagement",
@@ -207,39 +270,66 @@
     "manufacturer": "HikVision"
   },
   {
-    "name": "Canoe 5036",
-    "fullName": "Canoe 5036 - Motion Sensor (HikVision)",
-    "sortName": "Canoe 5036:MotionSensor",
-    "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe 503600000085",
+    "name": "Canoe",
+    "fullName": "Canoe - Motion Sensor (HikVision)",
+    "sortName": "Canoe:MotionSensor",
+    "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe00000085",
     "homebridge": "ECI-T24F2",
     "service": "MotionSensor",
     "manufacturer": "HikVision"
   },
   {
-    "name": "Cottage Main 8365",
-    "fullName": "Cottage Main 8365 - Input Source (Apple Inc.)",
-    "sortName": "Cottage Main 8365:InputSource",
-    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Cottage Main 8365000000D9",
+    "name": "CBC Gem",
+    "fullName": "CBC Gem - Input Source (Apple Inc.)",
+    "sortName": "CBC Gem:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.CBC Gem000000D9",
     "homebridge": "Apple TV 4",
     "service": "InputSource",
     "manufacturer": "Apple Inc."
   },
   {
-    "name": "Cottage Main 8365",
-    "fullName": "Cottage Main 8365 - Speaker (Apple Inc.)",
-    "sortName": "Cottage Main 8365:Speaker",
-    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Cottage Main 836500000113",
+    "name": "Citytv",
+    "fullName": "Citytv - Input Source (Apple Inc.)",
+    "sortName": "Citytv:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Citytv000000D9",
     "homebridge": "Apple TV 4",
-    "service": "Speaker",
+    "service": "InputSource",
     "manufacturer": "Apple Inc."
   },
   {
-    "name": "Cottage Main 8365",
-    "fullName": "Cottage Main 8365 - Television (Apple Inc.)",
-    "sortName": "Cottage Main 8365:Television",
-    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Cottage Main 8365000000D8",
+    "name": "Computers",
+    "fullName": "Computers - Input Source (Apple Inc.)",
+    "sortName": "Computers:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Computers000000D9",
     "homebridge": "Apple TV 4",
-    "service": "Television",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "Crackle",
+    "fullName": "Crackle - Input Source (Apple Inc.)",
+    "sortName": "Crackle:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Crackle000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "Crave",
+    "fullName": "Crave - Input Source (Apple Inc.)",
+    "sortName": "Crave:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Crave000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "CTV",
+    "fullName": "CTV - Input Source (Apple Inc.)",
+    "sortName": "CTV:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.CTV000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
     "manufacturer": "Apple Inc."
   },
   {
@@ -252,15 +342,6 @@
     "manufacturer": "HikVision"
   },
   {
-    "name": "Deck 6EED",
-    "fullName": "Deck 6EED - Motion Sensor (HikVision)",
-    "sortName": "Deck 6EED:MotionSensor",
-    "uniqueId": "ECI-T24F28E:88:AB:7A:D0:54HikVisionDeck 6EED00000085",
-    "homebridge": "ECI-T24F2",
-    "service": "MotionSensor",
-    "manufacturer": "HikVision"
-  },
-  {
     "name": "Deck Light",
     "fullName": "Deck Light - Lightbulb (Tasmota)",
     "sortName": "Deck Light:Lightbulb",
@@ -268,6 +349,15 @@
     "homebridge": "homebridge",
     "service": "Lightbulb",
     "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Deck",
+    "fullName": "Deck - Motion Sensor (HikVision)",
+    "sortName": "Deck:MotionSensor",
+    "uniqueId": "ECI-T24F28E:88:AB:7A:D0:54HikVisionDeck00000085",
+    "homebridge": "ECI-T24F2",
+    "service": "MotionSensor",
+    "manufacturer": "HikVision"
   },
   {
     "name": "Dining Room Chandelier",
@@ -279,6 +369,15 @@
     "manufacturer": "Tasmota"
   },
   {
+    "name": "Disney",
+    "fullName": "Disney - Input Source (Apple Inc.)",
+    "sortName": "Disney:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Disney000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
     "name": "Door Power",
     "fullName": "Door Power - Outlet (Tasmota)",
     "sortName": "Door Power:Outlet",
@@ -288,12 +387,30 @@
     "manufacturer": "Tasmota"
   },
   {
-    "name": "Doorbell Button",
-    "fullName": "Doorbell Button - Humidity Sensor (Tasmota)",
-    "sortName": "Doorbell Button:HumiditySensor",
-    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDoorbell Button00000082",
+    "name": "Doorbell Button BME280 DewPoint",
+    "fullName": "Doorbell Button BME280 DewPoint - Temperature Sensor (Tasmota)",
+    "sortName": "Doorbell Button BME280 DewPoint:TemperatureSensor",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDoorbell Button BME280 DewPoint0000008A",
+    "homebridge": "homebridge",
+    "service": "TemperatureSensor",
+    "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Doorbell Button BME280 Humidity",
+    "fullName": "Doorbell Button BME280 Humidity - Humidity Sensor (Tasmota)",
+    "sortName": "Doorbell Button BME280 Humidity:HumiditySensor",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDoorbell Button BME280 Humidity00000082",
     "homebridge": "homebridge",
     "service": "HumiditySensor",
+    "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Doorbell Button BME280 Temperature",
+    "fullName": "Doorbell Button BME280 Temperature - Temperature Sensor (Tasmota)",
+    "sortName": "Doorbell Button BME280 Temperature:TemperatureSensor",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDoorbell Button BME280 Temperature0000008A",
+    "homebridge": "homebridge",
+    "service": "TemperatureSensor",
     "manufacturer": "Tasmota"
   },
   {
@@ -306,15 +423,6 @@
     "manufacturer": "Tasmota"
   },
   {
-    "name": "Doorbell Button",
-    "fullName": "Doorbell Button - Temperature Sensor (Tasmota)",
-    "sortName": "Doorbell Button:TemperatureSensor",
-    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaDoorbell Button0000008A",
-    "homebridge": "homebridge",
-    "service": "TemperatureSensor",
-    "manufacturer": "Tasmota"
-  },
-  {
     "name": "Driveway 8E52",
     "fullName": "Driveway 8E52 - Camera (HikVision)",
     "sortName": "Driveway 8E52:CameraRTPStreamManagement",
@@ -324,10 +432,10 @@
     "manufacturer": "HikVision"
   },
   {
-    "name": "Driveway 8E52",
-    "fullName": "Driveway 8E52 - Motion Sensor (HikVision)",
-    "sortName": "Driveway 8E52:MotionSensor",
-    "uniqueId": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000085",
+    "name": "Driveway",
+    "fullName": "Driveway - Motion Sensor (HikVision)",
+    "sortName": "Driveway:MotionSensor",
+    "uniqueId": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway00000085",
     "homebridge": "ECI-T24F2",
     "service": "MotionSensor",
     "manufacturer": "HikVision"
@@ -351,10 +459,10 @@
     "manufacturer": "NRCHKB"
   },
   {
-    "name": "East Bedroom",
-    "fullName": "East Bedroom - Fan (Tasmota)",
-    "sortName": "East Bedroom:Fan",
-    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaEast Bedroom00000040",
+    "name": "East Bedroom Fan",
+    "fullName": "East Bedroom Fan - Fan (Tasmota)",
+    "sortName": "East Bedroom Fan:Fan",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaEast Bedroom Fan00000040",
     "homebridge": "homebridge",
     "service": "Fan",
     "manufacturer": "Tasmota"
@@ -369,6 +477,15 @@
     "manufacturer": "Tasmota"
   },
   {
+    "name": "Eternal Fire",
+    "fullName": "Eternal Fire - Input Source (Apple Inc.)",
+    "sortName": "Eternal Fire:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Eternal Fire000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
     "name": "Evening Lights",
     "fullName": "Evening Lights - Lightbulb (Node Red)",
     "sortName": "Evening Lights:Lightbulb",
@@ -378,6 +495,15 @@
     "manufacturer": "Node Red"
   },
   {
+    "name": "Fibe TV",
+    "fullName": "Fibe TV - Input Source (Apple Inc.)",
+    "sortName": "Fibe TV:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Fibe TV000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
     "name": "Firepit light",
     "fullName": "Firepit light - Lightbulb (Tasmota)",
     "sortName": "Firepit light:Lightbulb",
@@ -385,6 +511,15 @@
     "homebridge": "homebridge",
     "service": "Lightbulb",
     "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Fitness",
+    "fullName": "Fitness - Input Source (Apple Inc.)",
+    "sortName": "Fitness:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Fitness000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
   },
   {
     "name": "Floor Lamp One",
@@ -459,6 +594,15 @@
     "manufacturer": "Tasmota"
   },
   {
+    "name": "Global TV",
+    "fullName": "Global TV - Input Source (Apple Inc.)",
+    "sortName": "Global TV:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Global TV000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
     "name": "Greeni",
     "fullName": "Greeni - Outlet (Tasmota)",
     "sortName": "Greeni:Outlet",
@@ -466,6 +610,15 @@
     "homebridge": "homebridge",
     "service": "Outlet",
     "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Home",
+    "fullName": "Home - Input Source (Apple Inc.)",
+    "sortName": "Home:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Home000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
   },
   {
     "name": "Hue Bridge",
@@ -513,6 +666,15 @@
     "manufacturer": "Node Red"
   },
   {
+    "name": "Master Fan",
+    "fullName": "Master Fan - Fan (Tasmota)",
+    "sortName": "Master Fan:Fan",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaMaster Fan00000040",
+    "homebridge": "homebridge",
+    "service": "Fan",
+    "manufacturer": "Tasmota"
+  },
+  {
     "name": "Master Lights",
     "fullName": "Master Lights - Lightbulb (Node Red)",
     "sortName": "Master Lights:Lightbulb",
@@ -520,15 +682,6 @@
     "homebridge": "Default Model",
     "service": "Lightbulb",
     "manufacturer": "Node Red"
-  },
-  {
-    "name": "Master",
-    "fullName": "Master - Fan (Tasmota)",
-    "sortName": "Master:Fan",
-    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaMaster00000040",
-    "homebridge": "homebridge",
-    "service": "Fan",
-    "manufacturer": "Tasmota"
   },
   {
     "name": "Master",
@@ -540,6 +693,15 @@
     "manufacturer": "Tasmota"
   },
   {
+    "name": "Movies",
+    "fullName": "Movies - Input Source (Apple Inc.)",
+    "sortName": "Movies:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Movies000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
     "name": "Music Port",
     "fullName": "Music Port - Switch (HTTP-IRBlaster)",
     "sortName": "Music Port:Switch",
@@ -547,6 +709,15 @@
     "homebridge": "homebridge",
     "service": "Switch",
     "manufacturer": "HTTP-IRBlaster"
+  },
+  {
+    "name": "Netflix",
+    "fullName": "Netflix - Input Source (Apple Inc.)",
+    "sortName": "Netflix:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Netflix000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
   },
   {
     "name": "Patio Door",
@@ -603,6 +774,42 @@
     "manufacturer": "NRCHKB - OMG"
   },
   {
+    "name": "Photos",
+    "fullName": "Photos - Input Source (Apple Inc.)",
+    "sortName": "Photos:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Photos000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "Planets",
+    "fullName": "Planets - Input Source (Apple Inc.)",
+    "sortName": "Planets:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Planets000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "Pluto TV",
+    "fullName": "Pluto TV - Input Source (Apple Inc.)",
+    "sortName": "Pluto TV:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Pluto TV000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "Podcasts",
+    "fullName": "Podcasts - Input Source (Apple Inc.)",
+    "sortName": "Podcasts:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Podcasts000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
     "name": "Porch B6AE",
     "fullName": "Porch B6AE - Camera (HikVision)",
     "sortName": "Porch B6AE:CameraRTPStreamManagement",
@@ -612,30 +819,21 @@
     "manufacturer": "HikVision"
   },
   {
-    "name": "Porch B6AE",
-    "fullName": "Porch B6AE - Doorbell (HikVision)",
-    "sortName": "Porch B6AE:Doorbell",
-    "uniqueId": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionPorch B6AE00000121",
-    "homebridge": "ECI-T24F2",
-    "service": "Doorbell",
-    "manufacturer": "HikVision"
-  },
-  {
-    "name": "Porch B6AE",
-    "fullName": "Porch B6AE - Motion Sensor (HikVision)",
-    "sortName": "Porch B6AE:MotionSensor",
-    "uniqueId": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionPorch B6AE00000085",
-    "homebridge": "ECI-T24F2",
-    "service": "MotionSensor",
-    "manufacturer": "HikVision"
-  },
-  {
-    "name": "Porch B6AE",
-    "fullName": "Porch B6AE - Switch (HikVision)",
-    "sortName": "Porch B6AE:Switch",
-    "uniqueId": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionPorch B6AE00000049",
+    "name": "Porch Doorbell Trigger",
+    "fullName": "Porch Doorbell Trigger - Switch (HikVision)",
+    "sortName": "Porch Doorbell Trigger:Switch",
+    "uniqueId": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionPorch Doorbell Trigger00000049",
     "homebridge": "ECI-T24F2",
     "service": "Switch",
+    "manufacturer": "HikVision"
+  },
+  {
+    "name": "Porch Doorbell",
+    "fullName": "Porch Doorbell - Doorbell (HikVision)",
+    "sortName": "Porch Doorbell:Doorbell",
+    "uniqueId": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionPorch Doorbell00000121",
+    "homebridge": "ECI-T24F2",
+    "service": "Doorbell",
     "manufacturer": "HikVision"
   },
   {
@@ -655,6 +853,15 @@
     "homebridge": "Default Model",
     "service": "HumiditySensor",
     "manufacturer": "NRCHKB - Acurite-Tower/B"
+  },
+  {
+    "name": "Porch",
+    "fullName": "Porch - Motion Sensor (HikVision)",
+    "sortName": "Porch:MotionSensor",
+    "uniqueId": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionPorch00000085",
+    "homebridge": "ECI-T24F2",
+    "service": "MotionSensor",
+    "manufacturer": "HikVision"
   },
   {
     "name": "Porch",
@@ -702,6 +909,15 @@
     "manufacturer": "Tasmota"
   },
   {
+    "name": "Presence Switch",
+    "fullName": "Presence Switch - Switch (NRCHKB)",
+    "sortName": "Presence Switch:Switch",
+    "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBPresence Switch00000049",
+    "homebridge": "Default Model",
+    "service": "Switch",
+    "manufacturer": "NRCHKB"
+  },
+  {
     "name": "Presence",
     "fullName": "Presence - Occupancy Sensor (NRCHKB)",
     "sortName": "Presence:OccupancySensor",
@@ -711,13 +927,13 @@
     "manufacturer": "NRCHKB"
   },
   {
-    "name": "Presence",
-    "fullName": "Presence - Switch (NRCHKB)",
-    "sortName": "Presence:Switch",
-    "uniqueId": "Default Model69:62:B7:AE:38:D4NRCHKBPresence00000049",
-    "homebridge": "Default Model",
-    "service": "Switch",
-    "manufacturer": "NRCHKB"
+    "name": "Prime Video",
+    "fullName": "Prime Video - Input Source (Apple Inc.)",
+    "sortName": "Prime Video:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Prime Video000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
   },
   {
     "name": "Router Power",
@@ -727,6 +943,24 @@
     "homebridge": "homebridge",
     "service": "Outlet",
     "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Search",
+    "fullName": "Search - Input Source (Apple Inc.)",
+    "sortName": "Search:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Search000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
+    "name": "Settings",
+    "fullName": "Settings - Input Source (Apple Inc.)",
+    "sortName": "Settings:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Settings000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
   },
   {
     "name": "Shed Door",
@@ -846,6 +1080,15 @@
     "manufacturer": "NRCHKB"
   },
   {
+    "name": "Spotify",
+    "fullName": "Spotify - Input Source (Apple Inc.)",
+    "sortName": "Spotify:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.Spotify000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
+  },
+  {
     "name": "Stereo",
     "fullName": "Stereo - Fan (HTTP-IRBlaster)",
     "sortName": "Stereo:Fan",
@@ -864,6 +1107,15 @@
     "manufacturer": "Signify Netherlands B.V."
   },
   {
+    "name": "televisionSpeaker",
+    "fullName": "televisionSpeaker - Speaker (Apple Inc.)",
+    "sortName": "televisionSpeaker:Speaker",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.televisionSpeaker00000113",
+    "homebridge": "Apple TV 4",
+    "service": "Speaker",
+    "manufacturer": "Apple Inc."
+  },
+  {
     "name": "Trailer Power",
     "fullName": "Trailer Power - Outlet (Tasmota)",
     "sortName": "Trailer Power:Outlet",
@@ -880,6 +1132,15 @@
     "homebridge": "homebridge",
     "service": "Switch",
     "manufacturer": "HTTP-IRBlaster"
+  },
+  {
+    "name": "TV Shows",
+    "fullName": "TV Shows - Input Source (Apple Inc.)",
+    "sortName": "TV Shows:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.TV Shows000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
   },
   {
     "name": "Wasaga",
@@ -909,19 +1170,28 @@
     "manufacturer": "NRCHKB"
   },
   {
-    "name": "Water Meter",
-    "fullName": "Water Meter - Humidity Sensor (Tasmota)",
-    "sortName": "Water Meter:HumiditySensor",
-    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWater Meter00000082",
+    "name": "Water Meter BME280 DewPoint",
+    "fullName": "Water Meter BME280 DewPoint - Temperature Sensor (Tasmota)",
+    "sortName": "Water Meter BME280 DewPoint:TemperatureSensor",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWater Meter BME280 DewPoint0000008A",
+    "homebridge": "homebridge",
+    "service": "TemperatureSensor",
+    "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Water Meter BME280 Humidity",
+    "fullName": "Water Meter BME280 Humidity - Humidity Sensor (Tasmota)",
+    "sortName": "Water Meter BME280 Humidity:HumiditySensor",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWater Meter BME280 Humidity00000082",
     "homebridge": "homebridge",
     "service": "HumiditySensor",
     "manufacturer": "Tasmota"
   },
   {
-    "name": "Water Meter",
-    "fullName": "Water Meter - Temperature Sensor (Tasmota)",
-    "sortName": "Water Meter:TemperatureSensor",
-    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWater Meter0000008A",
+    "name": "Water Meter BME280 Temperature",
+    "fullName": "Water Meter BME280 Temperature - Temperature Sensor (Tasmota)",
+    "sortName": "Water Meter BME280 Temperature:TemperatureSensor",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWater Meter BME280 Temperature0000008A",
     "homebridge": "homebridge",
     "service": "TemperatureSensor",
     "manufacturer": "Tasmota"
@@ -936,10 +1206,10 @@
     "manufacturer": "Tasmota"
   },
   {
-    "name": "West Bedroom",
-    "fullName": "West Bedroom - Fan (Tasmota)",
-    "sortName": "West Bedroom:Fan",
-    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000040",
+    "name": "West Bedroom Fan",
+    "fullName": "West Bedroom Fan - Fan (Tasmota)",
+    "sortName": "West Bedroom Fan:Fan",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom Fan00000040",
     "homebridge": "homebridge",
     "service": "Fan",
     "manufacturer": "Tasmota"
@@ -961,5 +1231,14 @@
     "homebridge": "homebridge",
     "service": "Outlet",
     "manufacturer": "Tasmota"
+  },
+  {
+    "name": "YouTube",
+    "fullName": "YouTube - Input Source (Apple Inc.)",
+    "sortName": "YouTube:InputSource",
+    "uniqueId": "Apple TV 432:6C:6C:2B:4F:33Apple Inc.YouTube000000D9",
+    "homebridge": "Apple TV 4",
+    "service": "InputSource",
+    "manufacturer": "Apple Inc."
   }
 ]

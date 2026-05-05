@@ -48,6 +48,14 @@
         "env": []
     },
     {
+        "id": "1d56df32ae8e209d",
+        "type": "tab",
+        "label": "Power Bar",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "7e647d67.f33acc",
         "type": "hb-conf",
         "username": "031-45-154",
@@ -174,14 +182,14 @@
         "id": "0ed3cd7e0d60beda",
         "type": "hb-control",
         "z": "caef1e7b5b399e80",
-        "name": "West Bedroom",
+        "name": "West Bedroom Fan",
         "Homebridge": "homebridge",
         "Manufacturer": "Tasmota",
         "Service": "Fan",
-        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom00000040",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaWest Bedroom Fan00000040",
         "conf": "7e647d67.f33acc",
         "outputs": 0,
-        "x": 500,
+        "x": 510,
         "y": 220,
         "wires": []
     },
@@ -477,14 +485,14 @@
         "id": "12ce98441601c981",
         "type": "hb-event",
         "z": "caef1e7b5b399e80",
-        "name": "Driveway 8E52",
+        "name": "Driveway",
         "Homebridge": "ECI-T24F2",
         "Manufacturer": "HikVision",
         "Service": "MotionSensor",
-        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000085",
+        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway00000085",
         "conf": "7e647d67.f33acc",
         "sendInitialState": true,
-        "x": 340,
+        "x": 320,
         "y": 520,
         "wires": [
             [
@@ -2883,14 +2891,14 @@
         "id": "6df154716efd4949",
         "type": "hb-event",
         "z": "92f59d974b9c8a86",
-        "name": "North Sidewalk 5036",
+        "name": "North Sidewalk",
         "Homebridge": "ECI-T24F2",
         "Manufacturer": "HikVision",
         "Service": "MotionSensor",
-        "device": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionNorth Sidewalk 503600000085",
+        "device": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionNorth Sidewalk00000085",
         "conf": "7e647d67.f33acc",
         "sendInitialState": true,
-        "x": 130,
+        "x": 120,
         "y": 220,
         "wires": [
             [
@@ -2991,14 +2999,14 @@
         "id": "0f20a38b99769b49",
         "type": "hb-event",
         "z": "92f59d974b9c8a86",
-        "name": "Driveway 8E52",
+        "name": "Driveway",
         "Homebridge": "ECI-T24F2",
         "Manufacturer": "HikVision",
         "Service": "MotionSensor",
-        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway 8E5200000085",
+        "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway00000085",
         "conf": "7e647d67.f33acc",
         "sendInitialState": true,
-        "x": 120,
+        "x": 100,
         "y": 340,
         "wires": [
             [
@@ -3248,19 +3256,105 @@
         "id": "2802a70d3cd5570b",
         "type": "hb-event",
         "z": "92f59d974b9c8a86",
-        "name": "Canoe B6AE",
+        "name": "Canoe",
         "Homebridge": "ECI-T24F2",
         "Manufacturer": "HikVision",
-        "Service": "MotionSensor",
-        "device": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionCanoe B6AE00000085",
+        "Service": "CameraRTPStreamManagement",
+        "device": "ECI-T24F2C1:BB:DE:42:A5:39HikVisionCanoe B6AE00000110",
         "conf": "7e647d67.f33acc",
         "sendInitialState": true,
-        "x": 130,
+        "x": 110,
         "y": 600,
         "wires": [
             [
                 "943911317b27b4bc"
             ]
         ]
+    },
+    {
+        "id": "823968790d573177",
+        "type": "hb-event",
+        "z": "1d56df32ae8e209d",
+        "name": "Switch 4",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Outlet",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaSwitch 400000047",
+        "conf": "7e647d67.f33acc",
+        "sendInitialState": true,
+        "x": 120,
+        "y": 240,
+        "wires": [
+            [
+                "6ba3c983f3e9252c"
+            ]
+        ]
+    },
+    {
+        "id": "9abd2facef5e60bb",
+        "type": "hb-control",
+        "z": "1d56df32ae8e209d",
+        "name": "Switch 4",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Outlet",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaSwitch 400000047",
+        "conf": "7e647d67.f33acc",
+        "outputs": 0,
+        "x": 720,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "6ba3c983f3e9252c",
+        "type": "debug",
+        "z": "1d56df32ae8e209d",
+        "name": "debug 23",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "payload",
+        "statusType": "msg",
+        "x": 400,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "8d4c37242be7c7ed",
+        "type": "hb-status",
+        "z": "1d56df32ae8e209d",
+        "name": "Switch 4",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Outlet",
+        "device": "homebridge1C:22:3D:E3:CF:34TasmotaSwitch 400000047",
+        "conf": "7e647d67.f33acc",
+        "x": 120,
+        "y": 340,
+        "wires": [
+            [
+                "e8660b616a8725e3"
+            ]
+        ]
+    },
+    {
+        "id": "e8660b616a8725e3",
+        "type": "debug",
+        "z": "1d56df32ae8e209d",
+        "name": "debug 24",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "payload",
+        "statusType": "msg",
+        "x": 400,
+        "y": 340,
+        "wires": []
     }
 ]
