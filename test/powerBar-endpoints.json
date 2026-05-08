@@ -1,0 +1,572 @@
+[
+  {
+    "aid": 11,
+    "iid": 8,
+    "uuid": "00000047-0000-1000-8000-0026BB765291",
+    "type": "Outlet",
+    "humanType": "Outlet",
+    "serviceName": "Office Power 1",
+    "serviceCharacteristics": [
+      {
+        "aid": 11,
+        "iid": 10,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Outlet",
+        "serviceName": "Office Power 1",
+        "description": "On",
+        "value": 1,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 11,
+        "iid": 11,
+        "uuid": "000000E3-0000-1000-8000-0026BB765291",
+        "type": "ConfiguredName",
+        "serviceType": "Outlet",
+        "serviceName": "Office Power 1",
+        "description": "Configured Name",
+        "value": "Office Power 1",
+        "format": "string",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tasmota",
+      "Model": "Geeni GNC-SW003-199",
+      "Name": "Greeni",
+      "Serial Number": "4F7DD5-skyler",
+      "Firmware Revision": "9.5.0tasmota"
+    },
+    "values": {
+      "On": 1,
+      "ConfiguredName": "Office Power 1"
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "1C:22:3D:E3:CF:34",
+      "ipAddress": "192.168.1.3",
+      "port": 38749,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "225"
+    },
+    "uniqueId": "91e5adfeb7885c3f8f6b3f80584d6eae9facc58299fe03f2925f422b9274c2cc",
+    "nameBasedUniqueId": "32cc6659d635b48eee0aea511d2594c9f516cc11e4e415bb8b1eabbaad37aaba"
+  },
+  {
+    "aid": 11,
+    "iid": 12,
+    "uuid": "00000047-0000-1000-8000-0026BB765291",
+    "type": "Outlet",
+    "humanType": "Outlet",
+    "serviceName": "Switch 2",
+    "serviceCharacteristics": [
+      {
+        "aid": 11,
+        "iid": 14,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Outlet",
+        "serviceName": "Switch 2",
+        "description": "On",
+        "value": 1,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 11,
+        "iid": 15,
+        "uuid": "000000E3-0000-1000-8000-0026BB765291",
+        "type": "ConfiguredName",
+        "serviceType": "Outlet",
+        "serviceName": "Switch 2",
+        "description": "Configured Name",
+        "value": "Switch 2",
+        "format": "string",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tasmota",
+      "Model": "Geeni GNC-SW003-199",
+      "Name": "Greeni",
+      "Serial Number": "4F7DD5-skyler",
+      "Firmware Revision": "9.5.0tasmota"
+    },
+    "values": {
+      "On": 1,
+      "ConfiguredName": "Switch 2"
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "1C:22:3D:E3:CF:34",
+      "ipAddress": "192.168.1.3",
+      "port": 38749,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "225"
+    },
+    "uniqueId": "a8ed85664d7647e4a89c3cb109a8233aa8aa4ddb0bc34f897dc70681dd522991",
+    "nameBasedUniqueId": "80617fe6a8fb0d2ac2c917e0358a9d62675cc2de849f292a0fb33fa02cd0dc58"
+  },
+  {
+    "aid": 11,
+    "iid": 16,
+    "uuid": "00000047-0000-1000-8000-0026BB765291",
+    "type": "Outlet",
+    "humanType": "Outlet",
+    "serviceName": "Switch 3",
+    "serviceCharacteristics": [
+      {
+        "aid": 11,
+        "iid": 18,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Outlet",
+        "serviceName": "Switch 3",
+        "description": "On",
+        "value": 1,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 11,
+        "iid": 19,
+        "uuid": "000000E3-0000-1000-8000-0026BB765291",
+        "type": "ConfiguredName",
+        "serviceType": "Outlet",
+        "serviceName": "Switch 3",
+        "description": "Configured Name",
+        "value": "Switch 3",
+        "format": "string",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tasmota",
+      "Model": "Geeni GNC-SW003-199",
+      "Name": "Greeni",
+      "Serial Number": "4F7DD5-skyler",
+      "Firmware Revision": "9.5.0tasmota"
+    },
+    "values": {
+      "On": 1,
+      "ConfiguredName": "Switch 3"
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "1C:22:3D:E3:CF:34",
+      "ipAddress": "192.168.1.3",
+      "port": 38749,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "225"
+    },
+    "uniqueId": "f2f4bd88a8c186923ed4b269e58789c4f364dd2febbea36e6c029bf359a9ceb5",
+    "nameBasedUniqueId": "6d3cfea90695819738102923010b5ee7de61e001e33337d7a3d61808e6318420"
+  },
+  {
+    "aid": 11,
+    "iid": 20,
+    "uuid": "00000047-0000-1000-8000-0026BB765291",
+    "type": "Outlet",
+    "humanType": "Outlet",
+    "serviceName": "Switch 4",
+    "serviceCharacteristics": [
+      {
+        "aid": 11,
+        "iid": 22,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Outlet",
+        "serviceName": "Switch 4",
+        "description": "On",
+        "value": 1,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 11,
+        "iid": 23,
+        "uuid": "000000E3-0000-1000-8000-0026BB765291",
+        "type": "ConfiguredName",
+        "serviceType": "Outlet",
+        "serviceName": "Switch 4",
+        "description": "Configured Name",
+        "value": "Switch 4",
+        "format": "string",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tasmota",
+      "Model": "Geeni GNC-SW003-199",
+      "Name": "Greeni",
+      "Serial Number": "4F7DD5-skyler",
+      "Firmware Revision": "9.5.0tasmota"
+    },
+    "values": {
+      "On": 1,
+      "ConfiguredName": "Switch 4"
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "1C:22:3D:E3:CF:34",
+      "ipAddress": "192.168.1.3",
+      "port": 38749,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "225"
+    },
+    "uniqueId": "04fe501e9470cc85b625ab9764273f27b830f0264e74db4679f0ced703ef21aa",
+    "nameBasedUniqueId": "98d921ccd7e2f10ea658fbe0a3f4385000b24436dc57528fae1385eb02a32a8b"
+  },
+  {
+    "aid": 11,
+    "iid": 24,
+    "uuid": "00000047-0000-1000-8000-0026BB765291",
+    "type": "Outlet",
+    "humanType": "Outlet",
+    "serviceName": "Switch 5",
+    "serviceCharacteristics": [
+      {
+        "aid": 11,
+        "iid": 26,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Outlet",
+        "serviceName": "Switch 5",
+        "description": "On",
+        "value": 1,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 11,
+        "iid": 27,
+        "uuid": "000000E3-0000-1000-8000-0026BB765291",
+        "type": "ConfiguredName",
+        "serviceType": "Outlet",
+        "serviceName": "Switch 5",
+        "description": "Configured Name",
+        "value": "Switch 5",
+        "format": "string",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tasmota",
+      "Model": "Geeni GNC-SW003-199",
+      "Name": "Greeni",
+      "Serial Number": "4F7DD5-skyler",
+      "Firmware Revision": "9.5.0tasmota"
+    },
+    "values": {
+      "On": 1,
+      "ConfiguredName": "Switch 5"
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "1C:22:3D:E3:CF:34",
+      "ipAddress": "192.168.1.3",
+      "port": 38749,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "225"
+    },
+    "uniqueId": "912e6c8f7b18db336f73e055d9e1875e3a26ffe015cae0c3c74e6b92aebdd487",
+    "nameBasedUniqueId": "2f5a9fb1f79a2342714562e5856391c704eff1f17c3a3f94d9259c61fc464a6d"
+  },
+  {
+    "aid": 11,
+    "iid": 28,
+    "uuid": "00000047-0000-1000-8000-0026BB765291",
+    "type": "Outlet",
+    "humanType": "Outlet",
+    "serviceName": "Switch 6",
+    "serviceCharacteristics": [
+      {
+        "aid": 11,
+        "iid": 30,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Outlet",
+        "serviceName": "Switch 6",
+        "description": "On",
+        "value": 1,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      },
+      {
+        "aid": 11,
+        "iid": 31,
+        "uuid": "000000E3-0000-1000-8000-0026BB765291",
+        "type": "ConfiguredName",
+        "serviceType": "Outlet",
+        "serviceName": "Switch 6",
+        "description": "Configured Name",
+        "value": "Switch 6",
+        "format": "string",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tasmota",
+      "Model": "Geeni GNC-SW003-199",
+      "Name": "Greeni",
+      "Serial Number": "4F7DD5-skyler",
+      "Firmware Revision": "9.5.0tasmota"
+    },
+    "values": {
+      "On": 1,
+      "ConfiguredName": "Switch 6"
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "1C:22:3D:E3:CF:34",
+      "ipAddress": "192.168.1.3",
+      "port": 38749,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "225"
+    },
+    "uniqueId": "636b95a766314ab01a0ec424c4472d72c7ce61e39706d9c21d33652fd669a896",
+    "nameBasedUniqueId": "0c3f79a626617562e585dfc879fcd66b3e95fd7d69c8132eca959a97e91091eb"
+  },
+  {
+    "aid": 24,
+    "iid": 9,
+    "uuid": "00000049-0000-1000-8000-0026BB765291",
+    "type": "Switch",
+    "humanType": "Switch",
+    "serviceName": "Parent Bedroom Toilet left",
+    "serviceCharacteristics": [
+      {
+        "aid": 24,
+        "iid": 11,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Switch",
+        "serviceName": "Parent Bedroom Toilet left",
+        "description": "On",
+        "value": 1,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Aqara",
+      "Model": "QBKG24LM",
+      "Name": "Parent Bedroom Toilet",
+      "Serial Number": "0x00158d00051ec3b9",
+      "Firmware Revision": "?",
+      "Hardware Revision": "12-23-2021"
+    },
+    "values": {
+      "On": 1
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "0E:3E:8C:40:6F:4B",
+      "ipAddress": "127.0.0.1",
+      "port": 51513,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "36"
+    },
+    "uniqueId": "3cbf55bb49e96a1315b83edf83abe5a0086ed9bb319cce4ad20ae52ae86670fc",
+    "nameBasedUniqueId": "323e6b5eacfa906d11546f9b244967b2a1c57dceed9a63615dc736e6ed31a53d"
+  },
+  {
+    "aid": 24,
+    "iid": 12,
+    "uuid": "00000049-0000-1000-8000-0026BB765291",
+    "type": "Switch",
+    "humanType": "Switch",
+    "serviceName": "Parent Bedroom Toilet right",
+    "serviceCharacteristics": [
+      {
+        "aid": 24,
+        "iid": 14,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Switch",
+        "serviceName": "Parent Bedroom Toilet right",
+        "description": "On",
+        "value": 0,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Aqara",
+      "Model": "QBKG24LM",
+      "Name": "Parent Bedroom Toilet",
+      "Serial Number": "0x00158d00051ec3b9",
+      "Firmware Revision": "?",
+      "Hardware Revision": "12-23-2021"
+    },
+    "values": {
+      "On": 0
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "0E:3E:8C:40:6F:4B",
+      "ipAddress": "127.0.0.1",
+      "port": 51513,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "36"
+    },
+    "uniqueId": "b5a81acba6501aaa68b9d2d67f143c0f1a6fab9336003ad0d2a6707a10126da5",
+    "nameBasedUniqueId": "78a03c678161daa42a6880c8e1bd4f0aadf1a9a13e70466b28b5f27ebb7fba61"
+  },
+  {
+    "aid": 11,
+    "iid": 8,
+    "uuid": "00000047-0000-1000-8000-0026BB765291",
+    "type": "Outlet",
+    "humanType": "Outlet",
+    "serviceCharacteristics": [
+      {
+        "aid": 11,
+        "iid": 10,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Outlet",
+        "description": "On",
+        "value": 1,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tasmota",
+      "Model": "Geeni GNC-SW003-199",
+      "Name": "Greeni - without service name",
+      "Serial Number": "4F7DD5-skyler",
+      "Firmware Revision": "9.5.0tasmota"
+    },
+    "values": {
+      "On": 1
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "1C:22:3D:E3:CF:34",
+      "ipAddress": "192.168.1.3",
+      "port": 38749,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "225"
+    },
+    "uniqueId": "91e5adfeb7885c3f8f6b3f80584d6eae9facc58299fe03f2925f422b9274c2cc",
+    "nameBasedUniqueId": "32cc6659d635b48eee0aea511d2594c9f516cc11e4e415bb8b1eabbaad37aaba"
+  }
+]

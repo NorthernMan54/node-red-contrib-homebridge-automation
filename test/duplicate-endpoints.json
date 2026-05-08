@@ -1,0 +1,104 @@
+[
+  {
+    "aid": 11,
+    "iid": 8,
+    "uuid": "00000047-0000-1000-8000-0026BB765291",
+    "type": "Outlet",
+    "humanType": "Outlet",
+    "serviceName": "Office Power 1",
+    "serviceCharacteristics": [
+      {
+        "aid": 11,
+        "iid": 10,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Outlet",
+        "serviceName": "Office Power 1",
+        "description": "On",
+        "value": 1,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tasmota",
+      "Model": "Geeni GNC-SW003-199",
+      "Name": "Greeni",
+      "Serial Number": "4F7DD5-skyler",
+      "Firmware Revision": "9.5.0tasmota"
+    },
+    "values": {
+      "On": 1,
+      "serviceLabelIndex": 1
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "1C:22:3D:E3:CF:34",
+      "ipAddress": "192.168.1.3",
+      "port": 38749,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "225"
+    },
+    "uniqueId": "91e5adfeb7885c3f8f6b3f80584d6eae9facc58299fe03f2925f422b9274c2cc",
+    "nameBasedUniqueId": "32cc6659d635b48eee0aea511d2594c9f516cc11e4e415bb8b1eabbaad37aaba"
+  },
+  {
+    "aid": 15,
+    "iid": 8,
+    "uuid": "00000047-0000-1000-8000-0026BB765291",
+    "type": "Outlet",
+    "humanType": "Outlet",
+    "serviceName": "Office Power 1",
+    "serviceCharacteristics": [
+      {
+        "aid": 11,
+        "iid": 10,
+        "uuid": "00000025-0000-1000-8000-0026BB765291",
+        "type": "On",
+        "serviceType": "Outlet",
+        "serviceName": "Office Power 1",
+        "description": "On",
+        "value": 1,
+        "format": "bool",
+        "perms": [
+          "ev",
+          "pr",
+          "pw"
+        ],
+        "canRead": true,
+        "canWrite": true,
+        "ev": true
+      }
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tasmota",
+      "Model": "Geeni GNC-SW003-199",
+      "Name": "Internet Power Bar",
+      "Serial Number": "4F7DD5-skyler",
+      "Firmware Revision": "9.5.0tasmota"
+    },
+    "values": {
+      "On": 1,
+      "serviceLabelIndex": 1
+    },
+    "instance": {
+      "name": "homebridge",
+      "username": "1C:22:3D:E3:CF:34",
+      "ipAddress": "192.168.1.3",
+      "port": 38749,
+      "services": [],
+      "connectionFailedCount": 0,
+      "configurationNumber": "225"
+    },
+    "uniqueId": "91e5adfeb7885c3f8f6b3f80584d6eae9facc58299fe03f2925f422b9274c2cc",
+    "nameBasedUniqueId": "32cc6659d635b48eee0aea511d2594c9f516cc11e4e415bb8b1eabbaad37aaba"
+  }
+]

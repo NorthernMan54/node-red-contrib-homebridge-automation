@@ -1,0 +1,83 @@
+[
+  {
+    "name": "Greeni - without service name",
+    "fullName": "Greeni - without service name - Outlet (Tasmota)",
+    "sortName": "Greeni - without service name:Outlet",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaGreeni - without service name00000047",
+    "homebridge": "homebridge",
+    "service": "Outlet",
+    "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Office Power 1",
+    "fullName": "Office Power 1 - Outlet (Tasmota)",
+    "sortName": "Office Power 1:Outlet",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaOffice Power 100000047",
+    "homebridge": "homebridge",
+    "service": "Outlet",
+    "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Parent Bedroom Toilet left",
+    "fullName": "Parent Bedroom Toilet left - Switch (Aqara)",
+    "sortName": "Parent Bedroom Toilet left:Switch",
+    "uniqueId": "homebridge0E:3E:8C:40:6F:4BAqaraParent Bedroom Toilet left00000049",
+    "homebridge": "homebridge",
+    "service": "Switch",
+    "manufacturer": "Aqara"
+  },
+  {
+    "name": "Parent Bedroom Toilet right",
+    "fullName": "Parent Bedroom Toilet right - Switch (Aqara)",
+    "sortName": "Parent Bedroom Toilet right:Switch",
+    "uniqueId": "homebridge0E:3E:8C:40:6F:4BAqaraParent Bedroom Toilet right00000049",
+    "homebridge": "homebridge",
+    "service": "Switch",
+    "manufacturer": "Aqara"
+  },
+  {
+    "name": "Switch 2",
+    "fullName": "Switch 2 - Outlet (Tasmota)",
+    "sortName": "Switch 2:Outlet",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaSwitch 200000047",
+    "homebridge": "homebridge",
+    "service": "Outlet",
+    "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Switch 3",
+    "fullName": "Switch 3 - Outlet (Tasmota)",
+    "sortName": "Switch 3:Outlet",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaSwitch 300000047",
+    "homebridge": "homebridge",
+    "service": "Outlet",
+    "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Switch 4",
+    "fullName": "Switch 4 - Outlet (Tasmota)",
+    "sortName": "Switch 4:Outlet",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaSwitch 400000047",
+    "homebridge": "homebridge",
+    "service": "Outlet",
+    "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Switch 5",
+    "fullName": "Switch 5 - Outlet (Tasmota)",
+    "sortName": "Switch 5:Outlet",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaSwitch 500000047",
+    "homebridge": "homebridge",
+    "service": "Outlet",
+    "manufacturer": "Tasmota"
+  },
+  {
+    "name": "Switch 6",
+    "fullName": "Switch 6 - Outlet (Tasmota)",
+    "sortName": "Switch 6:Outlet",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaSwitch 600000047",
+    "homebridge": "homebridge",
+    "service": "Outlet",
+    "manufacturer": "Tasmota"
+  }
+]

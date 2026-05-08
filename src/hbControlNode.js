@@ -1,7 +1,7 @@
-const hbBaseNode = require('./hbBaseNode');
+const HbBaseNode = require('./hbBaseNode');
 const debug = require('debug')('hapNodeRed:hbControlNode');
 
-class HbControlNode extends hbBaseNode {
+class HbControlNode extends HbBaseNode {
   constructor(config, RED) {
     super(config, RED);
   }
@@ -11,6 +11,7 @@ class HbControlNode extends hbBaseNode {
 
     if (!this.hbDevice) {
       this.handleWarning('HB not initialized');
+      done('HB not initialized');
       return;
     }
 
@@ -26,12 +27,13 @@ class HbControlNode extends hbBaseNode {
       this.error(
         `Invalid payload. Expected JSON object, e.g., {"On":false, "Brightness":0}. Valid values: ${validNames}`
       );
-      this.status({ text: 'Invalid payload', shape: 'dot', fill: 'red' });
+      this.status({ text: 'Invalid payload', shape: 'ring', fill: 'red' });
+      done();
       return;
     }
 
     // Validate payload
-    let keysToKeep = Object.keys(this.hbDevice.values);
+    const keysToKeep = Object.keys(this.hbDevice.values);
 
     Object.keys(message.payload).forEach(key => {
       if (!keysToKeep.includes(key)) {
@@ -42,6 +44,7 @@ class HbControlNode extends hbBaseNode {
 
     const results = [];
     let fill = 'green';
+    let shape = 'dot';
 
     try {
       if (isCamera) {
@@ -68,30 +71,14 @@ class HbControlNode extends hbBaseNode {
           this.error(`${error.message} for ${JSON.stringify(message.payload)}`);
           results.push({ Error: `${error.message} for ${JSON.stringify(message.payload)}` });
           fill = 'red';
-          this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
+          shape = 'ring';
         }
-
-        /*
-        for (const key of Object.keys(message.payload)) {
-          try {
-            debug('Setting value for', key, message.payload[key]);
-            const result = await this.hbDevice.setCharacteristicByType(key, message.payload[key]);
-            results.push({ [result.type]: result.value });
-          } catch (error) {
-            console.log(error)
-            this.error(`Failed to set value for "${key}": ${error.message}`);
-            results.push({ [key]: `Error: ${error.message}` });
-            fill = 'red';
-            this.hbConfigNode.disconnectClientNodes(this.hbDevice.instance);
-          }
-           
-        } */
       }
 
       // Update status
       const statusText = this.statusText(JSON.stringify(Object.assign({}, ...results)));
-      this.status({ text: statusText, shape: 'dot', fill });
-      done
+      this.status({ text: statusText, shape, fill });
+      done();
     } catch (error) {
       this.handleError(error, 'Unhandled error');
       done(`Unhandled error: ${error.message}`);

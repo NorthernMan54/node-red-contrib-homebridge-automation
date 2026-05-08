@@ -1,2361 +1,329 @@
 // File: src/hbConfigNode.test.js
 const HBConfigNode = require('./hbConfigNode'); // Update the path as necessary
+const { HapClient } = require('@homebridge/hap-client');
 const fs = require('fs');
 const path = require('path');
-const process = require('process');
 
 jest.mock('@homebridge/hap-client', () => {
   return {
     HapClient: jest.fn().mockImplementation(() => ({
-      getAllServices: jest.fn(), // Will be set per test case
-      on: jest.fn(), // Mock event listeners
+      getAllServices: jest.fn(),
+      on: jest.fn(),
       removeListener: jest.fn(),
       connect: jest.fn().mockResolvedValue(true),
       disconnect: jest.fn(),
+      destroy: jest.fn(),
     })),
   };
 });
 
-describe('Issue 142', () => {
-  let mockConfig;
-  let RED;
+// Helper function to load test fixtures
+const loadFixture = (filename) => {
+  // eslint-disable-next-line no-undef
+  const fixturePath = path.join(__dirname, '..', 'test', filename);
+  return JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+};
+
+// Common test setup
+const createTestNode = (config = {}) => {
+  const mockConfig = {
+    username: '123-45-678',
+    macAddress: '00:11:22:33:44:55',
+    ...config,
+  };
+
+  const RED = {
+    nodes: {
+      createNode: jest.fn(),
+    },
+  };
+
+  const node = new HBConfigNode(mockConfig, RED);
+  node.warn = jest.fn();
+  node.log = jest.fn();
+  node.error = jest.fn();
+
+  return node;
+};
+
+describe('Issue 142 - Unsupported device types', () => {
   let node;
 
   beforeEach(() => {
-    mockConfig = {
-      username: '123-45-678',
-      macAddress: '00:11:22:33:44:55',
-    };
-
-    RED = {
-      nodes: {
-        createNode: jest.fn(),
-      },
-    };
-
-    node = new HBConfigNode(mockConfig, RED);
-    node.debug = true;
-    node.warn = console.log;
-    node.log = console.log;
+    node = createTestNode();
   });
 
-  test('Validate Issue 142 fix', async () => {
-    node.hapClient.getAllServices.mockResolvedValue(testhbDevicesIssue142);
-    await node.handleReady();
-    const result = node.toList({ perms: 'ev' });
-    expect(result).toEqual(testhbDevicesResultIssue142);
+  test('should filter out unsupported device types and include supported window coverings', async () => {
+    const endpoints = loadFixture('issue42-endpoints.json');
+    const expectedDevices = loadFixture('issue42-hbDevices.json');
 
-    // Ensure the unsupported type was filtered out
+    node.hapClient.getAllServices.mockResolvedValue(endpoints);
+    await node.handleReady();
+
+    const result = node.toList({ perms: 'ev' });
+
+    expect(result).toEqual(expectedDevices);
     expect(result.find(device => device.name === 'Garage Sensor')).toBeUndefined();
     expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
     expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
   });
 });
 
-describe('HBConfigNode', () => {
-  let mockConfig;
-  let RED;
+describe('Device list generation', () => {
   let node;
 
   beforeEach(() => {
-    mockConfig = {
-      username: '123-45-678',
-      macAddress: '00:11:22:33:44:55',
-    };
-
-    RED = {
-      nodes: {
-        createNode: jest.fn(),
-      },
-    };
-
-    node = new HBConfigNode(mockConfig, RED);
-    node.debug = true;
-    node.warn = console.log;
-    node.log = console.log;
+    node = createTestNode();
   });
 
-  test('Retrieve devices', async () => {
-    node.hapClient.getAllServices.mockResolvedValue(testhbDevices);
-    await node.handleReady();
-    const result = node.toList({ perms: 'ev' });
-    expect(result).toEqual(testhbDevicesResult);
+  test('should generate correct device list from homebridge endpoints (v3)', async () => {
+    const EXPECTED_DEVICE_COUNT = 138;
+    const endpoints = loadFixture('homebridge-automation-endpoints.json');
+    const expectedDevices = loadFixture('homebridge-automation-hbDevices-v3.json');
 
-    // Ensure the unsupported type was filtered out
+    node.hapClient.getAllServices.mockResolvedValue(endpoints);
+    await node.handleReady();
+
+    const result = node.toList({ perms: 'ev' });
+
+    expect(result).toHaveLength(EXPECTED_DEVICE_COUNT);
+    expect(result).toEqual(expectedDevices);
     expect(result.find(device => device.name === 'Garage Sensor')).toBeUndefined();
-    // expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
-    // expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
+  });
+
+  test('should correctly parse power bar devices', async () => {
+    const EXPECTED_DEVICE_COUNT = 9;
+    const endpoints = loadFixture('powerBar-endpoints.json');
+    const expectedDevices = loadFixture('powerBar-hbDevices.json');
+
+    node.hapClient.getAllServices.mockResolvedValue(endpoints);
+    await node.handleReady();
+
+    const result = node.toList({ perms: 'ev' });
+
+    // fs.writeFileSync(path.join(__dirname, '..', 'test', 'powerBar-hbDevices.json'), JSON.stringify(result, null, 2), 'utf8');
+    expect(result).toHaveLength(EXPECTED_DEVICE_COUNT);
+    expect(result).toEqual(expectedDevices);
+  });
+
+  test('should correctly handle service label indexes', async () => {
+    const EXPECTED_DEVICE_COUNT = 9;
+    const endpoints = loadFixture('serviceLabelIndex-endpoints.json');
+    const expectedDevices = loadFixture('serviceLabelIndex-hbDevices.json');
+
+    node.hapClient.getAllServices.mockResolvedValue(endpoints);
+    await node.handleReady();
+
+    const result = node.toList({ perms: 'ev' });
+    // fs.writeFileSync(path.join(__dirname, '..', 'test', 'serviceLabelIndex-hbDevices.json'), JSON.stringify(result, null, 2), 'utf8');
+    expect(result).toHaveLength(EXPECTED_DEVICE_COUNT);
+    expect(result).toEqual(expectedDevices);
+  });
+
+  test('composeDisplayName falls back gracefully when serviceName and accessoryInformation.Name are missing', async () => {
+    const baseService = {
+      aid: 1,
+      iid: 8,
+      uuid: 'AABBCCDD-0000-1000-8000-0026BB765291',
+      type: 'Outlet',
+      humanType: 'Outlet',
+      serviceName: '',
+      serviceCharacteristics: [
+        {
+          aid: 1,
+          iid: 10,
+          uuid: '00000025-0000-1000-8000-0026BB765291',
+          type: 'On',
+          serviceType: 'Outlet',
+          serviceName: '',
+          description: 'On',
+          value: 0,
+          format: 'bool',
+          perms: ['ev', 'pr', 'pw'],
+          canRead: true,
+          canWrite: true,
+          ev: true,
+        },
+      ],
+      accessoryInformation: {
+        Manufacturer: 'TestMfr',
+        Model: 'TestModel',
+        Name: '',
+        'Serial Number': 'SN-001',
+        'Firmware Revision': '1.0',
+      },
+      values: {},
+      instance: { name: 'TestBridge', username: 'AA:BB:CC:DD:EE:FF', port: 51826 },
+    };
+
+    // Fallback 1: no serviceName, no Name → should use username-aid:iid
+    const endpointsType = [{ ...baseService, serviceName: '', accessoryInformation: { ...baseService.accessoryInformation, Name: '' } }];
+    node.hapClient.getAllServices.mockResolvedValue(endpointsType);
+    await node.handleReady();
+    const resultType = node.toList({ perms: 'ev' });
+    expect(resultType).toHaveLength(1);
+    expect(resultType[0].name).not.toContain('undefined');
+    expect(resultType[0].name).toBe('AA:BB:CC:DD:EE:FF-1:8');
+  });
+
+  test('Devices with duplicate unique IDs should be handled and logged', async () => {
+    const EXPECTED_DEVICE_COUNT = 1;
+    const endpoints = loadFixture('duplicate-endpoints.json');
+    const expectedDevices = loadFixture('duplicate-hbDevices.json');
+
+    expect(node.warn).toHaveBeenCalledTimes(0);
+    node.hapClient.getAllServices.mockResolvedValue(endpoints);
+    await node.handleReady();
+
+    const result = node.toList({ perms: 'ev' });
+    // fs.writeFileSync(path.join(__dirname, '..', 'test', 'duplicate-hbDevices.json'), JSON.stringify(result, null, 2), 'utf8');
+    expect(result).toHaveLength(EXPECTED_DEVICE_COUNT);
+    expect(result).toEqual(expectedDevices);
+    expect(node.warn).toHaveBeenCalledTimes(1);
+    expect(node.warn).toHaveBeenCalledWith(expect.stringContaining('Duplicate uniqueId —'));
+  });
+
+  test("Cameras with additional CameraRTPStreamManagement services, should remove additional CameraRTPStreamManagement service", async () => {
+    const EXPECTED_DEVICE_COUNT = 2;
+    const endpoints = loadFixture('camera-endpoints.json');
+    const expectedDevices = loadFixture('camera-hbDevices.json');
+
+    expect(node.warn).toHaveBeenCalledTimes(0);
+    node.hapClient.getAllServices.mockResolvedValue(endpoints);
+    await node.handleReady();
+
+    const result = node.toList({ perms: 'ev' });
+    // fs.writeFileSync(path.join(__dirname, '..', 'test', 'camera-hbDevices.json'), JSON.stringify(result, null, 2), 'utf8');
+    expect(result).toHaveLength(EXPECTED_DEVICE_COUNT);
+    expect(result).toEqual(expectedDevices);
+    expect(node.warn).toHaveBeenCalledTimes(0);
   });
 });
 
-describe('from files', () => {
-  let mockConfig;
+describe('HapClient config options', () => {
   let RED;
-  let node;
 
   beforeEach(() => {
-    mockConfig = {
-      username: '123-45-678',
-      macAddress: '00:11:22:33:44:55',
-    };
-
+    HapClient.mockClear();
     RED = {
       nodes: {
-        createNode: jest.fn(),
+        createNode: jest.fn().mockImplementation(function (node, config) {
+          node.id = config.id;
+        }),
       },
     };
-
-    node = new HBConfigNode(mockConfig, RED);
-    // node.debug = true;
-    node.warn = console.log;
-    node.log = console.log;
+    HBConfigNode.clearPersistedState();
   });
 
-  test.skip('Retrieve devices, and compare with current (v2)', async () => {
-    // console.log('Reading Homebridge endpoints from file', process.cwd());
-    var storagePath = path.join(process.cwd(), 'test/homebridge-automation-endpoints.json');
-    // console.log(`Reading Homebridge endpoints from ${storagePath}`);
-    const fileHbDevices = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
-
-    node.hapClient.getAllServices.mockResolvedValue(fileHbDevices);
-    // console.log('testhbDevices', fileHbDevices);
-    await node.handleReady();
-    const result = node.toList({ perms: 'ev' });
-
-    storagePath = path.join(process.cwd(), 'test/homebridge-automation-hbDevices-v2.json');
-    // console.log(`Reading Homebridge results from ${storagePath}`);
-    const fileResult = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
-    expect(result.length).toBe(107);
-    expect(result).toEqual(fileResult);
-
-    // Ensure the unsupported type was filtered out
-    expect(result.find(device => device.name === 'Garage Sensor')).toBeUndefined();
-    // expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
-    // expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
+  test('passes hapClientDebug:true to HapClient when config.hapClientDebug is true', () => {
+    const config = { username: '123-45-678', hapClientDebug: true };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({ debug: true }),
+      })
+    );
   });
 
-  test('Retrieve devices, and compare with future (v3)', async () => {
-    // console.log('Reading Homebridge endpoints from file', process.cwd());
-    var storagePath = path.join(process.cwd(), 'test/homebridge-automation-endpoints.json');
-    // console.log(`Reading Homebridge endpoints from ${storagePath}`);
-    const fileHbDevices = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
+  test('passes hapClientDebug:false to HapClient when config.hapClientDebug is false', () => {
+    const config = { username: '123-45-678', hapClientDebug: false };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({ debug: false }),
+      })
+    );
+  });
 
-    node.hapClient.getAllServices.mockResolvedValue(fileHbDevices);
-    // console.log('testhbDevices', fileHbDevices);
-    await node.handleReady();
-    const result = node.toList({ perms: 'ev' });
+  test('config.debug (Debug Logging) does not affect HapClient debug option', () => {
+    const config = { username: '123-45-678', debug: true, hapClientDebug: false };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({ debug: false }),
+      })
+    );
+  });
 
-    storagePath = path.join(process.cwd(), 'test/homebridge-automation-hbDevices-v3.json');
-    // console.log(`Reading Homebridge results from ${storagePath}`);
-    const fileResult = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
-    expect(result.length).toBe(107);
-    expect(result).toEqual(fileResult);
+  test('passes instanceBlacklist array to HapClient when provided', () => {
+    const config = {
+      username: '123-45-678',
+      instanceBlacklist: '34:42:4E:4A:38:00, 6E:69:51:34:54:00',
+    };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({
+          instanceBlacklist: ['34:42:4E:4A:38:00', '6E:69:51:34:54:00'],
+        }),
+      })
+    );
+  });
 
-    // Ensure the unsupported type was filtered out
-    expect(result.find(device => device.name === 'Garage Sensor')).toBeUndefined();
-    // expect(result.find(device => device.name === 'Kitchen Curtain')).toBeDefined();
-    // expect(result.find(device => device.name === 'Livingroom Curtain')).toBeDefined();
+  test('does not pass instanceBlacklist to HapClient when not provided', () => {
+    const config = { username: '123-45-678' };
+    new HBConfigNode(config, RED);
+    const callArg = HapClient.mock.calls[0][0];
+    expect(callArg.config).not.toHaveProperty('instanceBlacklist');
+  });
+
+  test('does not pass instanceBlacklist to HapClient when empty string', () => {
+    const config = { username: '123-45-678', instanceBlacklist: '' };
+    new HBConfigNode(config, RED);
+    const callArg = HapClient.mock.calls[0][0];
+    expect(callArg.config).not.toHaveProperty('instanceBlacklist');
+  });
+
+  test('trims whitespace from instanceBlacklist entries', () => {
+    const config = {
+      username: '123-45-678',
+      instanceBlacklist: '  34:42:4E:4A:38:00 ,  6E:69:51:34:54:00  ',
+    };
+    new HBConfigNode(config, RED);
+    expect(HapClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        config: expect.objectContaining({
+          instanceBlacklist: ['34:42:4E:4A:38:00', '6E:69:51:34:54:00'],
+        }),
+      })
+    );
+  });
+
+  test('recreates HapClient when instanceBlacklist changes on redeploy', () => {
+    const config1 = { id: 'node-1', username: '123-45-678', instanceBlacklist: '' };
+    const node1 = new HBConfigNode(config1, RED);
+    node1.close(false, () => { });
+
+    expect(HapClient).toHaveBeenCalledTimes(1);
+
+    const config2 = { id: 'node-1', username: '123-45-678', instanceBlacklist: '34:42:4E:4A:38:00' };
+    new HBConfigNode(config2, RED);
+
+    expect(HapClient).toHaveBeenCalledTimes(2);
+  });
+
+  test('recreates HapClient when hapClientDebug changes on redeploy', () => {
+    const config1 = { id: 'node-3', username: '123-45-678', hapClientDebug: false };
+    const node1 = new HBConfigNode(config1, RED);
+    node1.close(false, () => { });
+
+    expect(HapClient).toHaveBeenCalledTimes(1);
+
+    const config2 = { id: 'node-3', username: '123-45-678', hapClientDebug: true };
+    new HBConfigNode(config2, RED);
+
+    expect(HapClient).toHaveBeenCalledTimes(2);
+  });
+
+  test('reuses HapClient when config unchanged on redeploy', () => {
+    const config = { id: 'node-2', username: '123-45-678', instanceBlacklist: '34:42:4E:4A:38:00' };
+    const node1 = new HBConfigNode(config, RED);
+    node1.close(false, () => { });
+
+    expect(HapClient).toHaveBeenCalledTimes(1);
+
+    new HBConfigNode(config, RED);
+
+    expect(HapClient).toHaveBeenCalledTimes(1);
   });
 });
-
-// Test Data
-
-const testhbDevices = [
-  {
-    humanType: 'UnknownType', // This should be filtered out
-    serviceName: 'Garage Sensor',
-    type: 'Sensor',
-    instance: {
-      name: 'Bridge3',
-      username: '22:33:44:55:66:77',
-    },
-    accessoryInformation: {
-      Manufacturer: 'Acme',
-    },
-    uuid: '11223344-5566-7788-99aa-bbccddeeff00',
-  },
-  {
-    "aid": 1,
-    "iid": 54,
-    "uuid": "000000A2-0000-1000-8000-0026BB765291",
-    "type": "ProtocolInformation",
-    "humanType": "Protocol Information",
-    "serviceName": "Deck 6EED",
-    "serviceCharacteristics": [
-      {
-        "aid": 1,
-        "iid": 55,
-        "uuid": "00000037-0000-1000-8000-0026BB765291",
-        "type": "Version",
-        "serviceType": "ProtocolInformation",
-        "serviceName": "Deck 6EED",
-        "description": "Version",
-        "value": "1.1.0",
-        "format": "string",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "HikVision",
-      "Model": "ECI-T24F2",
-      "Name": "Deck 6EED",
-      "Serial Number": "Default-SerialNumber",
-      "Firmware Revision": "0.0.0"
-    },
-    "values": {
-      "Version": "1.1.0"
-    },
-    "instance": {
-      "name": "ECI-T24F2",
-      "username": "8E:88:AB:7A:D0:54",
-      "ipAddress": "192.168.1.11",
-      "port": 33811,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "3"
-    },
-    "uniqueId": "df9f624e673eae7295adbddf6178e854c11245b7e76303550fc4b288058872ae"
-  },
-  {
-    "aid": 1,
-    "iid": 8,
-    "uuid": "00000085-0000-1000-8000-0026BB765291",
-    "type": "MotionSensor",
-    "humanType": "Motion Sensor",
-    "serviceName": "Canoe",
-    "serviceCharacteristics": [
-      {
-        "aid": 1,
-        "iid": 10,
-        "uuid": "00000022-0000-1000-8000-0026BB765291",
-        "type": "MotionDetected",
-        "serviceType": "MotionSensor",
-        "serviceName": "Canoe",
-        "description": "Motion Detected",
-        "value": 0,
-        "format": "bool",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "HikVision",
-      "Model": "ECI-T24F2",
-      "Name": "Canoe 5036",
-      "Serial Number": "Default-SerialNumber",
-      "Firmware Revision": "0.0.0"
-    },
-    "values": {
-      "MotionDetected": 0
-    },
-    "instance": {
-      "name": "ECI-T24F2",
-      "username": "5C:EE:FE:4D:64:B4",
-      "ipAddress": "192.168.1.11",
-      "port": 39757,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "3"
-    },
-    "uniqueId": "10dbaceb026b81f56c6226eca2c30b7ba06c29de632253972402bd3f489096f1"
-  },
-  {
-    "aid": 1,
-    "iid": 14,
-    "uuid": "00000110-0000-1000-8000-0026BB765291",
-    "type": "CameraRTPStreamManagement",
-    "humanType": "Camera Rtp Stream Management",
-    "serviceName": "Canoe 5036",
-    "serviceCharacteristics": [
-      {
-        "aid": 1,
-        "iid": 17,
-        "uuid": "00000120-0000-1000-8000-0026BB765291",
-        "type": "StreamingStatus",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Streaming Status",
-        "value": "AQEA",
-        "format": "tlv8",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 1,
-        "iid": 18,
-        "uuid": "00000115-0000-1000-8000-0026BB765291",
-        "type": "SupportedAudioStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported Audio Stream Configuration",
-        "value": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 19,
-        "uuid": "00000116-0000-1000-8000-0026BB765291",
-        "type": "SupportedRTPConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported RTP Configuration",
-        "value": "AgEA",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 20,
-        "uuid": "00000114-0000-1000-8000-0026BB765291",
-        "type": "SupportedVideoStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported Video Stream Configuration",
-        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 21,
-        "uuid": "000000B0-0000-1000-8000-0026BB765291",
-        "type": "Active",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "minStep": 1,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 1,
-        "iid": 15,
-        "uuid": "00000117-0000-1000-8000-0026BB765291",
-        "type": "SelectedRTPStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Selected RTP Stream Configuration",
-        "value": "AQMCAQI=",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 16,
-        "uuid": "00000118-0000-1000-8000-0026BB765291",
-        "type": "SetupEndpoints",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Setup Endpoints",
-        "value": "AgEC",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "HikVision",
-      "Model": "ECI-T24F2",
-      "Name": "Canoe 5036",
-      "Serial Number": "Default-SerialNumber",
-      "Firmware Revision": "0.0.0"
-    },
-    "values": {
-      "StreamingStatus": "AQEA",
-      "SupportedAudioStreamConfiguration": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
-      "SupportedRTPConfiguration": "AgEA",
-      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-      "Active": 1,
-      "SelectedRTPStreamConfiguration": "AQMCAQI=",
-      "SetupEndpoints": "AgEC"
-    },
-    "instance": {
-      "name": "ECI-T24F2",
-      "username": "5C:EE:FE:4D:64:B4",
-      "ipAddress": "192.168.1.11",
-      "port": 39757,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "3"
-    },
-    "uniqueId": "9959f43e6f32e451a9c13e0c028d863fa148c39cbbcb57f93d8d825fc31f8865"
-  },
-  {
-    "aid": 1,
-    "iid": 22,
-    "uuid": "00000110-0000-1000-8000-0026BB765291",
-    "type": "CameraRTPStreamManagement",
-    "humanType": "Camera Rtp Stream Management",
-    "serviceName": "Canoe 5036",
-    "serviceCharacteristics": [
-      {
-        "aid": 1,
-        "iid": 25,
-        "uuid": "00000120-0000-1000-8000-0026BB765291",
-        "type": "StreamingStatus",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Streaming Status",
-        "value": "AQEA",
-        "format": "tlv8",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 1,
-        "iid": 26,
-        "uuid": "00000115-0000-1000-8000-0026BB765291",
-        "type": "SupportedAudioStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported Audio Stream Configuration",
-        "value": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 27,
-        "uuid": "00000116-0000-1000-8000-0026BB765291",
-        "type": "SupportedRTPConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported RTP Configuration",
-        "value": "AgEA",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 28,
-        "uuid": "00000114-0000-1000-8000-0026BB765291",
-        "type": "SupportedVideoStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported Video Stream Configuration",
-        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 29,
-        "uuid": "000000B0-0000-1000-8000-0026BB765291",
-        "type": "Active",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "minStep": 1,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 1,
-        "iid": 23,
-        "uuid": "00000117-0000-1000-8000-0026BB765291",
-        "type": "SelectedRTPStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Selected RTP Stream Configuration",
-        "value": "AQMCAQI=",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 24,
-        "uuid": "00000118-0000-1000-8000-0026BB765291",
-        "type": "SetupEndpoints",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Setup Endpoints",
-        "value": "AgEC",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "HikVision",
-      "Model": "ECI-T24F2",
-      "Name": "Canoe 5036",
-      "Serial Number": "Default-SerialNumber",
-      "Firmware Revision": "0.0.0"
-    },
-    "values": {
-      "StreamingStatus": "AQEA",
-      "SupportedAudioStreamConfiguration": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
-      "SupportedRTPConfiguration": "AgEA",
-      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-      "Active": 1,
-      "SelectedRTPStreamConfiguration": "AQMCAQI=",
-      "SetupEndpoints": "AgEC"
-    },
-    "instance": {
-      "name": "ECI-T24F2",
-      "username": "5C:EE:FE:4D:64:B4",
-      "ipAddress": "192.168.1.11",
-      "port": 39757,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "3"
-    },
-    "uniqueId": "b0824c5bbe7c7e4dd6a8ab26d483cb0138ee56b34e444a0999ab5c24d1d33a58"
-  },
-  {
-    "aid": 1,
-    "iid": 30,
-    "uuid": "00000110-0000-1000-8000-0026BB765291",
-    "type": "CameraRTPStreamManagement",
-    "humanType": "Camera Rtp Stream Management",
-    "serviceName": "Canoe 5036",
-    "serviceCharacteristics": [
-      {
-        "aid": 1,
-        "iid": 33,
-        "uuid": "00000120-0000-1000-8000-0026BB765291",
-        "type": "StreamingStatus",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Streaming Status",
-        "value": "AQEA",
-        "format": "tlv8",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 1,
-        "iid": 34,
-        "uuid": "00000115-0000-1000-8000-0026BB765291",
-        "type": "SupportedAudioStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported Audio Stream Configuration",
-        "value": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 35,
-        "uuid": "00000116-0000-1000-8000-0026BB765291",
-        "type": "SupportedRTPConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported RTP Configuration",
-        "value": "AgEA",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 36,
-        "uuid": "00000114-0000-1000-8000-0026BB765291",
-        "type": "SupportedVideoStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported Video Stream Configuration",
-        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 37,
-        "uuid": "000000B0-0000-1000-8000-0026BB765291",
-        "type": "Active",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "minStep": 1,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 1,
-        "iid": 31,
-        "uuid": "00000117-0000-1000-8000-0026BB765291",
-        "type": "SelectedRTPStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Selected RTP Stream Configuration",
-        "value": "AQMCAQI=",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 32,
-        "uuid": "00000118-0000-1000-8000-0026BB765291",
-        "type": "SetupEndpoints",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Setup Endpoints",
-        "value": "AgEC",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "HikVision",
-      "Model": "ECI-T24F2",
-      "Name": "Canoe 5036",
-      "Serial Number": "Default-SerialNumber",
-      "Firmware Revision": "0.0.0"
-    },
-    "values": {
-      "StreamingStatus": "AQEA",
-      "SupportedAudioStreamConfiguration": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
-      "SupportedRTPConfiguration": "AgEA",
-      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-      "Active": 1,
-      "SelectedRTPStreamConfiguration": "AQMCAQI=",
-      "SetupEndpoints": "AgEC"
-    },
-    "instance": {
-      "name": "ECI-T24F2",
-      "username": "5C:EE:FE:4D:64:B4",
-      "ipAddress": "192.168.1.11",
-      "port": 39757,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "3"
-    },
-    "uniqueId": "629af36fdec5d22c5537a1f0312d88b6f3765ba57e29b7def8c96538a4ffb16b"
-  },
-  {
-    "aid": 1,
-    "iid": 38,
-    "uuid": "00000110-0000-1000-8000-0026BB765291",
-    "type": "CameraRTPStreamManagement",
-    "humanType": "Camera Rtp Stream Management",
-    "serviceName": "Canoe 5036",
-    "serviceCharacteristics": [
-      {
-        "aid": 1,
-        "iid": 41,
-        "uuid": "00000120-0000-1000-8000-0026BB765291",
-        "type": "StreamingStatus",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Streaming Status",
-        "value": "AQEA",
-        "format": "tlv8",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 1,
-        "iid": 42,
-        "uuid": "00000115-0000-1000-8000-0026BB765291",
-        "type": "SupportedAudioStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported Audio Stream Configuration",
-        "value": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 43,
-        "uuid": "00000116-0000-1000-8000-0026BB765291",
-        "type": "SupportedRTPConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported RTP Configuration",
-        "value": "AgEA",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 44,
-        "uuid": "00000114-0000-1000-8000-0026BB765291",
-        "type": "SupportedVideoStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported Video Stream Configuration",
-        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 45,
-        "uuid": "000000B0-0000-1000-8000-0026BB765291",
-        "type": "Active",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "minStep": 1,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 1,
-        "iid": 39,
-        "uuid": "00000117-0000-1000-8000-0026BB765291",
-        "type": "SelectedRTPStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Selected RTP Stream Configuration",
-        "value": "AQMCAQI=",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 40,
-        "uuid": "00000118-0000-1000-8000-0026BB765291",
-        "type": "SetupEndpoints",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Setup Endpoints",
-        "value": "AgEC",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "HikVision",
-      "Model": "ECI-T24F2",
-      "Name": "Canoe 5036",
-      "Serial Number": "Default-SerialNumber",
-      "Firmware Revision": "0.0.0"
-    },
-    "values": {
-      "StreamingStatus": "AQEA",
-      "SupportedAudioStreamConfiguration": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
-      "SupportedRTPConfiguration": "AgEA",
-      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-      "Active": 1,
-      "SelectedRTPStreamConfiguration": "AQMCAQI=",
-      "SetupEndpoints": "AgEC"
-    },
-    "instance": {
-      "name": "ECI-T24F2",
-      "username": "5C:EE:FE:4D:64:B4",
-      "ipAddress": "192.168.1.11",
-      "port": 39757,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "3"
-    },
-    "uniqueId": "b3b668fc3a29d9589bfcfa0395d7ce1e1029e6b70b4ca6129579cb0103cc6ea9"
-  },
-  {
-    "aid": 1,
-    "iid": 46,
-    "uuid": "00000110-0000-1000-8000-0026BB765291",
-    "type": "CameraRTPStreamManagement",
-    "humanType": "Camera Rtp Stream Management",
-    "serviceName": "Canoe 5036",
-    "serviceCharacteristics": [
-      {
-        "aid": 1,
-        "iid": 49,
-        "uuid": "00000120-0000-1000-8000-0026BB765291",
-        "type": "StreamingStatus",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Streaming Status",
-        "value": "AQEA",
-        "format": "tlv8",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 1,
-        "iid": 50,
-        "uuid": "00000115-0000-1000-8000-0026BB765291",
-        "type": "SupportedAudioStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported Audio Stream Configuration",
-        "value": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 51,
-        "uuid": "00000116-0000-1000-8000-0026BB765291",
-        "type": "SupportedRTPConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported RTP Configuration",
-        "value": "AgEA",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 52,
-        "uuid": "00000114-0000-1000-8000-0026BB765291",
-        "type": "SupportedVideoStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Supported Video Stream Configuration",
-        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 53,
-        "uuid": "000000B0-0000-1000-8000-0026BB765291",
-        "type": "Active",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "minStep": 1,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 1,
-        "iid": 47,
-        "uuid": "00000117-0000-1000-8000-0026BB765291",
-        "type": "SelectedRTPStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Selected RTP Stream Configuration",
-        "value": "AQMCAQI=",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      },
-      {
-        "aid": 1,
-        "iid": 48,
-        "uuid": "00000118-0000-1000-8000-0026BB765291",
-        "type": "SetupEndpoints",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Canoe 5036",
-        "description": "Setup Endpoints",
-        "value": "AgEC",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "HikVision",
-      "Model": "ECI-T24F2",
-      "Name": "Canoe 5036",
-      "Serial Number": "Default-SerialNumber",
-      "Firmware Revision": "0.0.0"
-    },
-    "values": {
-      "StreamingStatus": "AQEA",
-      "SupportedAudioStreamConfiguration": "AQ4BAQMCCQEBAQIBAAMBAgAAAQ4BAQICCQEBAQIBAAMBAQIBAA==",
-      "SupportedRTPConfiguration": "AgEA",
-      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-      "Active": 1,
-      "SelectedRTPStreamConfiguration": "AQMCAQI=",
-      "SetupEndpoints": "AgEC"
-    },
-    "instance": {
-      "name": "ECI-T24F2",
-      "username": "5C:EE:FE:4D:64:B4",
-      "ipAddress": "192.168.1.11",
-      "port": 39757,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "3"
-    },
-    "uniqueId": "57cf7042ca8aac16275fa2d6d135b1855a6faaadcd2e46499ecba278bbf241d3"
-  },
-  {
-    "aid": 1,
-    "iid": 54,
-    "uuid": "000000A2-0000-1000-8000-0026BB765291",
-    "type": "ProtocolInformation",
-    "humanType": "Protocol Information",
-    "serviceName": "Canoe 5036",
-    "serviceCharacteristics": [
-      {
-        "aid": 1,
-        "iid": 55,
-        "uuid": "00000037-0000-1000-8000-0026BB765291",
-        "type": "Version",
-        "serviceType": "ProtocolInformation",
-        "serviceName": "Canoe 5036",
-        "description": "Version",
-        "value": "1.1.0",
-        "format": "string",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "HikVision",
-      "Model": "ECI-T24F2",
-      "Name": "Canoe 5036",
-      "Serial Number": "Default-SerialNumber",
-      "Firmware Revision": "0.0.0"
-    },
-    "values": {
-      "Version": "1.1.0"
-    },
-    "instance": {
-      "name": "ECI-T24F2",
-      "username": "5C:EE:FE:4D:64:B4",
-      "ipAddress": "192.168.1.11",
-      "port": 39757,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "3"
-    },
-    "uniqueId": "660f0569500a9c2570f435943368c4f33c9a9c5162f366c66c1eb520f874c84e"
-  },
-  {
-    "aid": 1,
-    "iid": 2000000008,
-    "uuid": "000000A2-0000-1000-8000-0026BB765291",
-    "type": "ProtocolInformation",
-    "humanType": "Protocol Information",
-    "serviceName": "EufySecurity 9F7C",
-    "serviceCharacteristics": [
-      {
-        "aid": 1,
-        "iid": 9,
-        "uuid": "00000037-0000-1000-8000-0026BB765291",
-        "type": "Version",
-        "serviceType": "ProtocolInformation",
-        "serviceName": "EufySecurity 9F7C",
-        "description": "Version",
-        "value": "1.1.0",
-        "format": "string",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "homebridge.io",
-      "Model": "homebridge",
-      "Name": "EufySecurity 9F7C",
-      "Serial Number": "0E:89:A7:DA:D3:21",
-      "Firmware Revision": "1.8.5"
-    },
-    "values": {
-      "Version": "1.1.0"
-    },
-    "instance": {
-      "name": "homebridge",
-      "username": "0E:89:A7:DA:D3:21",
-      "ipAddress": "192.168.1.11",
-      "port": 40929,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "21"
-    },
-    "uniqueId": "c516aeaf2812436318a5aee6443ee633a459015a07676d78c73ca9decdf899b2"
-  },
-  {
-    "aid": 6,
-    "iid": 9,
-    "uuid": "0000021A-0000-1000-8000-0026BB765291",
-    "type": "CameraOperatingMode",
-    "humanType": "Camera Operating Mode",
-    "serviceName": "Backyard",
-    "serviceCharacteristics": [
-      {
-        "aid": 6,
-        "iid": 12,
-        "uuid": "0000021B-0000-1000-8000-0026BB765291",
-        "type": "HomeKitCameraActive",
-        "serviceType": "CameraOperatingMode",
-        "serviceName": "Backyard",
-        "description": "HomeKit Camera Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 6,
-        "iid": 13,
-        "uuid": "00000227-0000-1000-8000-0026BB765291",
-        "type": "ManuallyDisabled",
-        "serviceType": "CameraOperatingMode",
-        "serviceName": "Backyard",
-        "description": "Manually Disabled",
-        "value": 0,
-        "format": "bool",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 6,
-        "iid": 14,
-        "uuid": "0000021D-0000-1000-8000-0026BB765291",
-        "type": "CameraOperatingModeIndicator",
-        "serviceType": "CameraOperatingMode",
-        "serviceName": "Backyard",
-        "description": "Camera Operating Mode Indicator",
-        "value": 1,
-        "format": "bool",
-        "perms": [
-          "ev",
-          "pr",
-          "pw",
-          "tw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 6,
-        "iid": 15,
-        "uuid": "0000011B-0000-1000-8000-0026BB765291",
-        "type": "NightVision",
-        "serviceType": "CameraOperatingMode",
-        "serviceName": "Backyard",
-        "description": "Night Vision",
-        "value": 1,
-        "format": "bool",
-        "perms": [
-          "ev",
-          "pr",
-          "pw",
-          "tw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 6,
-        "iid": 11,
-        "uuid": "00000223-0000-1000-8000-0026BB765291",
-        "type": "EventSnapshotsActive",
-        "serviceType": "CameraOperatingMode",
-        "serviceName": "Backyard",
-        "description": "Event Snapshots Active",
-        "value": 0,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "Eufy",
-      "Model": "INDOOR_CAMERA",
-      "Name": "Backyard",
-      "Serial Number": "T8400P2020283341",
-      "Firmware Revision": "2.2.0.2",
-      "Hardware Revision": "P2"
-    },
-    "values": {
-      "HomeKitCameraActive": 1,
-      "ManuallyDisabled": 0,
-      "CameraOperatingModeIndicator": 1,
-      "NightVision": 1,
-      "EventSnapshotsActive": 0
-    },
-    "instance": {
-      "name": "homebridge",
-      "username": "0E:89:A7:DA:D3:21",
-      "ipAddress": "192.168.1.11",
-      "port": 40929,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "21"
-    },
-    "uniqueId": "260fba559f22053724ac5561be62f8e803281c3c8c82f872e05d839fc3fa95de"
-  },
-  {
-    "aid": 6,
-    "iid": 16,
-    "uuid": "00000085-0000-1000-8000-0026BB765291",
-    "type": "MotionSensor",
-    "humanType": "Motion Sensor",
-    "serviceName": "Backyard",
-    "serviceCharacteristics": [
-      {
-        "aid": 6,
-        "iid": 18,
-        "uuid": "00000022-0000-1000-8000-0026BB765291",
-        "type": "MotionDetected",
-        "serviceType": "MotionSensor",
-        "serviceName": "Backyard",
-        "description": "Motion Detected",
-        "value": 0,
-        "format": "bool",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "Eufy",
-      "Model": "INDOOR_CAMERA",
-      "Name": "Backyard",
-      "Serial Number": "T8400P2020283341",
-      "Firmware Revision": "2.2.0.2",
-      "Hardware Revision": "P2"
-    },
-    "values": {
-      "MotionDetected": 0
-    },
-    "instance": {
-      "name": "homebridge",
-      "username": "0E:89:A7:DA:D3:21",
-      "ipAddress": "192.168.1.11",
-      "port": 40929,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "21"
-    },
-    "uniqueId": "c9efb02acc5cabb2b164d4c479355551a6360345571b31de50e90f4a1fa42df6"
-  },
-  {
-    "aid": 6,
-    "iid": 19,
-    "uuid": "00000110-0000-1000-8000-0026BB765291",
-    "type": "CameraRTPStreamManagement",
-    "humanType": "Camera Rtp Stream Management",
-    "serviceName": "Backyard",
-    "serviceCharacteristics": [
-      {
-        "aid": 6,
-        "iid": 22,
-        "uuid": "00000120-0000-1000-8000-0026BB765291",
-        "type": "StreamingStatus",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Streaming Status",
-        "value": "AQEA",
-        "format": "tlv8",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 6,
-        "iid": 23,
-        "uuid": "00000115-0000-1000-8000-0026BB765291",
-        "type": "SupportedAudioStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Supported Audio Stream Configuration",
-        "value": "AQ4BAQICCQEBAQIBAAMBAQIBAA==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 6,
-        "iid": 24,
-        "uuid": "00000116-0000-1000-8000-0026BB765291",
-        "type": "SupportedRTPConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Supported RTP Configuration",
-        "value": "AgEA",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 6,
-        "iid": 25,
-        "uuid": "00000114-0000-1000-8000-0026BB765291",
-        "type": "SupportedVideoStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Supported Video Stream Configuration",
-        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 6,
-        "iid": 26,
-        "uuid": "000000B0-0000-1000-8000-0026BB765291",
-        "type": "Active",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "minStep": 1,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 6,
-        "iid": 20,
-        "uuid": "00000117-0000-1000-8000-0026BB765291",
-        "type": "SelectedRTPStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Selected RTP Stream Configuration",
-        "value": "AQMCAQI=",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      },
-      {
-        "aid": 6,
-        "iid": 21,
-        "uuid": "00000118-0000-1000-8000-0026BB765291",
-        "type": "SetupEndpoints",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Setup Endpoints",
-        "value": "AgEC",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "Eufy",
-      "Model": "INDOOR_CAMERA",
-      "Name": "Backyard",
-      "Serial Number": "T8400P2020283341",
-      "Firmware Revision": "2.2.0.2",
-      "Hardware Revision": "P2"
-    },
-    "values": {
-      "StreamingStatus": "AQEA",
-      "SupportedAudioStreamConfiguration": "AQ4BAQICCQEBAQIBAAMBAQIBAA==",
-      "SupportedRTPConfiguration": "AgEA",
-      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-      "Active": 1,
-      "SelectedRTPStreamConfiguration": "AQMCAQI=",
-      "SetupEndpoints": "AgEC"
-    },
-    "instance": {
-      "name": "homebridge",
-      "username": "0E:89:A7:DA:D3:21",
-      "ipAddress": "192.168.1.11",
-      "port": 40929,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "21"
-    },
-    "uniqueId": "924c9390e6a89452936dfff957faa127d87e78e3c1b5084863495a184804fe56"
-  },
-  {
-    "aid": 6,
-    "iid": 27,
-    "uuid": "00000110-0000-1000-8000-0026BB765291",
-    "type": "CameraRTPStreamManagement",
-    "humanType": "Camera Rtp Stream Management",
-    "serviceName": "Backyard",
-    "serviceCharacteristics": [
-      {
-        "aid": 6,
-        "iid": 30,
-        "uuid": "00000120-0000-1000-8000-0026BB765291",
-        "type": "StreamingStatus",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Streaming Status",
-        "value": "AQEA",
-        "format": "tlv8",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 6,
-        "iid": 31,
-        "uuid": "00000115-0000-1000-8000-0026BB765291",
-        "type": "SupportedAudioStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Supported Audio Stream Configuration",
-        "value": "AQ4BAQICCQEBAQIBAAMBAQIBAA==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 6,
-        "iid": 32,
-        "uuid": "00000116-0000-1000-8000-0026BB765291",
-        "type": "SupportedRTPConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Supported RTP Configuration",
-        "value": "AgEA",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 6,
-        "iid": 33,
-        "uuid": "00000114-0000-1000-8000-0026BB765291",
-        "type": "SupportedVideoStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Supported Video Stream Configuration",
-        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 6,
-        "iid": 34,
-        "uuid": "000000B0-0000-1000-8000-0026BB765291",
-        "type": "Active",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "minStep": 1,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 6,
-        "iid": 28,
-        "uuid": "00000117-0000-1000-8000-0026BB765291",
-        "type": "SelectedRTPStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Selected RTP Stream Configuration",
-        "value": "AQMCAQI=",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      },
-      {
-        "aid": 6,
-        "iid": 29,
-        "uuid": "00000118-0000-1000-8000-0026BB765291",
-        "type": "SetupEndpoints",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Backyard",
-        "description": "Setup Endpoints",
-        "value": "AgEC",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "Eufy",
-      "Model": "INDOOR_CAMERA",
-      "Name": "Backyard",
-      "Serial Number": "T8400P2020283341",
-      "Firmware Revision": "2.2.0.2",
-      "Hardware Revision": "P2"
-    },
-    "values": {
-      "StreamingStatus": "AQEA",
-      "SupportedAudioStreamConfiguration": "AQ4BAQICCQEBAQIBAAMBAQIBAA==",
-      "SupportedRTPConfiguration": "AgEA",
-      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-      "Active": 1,
-      "SelectedRTPStreamConfiguration": "AQMCAQI=",
-      "SetupEndpoints": "AgEC"
-    },
-    "instance": {
-      "name": "homebridge",
-      "username": "0E:89:A7:DA:D3:21",
-      "ipAddress": "192.168.1.11",
-      "port": 40929,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "21"
-    },
-    "uniqueId": "17e308a4de9af9ba95e5bcd32c1f56516403b14855f3397e8a48135e9cc78f14"
-  },
-  {
-    "aid": 7,
-    "iid": 9,
-    "uuid": "0000021A-0000-1000-8000-0026BB765291",
-    "type": "CameraOperatingMode",
-    "humanType": "Camera Operating Mode",
-    "serviceName": "Side door",
-    "serviceCharacteristics": [
-      {
-        "aid": 7,
-        "iid": 12,
-        "uuid": "0000021B-0000-1000-8000-0026BB765291",
-        "type": "HomeKitCameraActive",
-        "serviceType": "CameraOperatingMode",
-        "serviceName": "Side door",
-        "description": "HomeKit Camera Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 7,
-        "iid": 13,
-        "uuid": "00000227-0000-1000-8000-0026BB765291",
-        "type": "ManuallyDisabled",
-        "serviceType": "CameraOperatingMode",
-        "serviceName": "Side door",
-        "description": "Manually Disabled",
-        "value": 0,
-        "format": "bool",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 7,
-        "iid": 14,
-        "uuid": "0000021D-0000-1000-8000-0026BB765291",
-        "type": "CameraOperatingModeIndicator",
-        "serviceType": "CameraOperatingMode",
-        "serviceName": "Side door",
-        "description": "Camera Operating Mode Indicator",
-        "value": 1,
-        "format": "bool",
-        "perms": [
-          "ev",
-          "pr",
-          "pw",
-          "tw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 7,
-        "iid": 15,
-        "uuid": "0000011B-0000-1000-8000-0026BB765291",
-        "type": "NightVision",
-        "serviceType": "CameraOperatingMode",
-        "serviceName": "Side door",
-        "description": "Night Vision",
-        "value": 1,
-        "format": "bool",
-        "perms": [
-          "ev",
-          "pr",
-          "pw",
-          "tw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 7,
-        "iid": 11,
-        "uuid": "00000223-0000-1000-8000-0026BB765291",
-        "type": "EventSnapshotsActive",
-        "serviceType": "CameraOperatingMode",
-        "serviceName": "Side door",
-        "description": "Event Snapshots Active",
-        "value": 0,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "Eufy",
-      "Model": "INDOOR_CAMERA",
-      "Name": "Side door",
-      "Serial Number": "T8400P20202844ED",
-      "Firmware Revision": "2.2.0.2",
-      "Hardware Revision": "P2"
-    },
-    "values": {
-      "HomeKitCameraActive": 1,
-      "ManuallyDisabled": 0,
-      "CameraOperatingModeIndicator": 1,
-      "NightVision": 1,
-      "EventSnapshotsActive": 0
-    },
-    "instance": {
-      "name": "homebridge",
-      "username": "0E:89:A7:DA:D3:21",
-      "ipAddress": "192.168.1.11",
-      "port": 40929,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "21"
-    },
-    "uniqueId": "08895731d0736b8028cfd89ba93229c24cead807a2dbdbb9b209ff771b88c31a"
-  },
-  {
-    "aid": 7,
-    "iid": 16,
-    "uuid": "00000085-0000-1000-8000-0026BB765291",
-    "type": "MotionSensor",
-    "humanType": "Motion Sensor",
-    "serviceName": "Side door",
-    "serviceCharacteristics": [
-      {
-        "aid": 7,
-        "iid": 18,
-        "uuid": "00000022-0000-1000-8000-0026BB765291",
-        "type": "MotionDetected",
-        "serviceType": "MotionSensor",
-        "serviceName": "Side door",
-        "description": "Motion Detected",
-        "value": 0,
-        "format": "bool",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "Eufy",
-      "Model": "INDOOR_CAMERA",
-      "Name": "Side door",
-      "Serial Number": "T8400P20202844ED",
-      "Firmware Revision": "2.2.0.2",
-      "Hardware Revision": "P2"
-    },
-    "values": {
-      "MotionDetected": 0
-    },
-    "instance": {
-      "name": "homebridge",
-      "username": "0E:89:A7:DA:D3:21",
-      "ipAddress": "192.168.1.11",
-      "port": 40929,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "21"
-    },
-    "uniqueId": "f4827932577f2073ae5584a4a66607a1dd67af9b3e5bf22d59dffdc702d0f240"
-  },
-  {
-    "aid": 7,
-    "iid": 19,
-    "uuid": "00000110-0000-1000-8000-0026BB765291",
-    "type": "CameraRTPStreamManagement",
-    "humanType": "Camera Rtp Stream Management",
-    "serviceName": "Side door",
-    "serviceCharacteristics": [
-      {
-        "aid": 7,
-        "iid": 22,
-        "uuid": "00000120-0000-1000-8000-0026BB765291",
-        "type": "StreamingStatus",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Streaming Status",
-        "value": "AQEA",
-        "format": "tlv8",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 7,
-        "iid": 23,
-        "uuid": "00000115-0000-1000-8000-0026BB765291",
-        "type": "SupportedAudioStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Supported Audio Stream Configuration",
-        "value": "AQ4BAQICCQEBAQIBAAMBAQIBAA==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 7,
-        "iid": 24,
-        "uuid": "00000116-0000-1000-8000-0026BB765291",
-        "type": "SupportedRTPConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Supported RTP Configuration",
-        "value": "AgEA",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 7,
-        "iid": 25,
-        "uuid": "00000114-0000-1000-8000-0026BB765291",
-        "type": "SupportedVideoStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Supported Video Stream Configuration",
-        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 7,
-        "iid": 26,
-        "uuid": "000000B0-0000-1000-8000-0026BB765291",
-        "type": "Active",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "minStep": 1,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 7,
-        "iid": 20,
-        "uuid": "00000117-0000-1000-8000-0026BB765291",
-        "type": "SelectedRTPStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Selected RTP Stream Configuration",
-        "value": "AQMCAQI=",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      },
-      {
-        "aid": 7,
-        "iid": 21,
-        "uuid": "00000118-0000-1000-8000-0026BB765291",
-        "type": "SetupEndpoints",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Setup Endpoints",
-        "value": "AgEC",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "Eufy",
-      "Model": "INDOOR_CAMERA",
-      "Name": "Side door",
-      "Serial Number": "T8400P20202844ED",
-      "Firmware Revision": "2.2.0.2",
-      "Hardware Revision": "P2"
-    },
-    "values": {
-      "StreamingStatus": "AQEA",
-      "SupportedAudioStreamConfiguration": "AQ4BAQICCQEBAQIBAAMBAQIBAA==",
-      "SupportedRTPConfiguration": "AgEA",
-      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-      "Active": 1,
-      "SelectedRTPStreamConfiguration": "AQMCAQI=",
-      "SetupEndpoints": "AgEC"
-    },
-    "instance": {
-      "name": "homebridge",
-      "username": "0E:89:A7:DA:D3:21",
-      "ipAddress": "192.168.1.11",
-      "port": 40929,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "21"
-    },
-    "uniqueId": "e8e6aec782cd554108e95e4a61b7fa4e941f2c63b9e656e6c828ac89e26e2dbd"
-  },
-  {
-    "aid": 7,
-    "iid": 27,
-    "uuid": "00000110-0000-1000-8000-0026BB765291",
-    "type": "CameraRTPStreamManagement",
-    "humanType": "Camera Rtp Stream Management",
-    "serviceName": "Side door",
-    "serviceCharacteristics": [
-      {
-        "aid": 7,
-        "iid": 30,
-        "uuid": "00000120-0000-1000-8000-0026BB765291",
-        "type": "StreamingStatus",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Streaming Status",
-        "value": "AQEA",
-        "format": "tlv8",
-        "perms": [
-          "ev",
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": true
-      },
-      {
-        "aid": 7,
-        "iid": 31,
-        "uuid": "00000115-0000-1000-8000-0026BB765291",
-        "type": "SupportedAudioStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Supported Audio Stream Configuration",
-        "value": "AQ4BAQICCQEBAQIBAAMBAQIBAA==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 7,
-        "iid": 32,
-        "uuid": "00000116-0000-1000-8000-0026BB765291",
-        "type": "SupportedRTPConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Supported RTP Configuration",
-        "value": "AgEA",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 7,
-        "iid": 33,
-        "uuid": "00000114-0000-1000-8000-0026BB765291",
-        "type": "SupportedVideoStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Supported Video Stream Configuration",
-        "value": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-        "format": "tlv8",
-        "perms": [
-          "pr"
-        ],
-        "canRead": true,
-        "canWrite": false,
-        "ev": false
-      },
-      {
-        "aid": 7,
-        "iid": 34,
-        "uuid": "000000B0-0000-1000-8000-0026BB765291",
-        "type": "Active",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Active",
-        "value": 1,
-        "format": "uint8",
-        "perms": [
-          "ev",
-          "pr",
-          "pw"
-        ],
-        "maxValue": 1,
-        "minValue": 0,
-        "minStep": 1,
-        "canRead": true,
-        "canWrite": true,
-        "ev": true
-      },
-      {
-        "aid": 7,
-        "iid": 28,
-        "uuid": "00000117-0000-1000-8000-0026BB765291",
-        "type": "SelectedRTPStreamConfiguration",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Selected RTP Stream Configuration",
-        "value": "AQMCAQI=",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      },
-      {
-        "aid": 7,
-        "iid": 29,
-        "uuid": "00000118-0000-1000-8000-0026BB765291",
-        "type": "SetupEndpoints",
-        "serviceType": "CameraRTPStreamManagement",
-        "serviceName": "Side door",
-        "description": "Setup Endpoints",
-        "value": "AgEC",
-        "format": "tlv8",
-        "perms": [
-          "pr",
-          "pw"
-        ],
-        "canRead": true,
-        "canWrite": true,
-        "ev": false
-      }
-    ],
-    "accessoryInformation": {
-      "Manufacturer": "Eufy",
-      "Model": "INDOOR_CAMERA",
-      "Name": "Side door",
-      "Serial Number": "T8400P20202844ED",
-      "Firmware Revision": "2.2.0.2",
-      "Hardware Revision": "P2"
-    },
-    "values": {
-      "StreamingStatus": "AQEA",
-      "SupportedAudioStreamConfiguration": "AQ4BAQICCQEBAQIBAAMBAQIBAA==",
-      "SupportedRTPConfiguration": "AgEA",
-      "SupportedVideoStreamConfiguration": "AcUBAQACHQEBAAAAAQEBAAABAQICAQAAAAIBAQAAAgECAwEAAwsBAkABAgK0AAMBHgAAAwsBAkABAgLwAAMBDwAAAwsBAkABAgLwAAMBHgAAAwsBAuABAgIOAQMBHgAAAwsBAuABAgJoAQMBHgAAAwsBAoACAgJoAQMBHgAAAwsBAoACAgLgAQMBHgAAAwsBAgAFAgLQAgMBHgAAAwsBAgAFAgLAAwMBHgAAAwsBAoAHAgI4BAMBHgAAAwsBAkAGAgKwBAMBHg==",
-      "Active": 1,
-      "SelectedRTPStreamConfiguration": "AQMCAQI=",
-      "SetupEndpoints": "AgEC"
-    },
-    "instance": {
-      "name": "homebridge",
-      "username": "0E:89:A7:DA:D3:21",
-      "ipAddress": "192.168.1.11",
-      "port": 40929,
-      "services": [],
-      "connectionFailedCount": 0,
-      "configurationNumber": "21"
-    },
-    "uniqueId": "67fa85f535234f003c95e01c90897d1d3aff7a5523ee1b5cd593aedbebc1b30d"
-  }
-];
-
-const testhbDevicesResult = [
-  {
-    name: 'Backyard',
-    fullName: 'Backyard - Camera Rtp Stream Management',
-    sortName: 'Backyard:CameraRTPStreamManagement',
-    uniqueId: 'homebridge0E:89:A7:DA:D3:21EufyBackyard00000110',
-    homebridge: 'homebridge',
-    service: 'CameraRTPStreamManagement',
-    manufacturer: 'Eufy'
-  },
-  {
-    name: 'Backyard',
-    fullName: 'Backyard - Motion Sensor',
-    sortName: 'Backyard:MotionSensor',
-    uniqueId: 'homebridge0E:89:A7:DA:D3:21EufyBackyard00000085',
-    homebridge: 'homebridge',
-    service: 'MotionSensor',
-    manufacturer: 'Eufy'
-  },
-  {
-    "fullName": "Canoe 5036 - Camera Rtp Stream Management",
-    "homebridge": "ECI-T24F2",
-    "manufacturer": "HikVision",
-    "name": "Canoe 5036",
-    "service": "CameraRTPStreamManagement",
-    "sortName": "Canoe 5036:CameraRTPStreamManagement",
-    "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe 503600000110",
-  },
-  {
-    "fullName": "Canoe 5036 - Motion Sensor",
-    "homebridge": "ECI-T24F2",
-    "manufacturer": "HikVision",
-    "name": "Canoe 5036",
-    "service": "MotionSensor",
-    "sortName": "Canoe 5036:MotionSensor",
-    "uniqueId": "ECI-T24F25C:EE:FE:4D:64:B4HikVisionCanoe 503600000085",
-  },
-  {
-    name: 'Side door',
-    fullName: 'Side door - Camera Rtp Stream Management',
-    sortName: 'Side door:CameraRTPStreamManagement',
-    uniqueId: 'homebridge0E:89:A7:DA:D3:21EufySide door00000110',
-    homebridge: 'homebridge',
-    service: 'CameraRTPStreamManagement',
-    manufacturer: 'Eufy'
-  },
-  {
-    name: 'Side door',
-    fullName: 'Side door - Motion Sensor',
-    sortName: 'Side door:MotionSensor',
-    uniqueId: 'homebridge0E:89:A7:DA:D3:21EufySide door00000085',
-    homebridge: 'homebridge',
-    service: 'MotionSensor',
-    manufacturer: 'Eufy'
-  },
-];
-
-// Issue #142
-
-// `${service.instance.name}${service.instance.username}${service.accessoryInformation.Manufacturer}${friendlyName}${service.uuid.slice(0, 8)}`;
-const testhbDevicesIssue142 = [
-  {
-    "aid": 11,
-    "iid": 10,
-    "uuid": "0000008C-0000-1000-8000-0026BB765291",
-    "type": "WindowCovering",
-    "humanType": "Window Covering",
-    "serviceName": "control",
-    "serviceCharacteristics": [{}, {}, {}, {}],
-    "accessoryInformation": {
-      "Manufacturer": "Tuya Inc.",
-      "Model": "2rvvqjoa",
-      "Name": "Livingroom Curtain",
-      "Serial Number": "aaaaa",
-      "Firmware Revision": "0",
-      "Configured Name": "Livingroom Curtain",
-      "Status Active": 1
-    },
-    "values": {},
-    "instance": { name: 'Issue142', username: '0E:89:A7:DA:D3:21', port: 1234 },
-    "uniqueId": "aaaaa"
-  },
-  {
-    "aid": 12,
-    "iid": 10,
-    "uuid": "0000008C-0000-1000-8000-0026BB765291",
-    "type": "WindowCovering",
-    "humanType": "Window Covering",
-    "serviceName": "control",
-    "serviceCharacteristics": [{}, {}, {}, {}],
-    "accessoryInformation": {
-      "Manufacturer": "Tuya Inc.",
-      "Model": "2rvvqjoa",
-      "Name": "Kitchen Curtain",
-      "Serial Number": "bbbbb",
-      "Firmware Revision": "0",
-      "Configured Name": "Kitchen Curtain",
-      "Status Active": 1
-    },
-    "values": {},
-    "instance": { name: 'Issue142', username: '0E:89:A7:DA:D3:21', port: 1234 },
-    "uniqueId": "bbbbb"
-  },
-  {
-    "aid": 17,
-    "iid": 10,
-    "uuid": "0000008C-0000-1000-8000-0026BB765291",
-    "type": "WindowCovering",
-    "humanType": "Window Covering",
-    "serviceName": "control",
-    "serviceCharacteristics": [{}, {}, {}, {}],
-    "accessoryInformation": {
-      "Manufacturer": "Tuya Inc.",
-      "Model": "2rvvqjoa",
-      "Name": "Bedroom Curtain",
-      "Serial Number": "ccccc",
-      "Firmware Revision": "0.0.0",
-      "Configured Name": "Bedroom Curtain",
-      "Status Active": 1
-    },
-    "values": {},
-    "instance": { name: 'Issue142', username: '0E:89:A7:DA:D3:21', port: 1234 },
-    "uniqueId": "ccccc"
-  }
-];
-
-const testhbDevicesResultIssue142 = [
-  {
-    name: 'Bedroom Curtain',
-    fullName: 'Bedroom Curtain - Window Covering',
-    sortName: 'Bedroom Curtain:WindowCovering',
-    uniqueId: 'Issue1420E:89:A7:DA:D3:21Tuya Inc.Bedroom Curtain0000008C',
-    homebridge: 'Issue142',
-    service: 'WindowCovering',
-    manufacturer: 'Tuya Inc.'
-  },
-  {
-    name: 'Kitchen Curtain',
-    fullName: 'Kitchen Curtain - Window Covering',
-    sortName: 'Kitchen Curtain:WindowCovering',
-    uniqueId: 'Issue1420E:89:A7:DA:D3:21Tuya Inc.Kitchen Curtain0000008C',
-    homebridge: 'Issue142',
-    service: 'WindowCovering',
-    manufacturer: 'Tuya Inc.'
-  },
-  {
-    name: 'Livingroom Curtain',
-    fullName: 'Livingroom Curtain - Window Covering',
-    sortName: 'Livingroom Curtain:WindowCovering',
-    uniqueId: 'Issue1420E:89:A7:DA:D3:21Tuya Inc.Livingroom Curtain0000008C',
-    homebridge: 'Issue142',
-    service: 'WindowCovering',
-    manufacturer: 'Tuya Inc.'
-  }
-];

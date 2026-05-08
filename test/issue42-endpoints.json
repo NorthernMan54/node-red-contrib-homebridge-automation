@@ -1,0 +1,98 @@
+[
+  {
+    "aid": 11,
+    "iid": 10,
+    "uuid": "0000008C-0000-1000-8000-0026BB765291",
+    "type": "WindowCovering",
+    "humanType": "Window Covering",
+    "serviceName": "control",
+    "serviceCharacteristics": [
+      {},
+      {},
+      {},
+      {}
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tuya Inc.",
+      "Model": "2rvvqjoa",
+      "Name": "Livingroom Curtain",
+      "Serial Number": "aaaaa",
+      "Firmware Revision": "0",
+      "Configured Name": "Livingroom Curtain",
+      "Status Active": 1
+    },
+    "values": {
+      "ConfiguredName": "Livingroom Curtain"
+    },
+    "instance": {
+      "name": "Issue142",
+      "username": "0E: 89:A7:DA:D3: 21",
+      "port": 1234
+    },
+    "uniqueId": "aaaaa"
+  },
+  {
+    "aid": 12,
+    "iid": 10,
+    "uuid": "0000008C-0000-1000-8000-0026BB765291",
+    "type": "WindowCovering",
+    "humanType": "Window Covering",
+    "serviceName": "control",
+    "serviceCharacteristics": [
+      {},
+      {},
+      {},
+      {}
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tuya Inc.",
+      "Model": "2rvvqjoa",
+      "Name": "Kitchen Curtain",
+      "Serial Number": "bbbbb",
+      "Firmware Revision": "0",
+      "Configured Name": "Kitchen Curtain",
+      "Status Active": 1
+    },
+    "values": {
+      "ConfiguredName": "Kitchen Curtain"
+    },
+    "instance": {
+      "name": "Issue142",
+      "username": "0E: 89:A7:DA:D3: 21",
+      "port": 1234
+    },
+    "uniqueId": "bbbbb"
+  },
+  {
+    "aid": 17,
+    "iid": 10,
+    "uuid": "0000008C-0000-1000-8000-0026BB765291",
+    "type": "WindowCovering",
+    "humanType": "Window Covering",
+    "serviceName": "control",
+    "serviceCharacteristics": [
+      {},
+      {},
+      {},
+      {}
+    ],
+    "accessoryInformation": {
+      "Manufacturer": "Tuya Inc.",
+      "Model": "2rvvqjoa",
+      "Name": "Bedroom Curtain",
+      "Serial Number": "ccccc",
+      "Firmware Revision": "0.0.0",
+      "Configured Name": "Bedroom Curtain",
+      "Status Active": 1
+    },
+    "values": {
+      "ConfiguredName": "Bedroom Curtain"
+    },
+    "instance": {
+      "name": "Issue142",
+      "username": "0E: 89:A7:DA:D3: 21",
+      "port": 1234
+    },
+    "uniqueId": "ccccc"
+  }
+]

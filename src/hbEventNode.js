@@ -1,7 +1,7 @@
-const hbBaseNode = require('./hbBaseNode');
+const HbBaseNode = require('./hbBaseNode');
 const debug = require('debug')('hapNodeRed:hbEventNode');
 
-class HbEventNode extends hbBaseNode {
+class HbEventNode extends HbBaseNode {
   constructor(config, RED) {
     super(config, RED);
     this.sendInitialState = config.sendInitialState === true;
@@ -9,7 +9,8 @@ class HbEventNode extends hbBaseNode {
 
   handleHbReady(service) {
     debug('handleHbReady', this.id, this.name, service.values)
-    if (this.sendInitialState) {
+    if (this.sendInitialState && !this._initialStateSent) {
+      this._initialStateSent = true;
       this.status({
         text: this.statusText(JSON.stringify(service.values)),
         shape: 'dot',
@@ -19,11 +20,15 @@ class HbEventNode extends hbBaseNode {
     }
   }
 
+  handleHbDisconnected() {
+    this._initialStateSent = false;
+  }
+
   handleHBEventMessage(service) {
     debug('hbEvent for', this.id, this.type, service.serviceName, JSON.stringify(service.values));
 
     this.status({
-      text: JSON.stringify(service.values),
+      text: this.statusText(JSON.stringify(service.values)),
       shape: 'dot',
       fill: 'green',
     });

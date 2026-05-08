@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Office Power 1-1",
+    "fullName": "Office Power 1-1 - Outlet (Tasmota)",
+    "sortName": "Office Power 1-1:Outlet",
+    "uniqueId": "homebridge1C:22:3D:E3:CF:34TasmotaOffice Power 1-100000047",
+    "homebridge": "homebridge",
+    "service": "Outlet",
+    "manufacturer": "Tasmota"
+  }
+]

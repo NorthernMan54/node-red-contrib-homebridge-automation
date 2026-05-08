@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Bedroom Curtain",
+    "fullName": "Bedroom Curtain - Window Covering (Tuya Inc.)",
+    "sortName": "Bedroom Curtain:WindowCovering",
+    "uniqueId": "Issue1420E: 89:A7:DA:D3: 21Tuya Inc.Bedroom Curtain0000008C",
+    "homebridge": "Issue142",
+    "service": "WindowCovering",
+    "manufacturer": "Tuya Inc."
+  },
+  {
+    "name": "Kitchen Curtain",
+    "fullName": "Kitchen Curtain - Window Covering (Tuya Inc.)",
+    "sortName": "Kitchen Curtain:WindowCovering",
+    "uniqueId": "Issue1420E: 89:A7:DA:D3: 21Tuya Inc.Kitchen Curtain0000008C",
+    "homebridge": "Issue142",
+    "service": "WindowCovering",
+    "manufacturer": "Tuya Inc."
+  },
+  {
+    "name": "Livingroom Curtain",
+    "fullName": "Livingroom Curtain - Window Covering (Tuya Inc.)",
+    "sortName": "Livingroom Curtain:WindowCovering",
+    "uniqueId": "Issue1420E: 89:A7:DA:D3: 21Tuya Inc.Livingroom Curtain0000008C",
+    "homebridge": "Issue142",
+    "service": "WindowCovering",
+    "manufacturer": "Tuya Inc."
+  }
+]
