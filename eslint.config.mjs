@@ -1,6 +1,6 @@
 /** @type {import('eslint').FlatConfig[]} */
 import pluginJs from "@eslint/js";
-import pluginVitest from "eslint-plugin-vitest";
+import pluginVitest from "@vitest/eslint-plugin";
 import globals from "globals";
 
 
@@ -12,6 +12,7 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.es2021,
+        ...globals.node,
         ...pluginVitest.environments.env.globals, // Add Vitest globals
       },
     },

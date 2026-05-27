@@ -1,4 +1,4 @@
-import Module from 'node:module';
+const Module = require('node:module');
 
 // Create a stable mock HapClient constructor for the lifetime of this worker process.
 // A regular function (not an arrow function) is required because hbConfigNode.js
