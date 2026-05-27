@@ -235,6 +235,12 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 - Added **Ignored Instances** configuration option on the `hb-conf` node. Accepts a comma-separated list of Homebridge instance MAC addresses to exclude from discovery (e.g. `34:42:4E:4A:38:00, 6E:69:51:34:54:00`). Useful when you have Homebridge instances you do not want to integrate with Node-RED.
 - Added **HAP-Client Debug** configuration option on the `hb-conf` node. When enabled, it enables debug logging within the HAP-Client library, which outputs detailed HAP protocol information. Useful for troubleshooting Homebridge instance discovery issues.
 
+### Version 0.3.4
+
+#### Changes
+
+ - Support for custom characteristics including voltage, current, and power data of devices with the power meter function has been added to resolve #231
+
 # Backlog / Roadmap
 
 * [x] - Update Node Information with Homebridge Accessory Details ( hapEndpoint, deviceType, description )
