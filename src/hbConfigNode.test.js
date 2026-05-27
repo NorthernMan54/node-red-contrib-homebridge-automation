@@ -1,25 +1,29 @@
 // File: src/hbConfigNode.test.js
+// vi.hoisted() is required because vi.fn() is not available inside vi.mock() factory
+// when running in CJS mode. vi.hoisted() ensures the mocks are created in the
+// hoisted scope where vi is guaranteed to be initialized.
+const MockHapClient = vi.hoisted(() =>
+  vi.fn().mockImplementation(() => ({
+    getAllServices: vi.fn(),
+    on: vi.fn(),
+    removeListener: vi.fn(),
+    connect: vi.fn().mockResolvedValue(true),
+    disconnect: vi.fn(),
+    destroy: vi.fn(),
+  }))
+);
+
+vi.mock('@homebridge/hap-client', () => ({
+  HapClient: MockHapClient,
+}));
+
 const HBConfigNode = require('./hbConfigNode'); // Update the path as necessary
 const { HapClient } = require('@homebridge/hap-client');
 const fs = require('fs');
 const path = require('path');
 
-jest.mock('@homebridge/hap-client', () => {
-  return {
-    HapClient: jest.fn().mockImplementation(() => ({
-      getAllServices: jest.fn(),
-      on: jest.fn(),
-      removeListener: jest.fn(),
-      connect: jest.fn().mockResolvedValue(true),
-      disconnect: jest.fn(),
-      destroy: jest.fn(),
-    })),
-  };
-});
-
 // Helper function to load test fixtures
 const loadFixture = (filename) => {
-  // eslint-disable-next-line no-undef
   const fixturePath = path.join(__dirname, '..', 'test', filename);
   return JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
 };
@@ -34,14 +38,14 @@ const createTestNode = (config = {}) => {
 
   const RED = {
     nodes: {
-      createNode: jest.fn(),
+      createNode: vi.fn(),
     },
   };
 
   const node = new HBConfigNode(mockConfig, RED);
-  node.warn = jest.fn();
-  node.log = jest.fn();
-  node.error = jest.fn();
+  node.warn = vi.fn();
+  node.log = vi.fn();
+  node.error = vi.fn();
 
   return node;
 };
@@ -207,7 +211,7 @@ describe('HapClient config options', () => {
     HapClient.mockClear();
     RED = {
       nodes: {
-        createNode: jest.fn().mockImplementation(function (node, config) {
+        createNode: vi.fn().mockImplementation(function (node, config) {
           node.id = config.id;
         }),
       },
