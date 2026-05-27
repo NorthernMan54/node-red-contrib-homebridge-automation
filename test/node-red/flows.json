@@ -56,11 +56,21 @@
         "env": []
     },
     {
+        "id": "8206ab1be7c04fbf",
+        "type": "tab",
+        "label": "Flow 6",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "7e647d67.f33acc",
         "type": "hb-conf",
         "username": "031-45-154",
         "macAddress": "",
-        "debug": true
+        "debug": false,
+        "hapClientDebug": false,
+        "instanceBlacklist": ""
     },
     {
         "id": "902c5887b6877df6",
@@ -2999,14 +3009,14 @@
         "id": "0f20a38b99769b49",
         "type": "hb-event",
         "z": "92f59d974b9c8a86",
-        "name": "Driveway",
+        "name": "",
         "Homebridge": "ECI-T24F2",
         "Manufacturer": "HikVision",
         "Service": "MotionSensor",
         "device": "ECI-T24F2CB:6F:94:DD:43:77HikVisionDriveway00000085",
         "conf": "7e647d67.f33acc",
         "sendInitialState": true,
-        "x": 100,
+        "x": 150,
         "y": 340,
         "wires": [
             [
@@ -3356,5 +3366,105 @@
         "x": 400,
         "y": 340,
         "wires": []
+    },
+    {
+        "id": "bf3130457b5d72a2",
+        "type": "hb-status",
+        "z": "8206ab1be7c04fbf",
+        "name": "Trailer Power Test",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Outlet",
+        "device": "homebridge0E:90:D5:2E:54:2FTasmotaTrailer Power Test00000047",
+        "conf": "7e647d67.f33acc",
+        "x": 490,
+        "y": 360,
+        "wires": [
+            [
+                "55046b7fb6846096"
+            ]
+        ]
+    },
+    {
+        "id": "c278e69b24580ee0",
+        "type": "hb-event",
+        "z": "8206ab1be7c04fbf",
+        "name": "Trailer Power Test",
+        "Homebridge": "homebridge",
+        "Manufacturer": "Tasmota",
+        "Service": "Outlet",
+        "device": "homebridge0E:90:D5:2E:54:2FTasmotaTrailer Power Test00000047",
+        "conf": "7e647d67.f33acc",
+        "sendInitialState": true,
+        "x": 140,
+        "y": 220,
+        "wires": [
+            [
+                "e68fb3e47c80c456"
+            ]
+        ]
+    },
+    {
+        "id": "e68fb3e47c80c456",
+        "type": "debug",
+        "z": "8206ab1be7c04fbf",
+        "name": "debug 25",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 620,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "55046b7fb6846096",
+        "type": "debug",
+        "z": "8206ab1be7c04fbf",
+        "name": "debug 26",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 860,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "a6123fa207e4b3e8",
+        "type": "inject",
+        "z": "8206ab1be7c04fbf",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 220,
+        "y": 360,
+        "wires": [
+            [
+                "bf3130457b5d72a2"
+            ]
+        ]
     }
 ]

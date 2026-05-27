@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-homebridge-automation",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "NodeRED Automation for HomeBridge",
   "main": "src/HAP-NodeRed.js",
   "scripts": {
@@ -56,7 +56,7 @@
     ],
     "ext": "js,html",
     "ignore": [],
-    "exec": "DEBUG=hapNodeRed* ./node_modules/.bin/node-red -v -u test/node-red",
+    "exec": "./node_modules/.bin/node-red -v -u test/node-red",
     "signal": "SIGTERM",
     "env": {
       "NODE_OPTIONS": "--trace-warnings"
