@@ -1,23 +1,8 @@
 // File: src/hbConfigNode.test.js
-// vi.hoisted() is required because vi.fn() is not available inside vi.mock() factory
-// when running in CJS mode. vi.hoisted() ensures the mocks are created in the
-// hoisted scope where vi is guaranteed to be initialized.
-const MockHapClient = vi.hoisted(() =>
-  vi.fn().mockImplementation(() => ({
-    getAllServices: vi.fn(),
-    on: vi.fn(),
-    removeListener: vi.fn(),
-    connect: vi.fn().mockResolvedValue(true),
-    disconnect: vi.fn(),
-    destroy: vi.fn(),
-  }))
-);
-
-vi.mock('@homebridge/hap-client', () => ({
-  HapClient: MockHapClient,
-}));
-
-const HBConfigNode = require('./hbConfigNode'); // Update the path as necessary
+// @homebridge/hap-client is mocked via Module._load in vitest.setup.js.
+// That patch runs before this file is evaluated, so the require() calls below
+// already return the mock constructor rather than the real ESM package.
+const HBConfigNode = require('./hbConfigNode');
 const { HapClient } = require('@homebridge/hap-client');
 const fs = require('fs');
 const path = require('path');

@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
+    setupFiles: ['./vitest.setup.js'],
     server: {
       deps: {
         inline: ['@homebridge/hap-client'],
