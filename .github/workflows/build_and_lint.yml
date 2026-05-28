@@ -1,7 +1,7 @@
 name: Build and Lint
 
 on:
-  push:
+  pull_request:
 
 concurrency:
   group: build_and_lint
