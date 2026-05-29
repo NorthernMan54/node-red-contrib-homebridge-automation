@@ -29,9 +29,9 @@
     "@eslint/js": "^9.16.0",
     "@types/node-red": "^1.3.5",
     "@vitest/coverage-v8": "^4.1.7",
+    "@vitest/eslint-plugin": "^1.1.0",
     "eslint": "^9.36.0",
     "eslint-plugin-format": "^1.0.2",
-    "@vitest/eslint-plugin": "^1.1.0",
     "globals": "^17.0.0",
     "node-red": "^4.1.8",
     "node-red-node-test-helper": "^0.3.4",
@@ -41,7 +41,7 @@
     "vitest": "^4.1.7"
   },
   "dependencies": {
-    "@homebridge/hap-client": "^5.0.0-beta.1",
+    "@homebridge/hap-client": "^5.0.0",
     "debug": "^4.4.1"
   },
   "author": "NorthernMan54",
