@@ -1,6 +1,6 @@
 /** @type {import('eslint').FlatConfig[]} */
 import pluginJs from "@eslint/js";
-import pluginJest from "eslint-plugin-jest";
+import pluginVitest from "@vitest/eslint-plugin";
 import globals from "globals";
 
 
@@ -12,7 +12,8 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.es2021,
-        ...globals.jest, // Add Jest globals
+        ...globals.node,
+        ...pluginVitest.environments.env.globals, // Add Vitest globals
       },
     },
     // Add any other specific rules here
@@ -20,10 +21,10 @@ export default [
   pluginJs.configs.recommended,
   {
     plugins: {
-      jest: pluginJest,
+      vitest: pluginVitest,
     },
     rules: {
-      ...pluginJest.configs.recommended.rules,
+      ...pluginVitest.configs.recommended.rules,
       "no-unused-vars": "warn", // Change no-unused-vars to a warning
     },
   },

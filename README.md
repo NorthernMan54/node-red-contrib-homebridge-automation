@@ -45,6 +45,8 @@ The above Node-RED Flow, turns on my 'Outside Office' light when the powder room
          * [Breaking Change](#breaking-change-2)
          * [Changes](#changes-1)
          * [New Features](#new-features)
+      * [Version 0.3.5](#version-035)
+         * [Changes](#changes-2)
 * [Backlog / Roadmap](#backlog--roadmap)
    * [Dropped items](#dropped-items)
 * [Installation Steps](#installation-steps)
@@ -234,6 +236,13 @@ With a plugin, you can see if it supports Real Time events, by opening the Home 
 - Added logging of device naming/uniqueId collisions. Devices with duplicate names present only one option for selection. If a duplicate is detected, the debug log will show it as a `Duplicate uniqueId`. To resolve, change the device name in the Home App to be unique.
 - Added **Ignored Instances** configuration option on the `hb-conf` node. Accepts a comma-separated list of Homebridge instance MAC addresses to exclude from discovery (e.g. `34:42:4E:4A:38:00, 6E:69:51:34:54:00`). Useful when you have Homebridge instances you do not want to integrate with Node-RED.
 - Added **HAP-Client Debug** configuration option on the `hb-conf` node. When enabled, it enables debug logging within the HAP-Client library, which outputs detailed HAP protocol information. Useful for troubleshooting Homebridge instance discovery issues.
+
+### Version 0.3.5
+
+#### Changes
+
+ - Support for custom characteristics including voltage, current, and power data of devices with the power meter function has been added to resolve #231
+ - Added support for security system and cooler/heater devices #232
 
 # Backlog / Roadmap
 

@@ -1,25 +1,14 @@
 // File: src/hbConfigNode.test.js
-const HBConfigNode = require('./hbConfigNode'); // Update the path as necessary
+// @homebridge/hap-client is mocked via Module._load in vitest.setup.js.
+// That patch runs before this file is evaluated, so the require() calls below
+// already return the mock constructor rather than the real ESM package.
+const HBConfigNode = require('./hbConfigNode');
 const { HapClient } = require('@homebridge/hap-client');
 const fs = require('fs');
 const path = require('path');
 
-jest.mock('@homebridge/hap-client', () => {
-  return {
-    HapClient: jest.fn().mockImplementation(() => ({
-      getAllServices: jest.fn(),
-      on: jest.fn(),
-      removeListener: jest.fn(),
-      connect: jest.fn().mockResolvedValue(true),
-      disconnect: jest.fn(),
-      destroy: jest.fn(),
-    })),
-  };
-});
-
 // Helper function to load test fixtures
 const loadFixture = (filename) => {
-  // eslint-disable-next-line no-undef
   const fixturePath = path.join(__dirname, '..', 'test', filename);
   return JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
 };
@@ -34,14 +23,14 @@ const createTestNode = (config = {}) => {
 
   const RED = {
     nodes: {
-      createNode: jest.fn(),
+      createNode: vi.fn(),
     },
   };
 
   const node = new HBConfigNode(mockConfig, RED);
-  node.warn = jest.fn();
-  node.log = jest.fn();
-  node.error = jest.fn();
+  node.warn = vi.fn();
+  node.log = vi.fn();
+  node.error = vi.fn();
 
   return node;
 };
@@ -207,7 +196,7 @@ describe('HapClient config options', () => {
     HapClient.mockClear();
     RED = {
       nodes: {
-        createNode: jest.fn().mockImplementation(function (node, config) {
+        createNode: vi.fn().mockImplementation(function (node, config) {
           node.id = config.id;
         }),
       },
