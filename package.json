@@ -61,5 +61,8 @@
     "env": {
       "NODE_OPTIONS": "--trace-warnings"
     }
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true
   }
 }
