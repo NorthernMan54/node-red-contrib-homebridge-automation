@@ -26,14 +26,14 @@
     "url": "git+https://github.com/NorthernMan54/node-red-contrib-homebridge-automation.git"
   },
   "devDependencies": {
-    "@eslint/js": "^9.16.0",
+    "@eslint/js": "^10.0.1",
     "@types/node-red": "^1.3.5",
     "@vitest/coverage-v8": "^4.1.7",
     "@vitest/eslint-plugin": "^1.1.0",
-    "eslint": "^9.36.0",
-    "eslint-plugin-format": "^1.0.2",
+    "eslint": "^10.5.0",
+    "eslint-plugin-format": "^2.0.1",
     "globals": "^17.0.0",
-    "node-red": "^4.1.8",
+    "node-red": "^5.0.0",
     "node-red-node-test-helper": "^0.3.4",
     "nodemon": "^3.1.7",
     "rimraf": "^6.0.1",
