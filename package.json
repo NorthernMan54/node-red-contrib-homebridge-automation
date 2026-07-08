@@ -33,7 +33,7 @@
     "eslint": "^9.36.0",
     "eslint-plugin-format": "^1.0.2",
     "globals": "^17.0.0",
-    "node-red": "^4.1.8",
+    "node-red": "^5.0.1",
     "node-red-node-test-helper": "^0.3.4",
     "nodemon": "^3.1.7",
     "rimraf": "^6.0.1",
